@@ -2,807 +2,581 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dark Neon Gold — Preview</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="וידאו דיזיין">
+<meta name="theme-color" content="#0a0e1a">
+<title>לקוחות וידאו דיזיין</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-/* ══ base.css ══ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-:root {
-  --bg:    #0A0D11;
-  --sur:   #0F1318;
-  --sur2:  #141A22;
-  --sur3:  #1A2130;
-  --sur4:  #1F283C;
-  --gld:        #D4AF37;
-  --gld2:       #E8C07A;
-  --gld3:       #F5D98B;
-  --gld-dim:    rgba(212,175,55,0.10);
-  --gld-med:    rgba(212,175,55,0.20);
-  --gld-glow:   rgba(232,192,122,0.30);
-  --gld-bright: rgba(232,192,122,0.55);
-  --acc:   #3A6EBF;
-  --grn:   #1A7A50;
-  --red:   #A8312A;
-  --yel:   #B87210;
-  --ora:   #B55B28;
-  --cya:   #16697A;
-  --tx:    #EAE6DE;
-  --tx2:   #9E9888;
-  --tx3:   #585248;
-  --tx-gld: #F5D98B;
-  --brd:   rgba(212,175,55,0.10);
-  --brd2:  rgba(212,175,55,0.22);
-  --brd3:  rgba(212,175,55,0.48);
-  --r:     10px;
-  --r-lg:  14px;
-  --sidebar-w: 230px;
-}
+<script>
+/* PWA manifest + apple-touch-icon injected at runtime (must run before module scripts) */
+const _manifest = {
+  name:"Video Design CRM", short_name:"VD CRM", start_url:".", display:"standalone",
+  background_color:"#0a0e1a", theme_color:"#0a0e1a",
+  icons:[
+    {"src":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAABEB0lEQVR4nO19d3xUVdr/uXd6MiG9J4T0nkDovYMCQpQSBHXFVVzd11XRFxc/q7vqR0B0V8UGuC8qCEivS+8ECCAlhDRITyY9mUza9Ht/fzy/e97DJLlzZzIJ+vvN9498JjP3nvqc5zznaQchJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xw4v9l0DRNURRCiKIomqbhg8NrETu8RCd+CxCJRAghlmVFIhFQDwbLso+oUU78fkDTtFQqlUgk+BuxWGxBSY6pyOElOvFbAMMwsGFFRUUtXrw4PDzcZDIhhGiaFoud244T1gByj1KpXLt2bUNDw7vvvgt7mUgkchKQE9ZBURRFUSEhIZmZmSzLnj171svLi6IokI0cCOcW9v8mQPphGMbV1ZVlWTc3N5lMBjK1Y89iTgJyMPriqGxrXRRFMQyDEILdymw2UxTVR4cvvu0Q9lGGYcRisdFoBK7Isiy0G5ooBCKRCGQ63DEonGVZi16JxWJ4hmEYqAgWDfzbU/mg8IBhshgp/umEBlAc4F/osn3DDSKq0WiEz7YW0nVA+GHROzzC8BcPIIg+ULLZbMYvwl9cIzk7wsHHgaBuoGKsV4CjoE39hLeguWKxGKikKzuFL4F6EEcWAnsFowYnVYoAzyuwPHDDEEJSqRS62Rsxk2EYmDDhr0BLYDRsZWD4Fei7xVjBsJBThtcMQogUqOF7OyQkvpGiadpkMtE0TWQL7SOZkEAyYllWIpHo9XpEEKXBYOhKGWT3MGCMoA09lQ/NM5vNti5iAJYYRCKRyWSCE68dgBFD3GKw9XUQcvESsgryMXxux0VZlEx+xsyJ/Ne+NvMREMuyAQEBAwcOZFnWYDAUFhbqdDpMTAIrg6abzebk5GQXFxexWFxdXV1eXt61BMxvBg8enJKSYjQaVapVVlaWyWQSyIR8fHzi4uLI6e+JnoAiOzs729raGhsbOzs7KYpSKBR6vR4aZt8W5uPjEx0dbTAYxGIxULOQt8hdOz8/v7Oz06ZKocFisVgikXR0dABTEbIGFAqF0WgErg+0C5uvTeiRgIAex4wZ8/7771MUVVVV9Ze//KWoqAiaK1xKgNFxd3f/8MMPo6OjzWbzd999t3HjRolEAq3HTwILNZvNs2bNev/992ma3rdv37Vr1zDbs1rL4MGDP/roI7lcbrEcuwJIpLOzs7a2Njs7++bNmzk5OVVVVWKx2Oq73QLY8/Dhw1evXm0ymSiKMhqNQrZCYMmwk96/f/+NN94AahY4vLD3mUwmvV6v1+sxq8b7Rk81IoTa2toQQhKJhOdhq7BCQM3NzSEhIV5eXjExMfHx8UVFRViktYkDRUVFjR479A==","sizes":"192x192","type":"image/png"}
+  ]
+};
+const _blob = new Blob([JSON.stringify(_manifest)], {type:'application/json'});
+const _link  = document.createElement('link');
+_link.rel    = 'manifest';
+_link.href   = URL.createObjectURL(_blob);
+document.head.appendChild(_link);
 
-body {
-  font-family: 'Heebo', sans-serif;
-  background: var(--bg);
-  color: var(--tx);
-  min-height: 100vh;
-  direction: rtl;
-  overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  top: -120px; left: 50%;
-  transform: translateX(-50%);
-  width: 700px; height: 300px;
-  background: radial-gradient(ellipse, rgba(212,175,55,0.06) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes goldPulse {
-  0%,100% { box-shadow: 0 0 8px var(--gld-glow); }
-  50%     { box-shadow: 0 0 22px var(--gld-glow), 0 0 40px rgba(212,175,55,0.1); }
-}
-
-/* ══ layout.css ══ */
-.sidebar {
-  position: fixed;
-  top: 0; right: 0;
-  width: var(--sidebar-w);
-  height: 100vh;
-  background: var(--sur);
-  border-left: 1px solid var(--brd2);
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  overflow-y: auto;
-  background-image: linear-gradient(180deg, rgba(212,175,55,0.04) 0%, transparent 35%, rgba(212,175,55,0.02) 100%);
-}
-.sidebar::-webkit-scrollbar { width: 3px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--brd2); border-radius: 2px; }
-
-.logo {
-  padding: 22px 16px 18px;
-  border-bottom: 1px solid var(--brd);
-  text-align: center;
-  position: relative;
-}
-.logo::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 15%; right: 15%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gld), transparent);
-  opacity: 0.6;
-}
-.logo-mark {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0px;
-  margin-bottom: 6px;
-}
-.logo-top {
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--gld3);
-  text-shadow: 0 0 16px rgba(245,217,139,0.5);
-  line-height: 1.1;
-}
-.logo-bot {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--tx3);
-  line-height: 1.2;
-}
-.logo p { font-size: 10px; color: var(--tx3); margin-top: 4px; letter-spacing: 1px; }
-
-#user-badge {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 3px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  border: 1px solid var(--brd2);
-  color: var(--gld2);
-  background: var(--gld-dim);
-}
-
-.nav { flex: 1; padding: 8px 8px 20px; }
-.nav-sec {
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--tx3);
-  text-transform: uppercase;
-  letter-spacing: 1.8px;
-  padding: 16px 10px 5px;
-  position: relative;
-}
-.nav-sec::before {
-  content: '';
-  position: absolute;
-  top: 8px; left: 10px; right: 10px;
-  height: 1px;
-  background: linear-gradient(90deg, var(--brd2), transparent);
-}
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 12px;
-  border-radius: var(--r);
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--tx2);
-  background: none;
-  border: 1px solid transparent;
-  width: 100%;
-  text-align: right;
-  font-family: 'Heebo', sans-serif;
-  margin-bottom: 2px;
-  transition: all .18s;
-  position: relative;
-}
-.nav-btn:hover { background: var(--gld-dim); color: var(--gld2); }
-.nav-btn.on {
-  background: var(--gld-dim);
-  color: var(--gld3);
-  border-color: var(--brd2);
-  text-shadow: 0 0 10px rgba(245,217,139,0.35);
-}
-.nav-btn.on::before {
-  content: '';
-  position: absolute;
-  right: 0; top: 20%; bottom: 20%;
-  width: 2px;
-  background: linear-gradient(180deg, transparent, var(--gld), transparent);
-  border-radius: 1px;
-  box-shadow: 0 0 6px var(--gld-glow);
-}
-.nav-btn-logout { color: rgba(192,57,43,0.7); margin-top: 8px; }
-.nav-btn-logout:hover { background: rgba(192,57,43,0.08); color: #E74C3C; border-color: transparent; }
-
-.main {
-  margin-right: var(--sidebar-w);
-  padding: 24px;
-  min-height: 100vh;
-  width: calc(100% - var(--sidebar-w));
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-}
-
-.pg    { display: none; }
-.pg.on { display: block; animation: fadeUp 0.25s ease; }
-
-.ph {
-  display: flex; align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px; flex-wrap: wrap; gap: 10px;
-}
-.pt { font-size: 20px; font-weight: 800; color: var(--tx); letter-spacing: -0.3px; }
-.ps { font-size: 11px; color: var(--tx3); margin-top: 2px; letter-spacing: 0.3px; }
-
-.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-.dash3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
-.fg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-
-/* ══ components.css ══ */
-.sc {
-  background: var(--sur2);
-  border: 1px solid var(--brd);
-  border-radius: var(--r-lg);
-  padding: 16px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: border-color .2s, box-shadow .2s, transform .2s;
-  cursor: pointer;
-}
-.sc::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 55%);
-  pointer-events: none;
-}
-.sc::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 20%; right: 20%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.35), transparent);
-}
-.sc:hover { border-color: var(--brd2); box-shadow: 0 6px 24px rgba(0,0,0,0.4); transform: translateY(-1px); }
-.sc.info    { border-color: rgba(58,110,191,0.25); }
-.sc.warn    { border-color: rgba(184,114,16,0.28); }
-.sc.danger  { border-color: rgba(168,49,42,0.28); }
-.sc.success { border-color: rgba(26,122,80,0.28); }
-.sc.orange  { border-color: rgba(181,91,40,0.28); }
-.sc-lbl { font-size: 9px; color: var(--tx3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-.sc-val { font-size: 26px; font-weight: 800; color: var(--gld3); text-shadow: 0 0 14px rgba(245,217,139,0.28); line-height: 1; }
-.sc-sub { font-size: 10px; color: var(--tx3); margin-top: 6px; }
-
-.panel-title {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--brd);
-  font-weight: 700; font-size: 12px;
-  color: var(--tx2); letter-spacing: 0.3px;
-  background: linear-gradient(90deg, rgba(212,175,55,0.05) 0%, transparent 60%);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.panel-body { max-height: 220px; overflow-y: auto; }
-.panel-body::-webkit-scrollbar { width: 3px; }
-.panel-body::-webkit-scrollbar-thumb { background: var(--brd2); border-radius: 2px; }
-.panel-link-btn { font-size: 11px; color: var(--gld2); background: none; border: none; cursor: pointer; font-family: Heebo, sans-serif; opacity: 0.65; transition: opacity .2s; }
-.panel-link-btn:hover { opacity: 1; }
-
-.ai { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--brd); cursor: pointer; transition: background .15s; }
-.ai:hover      { background: rgba(212,175,55,0.05); }
-.ai:last-child { border-bottom: none; }
-.ai.warn   { border-right: 2px solid var(--yel); }
-.ai.danger { border-right: 2px solid var(--red); }
-
-.tw { background: var(--sur2); border: 1px solid var(--brd); border-radius: var(--r-lg); overflow: hidden; }
-
-.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-.bg { background: rgba(26,122,80,0.15);  color: #2DBD82; border: 1px solid rgba(26,122,80,0.3); }
-.br { background: rgba(168,49,42,0.15);  color: #E05550; border: 1px solid rgba(168,49,42,0.3); }
-.by { background: rgba(184,114,16,0.15); color: #D4960E; border: 1px solid rgba(184,114,16,0.3); }
-.bb { background: rgba(58,110,191,0.15); color: #5A8FD4; border: 1px solid rgba(58,110,191,0.3); }
-
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 18px; border-radius: 8px;
-  font-size: 13px; font-weight: 600; cursor: pointer; border: none;
-  font-family: 'Heebo', sans-serif; transition: all .18s; white-space: nowrap;
-}
-.bp { background: var(--gld-dim); color: var(--gld3); border: 1px solid var(--brd2); }
-.bp:hover { background: var(--gld-med); border-color: var(--brd3); box-shadow: 0 0 16px var(--gld-glow); text-shadow: 0 0 8px rgba(245,217,139,0.5); }
-.bp:active { transform: scale(0.98); }
-.bs { background: var(--sur3); color: var(--tx2); border: 1px solid var(--brd); }
-.bs:hover { background: var(--sur4); color: var(--tx); border-color: var(--brd2); }
-.bd { background: rgba(168,49,42,0.1); color: #E05550; border: 1px solid rgba(168,49,42,0.28); }
-.btn-sm { padding: 5px 12px; font-size: 11px; }
-
-.pb      { height: 4px; background: var(--sur3); border-radius: 3px; overflow: hidden; margin-top: 5px; }
-.pb-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--gld), var(--gld2)); box-shadow: 0 0 6px var(--gld-glow); }
-
-.fc {
-  background: var(--sur2); border: 1px solid var(--brd);
-  border-radius: var(--r-lg); padding: 14px; cursor: pointer;
-  transition: border-color .2s, box-shadow .2s, transform .18s; position: relative; overflow: hidden;
-}
-.fc::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(212,175,55,0.03) 0%, transparent 50%);
-  pointer-events: none;
-}
-.fc:hover { border-color: var(--brd3); box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 0 14px rgba(212,175,55,0.07); transform: translateY(-1px); }
-.fch   { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
-.fdesc { font-size: 13px; color: var(--tx2); margin-bottom: 8px; line-height: 1.55; }
-.fmeta { display: flex; gap: 10px; flex-wrap: wrap; }
-.fmeta span { font-size: 11px; color: var(--tx3); }
-
-.flbl { display: block; font-size: 10px; font-weight: 700; color: var(--tx3); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.7px; }
-.finp {
-  background: var(--sur3); border: 1px solid var(--brd); border-radius: 8px;
-  padding: 9px 12px; color: var(--tx); font-size: 14px;
-  font-family: 'Heebo', sans-serif; outline: none; width: 100%;
-  transition: border-color .2s, box-shadow .2s;
-}
-.finp:focus { border-color: var(--brd3); box-shadow: 0 0 0 3px rgba(212,175,55,0.07), 0 0 14px rgba(212,175,55,0.1); }
-
-.stit { font-size: 10px; font-weight: 700; color: var(--gld2); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--brd); text-transform: uppercase; letter-spacing: 1.2px; }
-
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
-.modal.open { display: flex; }
-.mbox { background: var(--sur2); border: 1px solid var(--brd2); border-radius: var(--r-lg); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.7), inset 0 1px 0 rgba(212,175,55,0.06); }
-.mhd { padding: 16px 20px; border-bottom: 1px solid var(--brd); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--sur2); z-index: 1; background-image: linear-gradient(90deg, rgba(212,175,55,0.05) 0%, transparent 60%); position: relative; }
-.mhd::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent); }
-.mhd h2 { font-size: 15px; font-weight: 700; color: var(--tx); }
-.mbody  { padding: 20px; }
-.mft    { padding: 14px 20px; border-top: 1px solid var(--brd); display: flex; gap: 8px; justify-content: flex-end; }
-.fgrid  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.fg1    { grid-column: 1 / -1; }
-
-#toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--sur3); color: var(--tx); padding: 10px 22px; border-radius: 8px; font-size: 13px; z-index: 9999; opacity: 0; transition: opacity .3s; white-space: nowrap; border: 1px solid var(--brd2); }
-#toast.show { opacity: 1; }
-
-/* ══ pages.css ══ */
-#login-screen {
-  position: fixed; inset: 0;
-  background: var(--bg);
-  background-image:
-    radial-gradient(ellipse 70% 45% at 50% -10%, rgba(212,175,55,0.07) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 30% at 85% 95%,  rgba(212,175,55,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 35% 25% at 10% 80%,  rgba(58,110,191,0.04) 0%, transparent 60%);
-  z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
-}
-.login-card {
-  background: var(--sur); border: 1px solid var(--brd2); border-radius: 20px;
-  padding: 38px 32px 32px; width: 100%; max-width: 380px; text-align: center;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.05), inset 0 1px 0 rgba(212,175,55,0.08);
-  position: relative; overflow: hidden; animation: fadeUp 0.4s ease;
-}
-.login-card::before {
-  content: '';
-  position: absolute; top: 0; left: 15%; right: 15%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.7), transparent);
-}
-.login-card::after {
-  content: '';
-  position: absolute; top: -60px; right: -60px;
-  width: 160px; height: 160px;
-  background: radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%);
-  pointer-events: none;
-}
-.login-logo-mark {
-  display: inline-flex; flex-direction: column; align-items: center; gap: 0;
-  margin-bottom: 10px;
-}
-.login-logo-top { font-size: 22px; font-weight: 800; letter-spacing: 5px; text-transform: uppercase; color: var(--gld3); text-shadow: 0 0 20px rgba(245,217,139,0.5); line-height: 1.1; }
-.login-logo-bot { font-size: 12px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: var(--tx3); }
-.login-sub { font-size: 10px; color: var(--tx3); margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2.5px; }
-#user-btns-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-
-.user-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  padding: 16px 10px; background: var(--gld-dim); border: 1px solid var(--brd2);
-  border-radius: 10px; cursor: pointer; transition: all .2s; font-family: Heebo, sans-serif;
-}
-.user-btn:hover {
-  background: var(--gld-med); border-color: var(--brd3);
-  box-shadow: 0 0 16px var(--gld-glow);
-}
-.user-btn-av {
-  width: 40px; height: 40px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 800; color: #fff; border: 1px solid rgba(255,255,255,0.2);
-}
-.user-btn-name { font-size: 13px; font-weight: 600; color: var(--gld2); }
-.user-btn-role { font-size: 10px; color: var(--tx3); }
-
-.sidebar-search-btn {
-  width: 100%; background: var(--sur2); border: 1px solid var(--brd); border-radius: 8px;
-  padding: 8px 12px; color: var(--tx3); font-size: 12px; font-family: Heebo, sans-serif;
-  cursor: pointer; display: flex; align-items: center; gap: 8px; transition: border-color .2s, color .2s;
-}
-.sidebar-search-btn:hover { border-color: var(--brd2); color: var(--tx2); }
-
-/* ── Demo: toggle between screens ─────────────── */
-.demo-toggle {
-  position: fixed;
-  top: 16px; left: 16px; z-index: 10000;
-  display: flex; gap: 8px;
-}
-.demo-toggle button {
-  background: var(--sur3); border: 1px solid var(--brd2);
-  color: var(--tx2); font-family: Heebo, sans-serif;
-  font-size: 12px; padding: 6px 14px; border-radius: 6px; cursor: pointer;
-  transition: all .15s;
-}
-.demo-toggle button.active { background: var(--gld-dim); color: var(--gld3); border-color: var(--brd3); }
-
-@media (max-width: 768px) {
-  .sidebar { display: none !important; }
-  .main    { margin-right: 0 !important; width: 100% !important; padding: 12px 12px 20px !important; }
-  .stats   { grid-template-columns: 1fr 1fr !important; }
-  .dash3   { grid-template-columns: 1fr !important; }
-  .pt      { font-size: 18px; }
-}
-</style>
+const _apl  = document.createElement('link');
+_apl.rel    = 'apple-touch-icon';
+_apl.href   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEB0lEQVR4nO3BMQEAAADCoPVP7WsIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMAAAGQAAEA';
+document.head.appendChild(_apl);
+</script>
 </head>
 <body>
-
-<!-- Demo toggle -->
-<div class="demo-toggle">
-  <button id="btn-login" class="active" onclick="showLogin()">כניסה</button>
-  <button id="btn-dash"  onclick="showDash()">לוח בקרה</button>
-</div>
 
 <!-- ══ LOGIN SCREEN ══ -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-logo-mark">
-      <div class="login-logo-top">VIDEO</div>
-      <div class="login-logo-bot">DESIGN</div>
-    </div>
+    <img class="login-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wgARCALqBJsDASIAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAAAAUGAQMEAv/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAp8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//Z"
+         alt="Video Design">
     <p class="login-sub">ניהול לקוחות</p>
-    <div id="user-btns-demo">
-      <div class="user-btn" onclick="showDash()">
-        <div class="user-btn-av" style="background:#3A6EBF">א</div>
-        <div class="user-btn-name">אופיר</div>
-        <div class="user-btn-role">👑 בעלים</div>
-      </div>
-      <div class="user-btn" onclick="showDash()">
-        <div class="user-btn-av" style="background:#D4AF37;color:#0A0D11">ר</div>
-        <div class="user-btn-name">רז</div>
-        <div class="user-btn-role">🔧 אדמין</div>
-      </div>
-      <div class="user-btn" onclick="showDash()">
-        <div class="user-btn-av" style="background:#1A7A50">ג</div>
-        <div class="user-btn-name">גלאל</div>
-        <div class="user-btn-role">🔨 מתקין</div>
-      </div>
-      <div class="user-btn" onclick="showDash()">
-        <div class="user-btn-av" style="background:#16697A">מ</div>
-        <div class="user-btn-name">מוטי</div>
-        <div class="user-btn-role">🔨 מתקין</div>
-      </div>
+    <div id="user-btns"></div>
+    <div id="pass-area">
+      <p id="pass-label"></p>
+      <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="סיסמה"
+             onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn bp login-full-btn" onclick="doLogin()">כניסה →</button>
+      <button class="btn bs btn-sm login-full-btn" onclick="backToUsers()">חזור</button>
+      <p id="pass-err">סיסמה שגויה ❌</p>
     </div>
-    <p style="font-size:11px;color:var(--tx3);margin-top:8px">בחר משתמש להתחברות</p>
+  </div>
+</div>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<div id="mnav">
+  <div class="mns">
+    <button class="mnb" onclick="nav('dashboard')"><span style="font-size:20px">🏠</span>ראשי</button>
+    <button class="mnb" onclick="nav('customers')"><span style="font-size:20px">👥</span>לקוחות</button>
+    <button class="mnb" onclick="nav('faults')"><span style="font-size:20px">🔧</span>משימות</button>
+    <button class="mnb" onclick="nav('notes')"><span style="font-size:20px">📝</span>הערות</button>
+    <button class="mnb" onclick="openDrawer()"><span style="font-size:20px">☰</span>עוד</button>
+  </div>
+</div>
+
+<!-- ══ MOBILE DRAWER ══ -->
+<div id="m-drawer">
+  <div id="m-drawer-bg" onclick="closeDrawer()"></div>
+  <div id="m-drawer-panel">
+    <div class="m-drawer-header">
+      <span>תפריט</span>
+      <button onclick="closeDrawer()" class="m-drawer-close">✕</button>
+    </div>
+    <div class="m-drawer-sec">ניהול</div>
+    <button class="m-drawer-btn" onclick="navD('dashboard')">📊 לוח בקרה</button>
+    <button class="m-drawer-btn" onclick="navD('customers')">👥 לקוחות</button>
+    <button class="m-drawer-btn" onclick="navD('faults')">🔧 משימות</button>
+    <button class="m-drawer-btn" onclick="navD('archive')">✅ ארכיון</button>
+    <div class="m-drawer-sec">דוחות</div>
+    <button class="m-drawer-btn" onclick="navD('warranties')">🛡️ אחריות</button>
+    <button class="m-drawer-btn" onclick="navD('debts')">💰 חובות</button>
+    <button class="m-drawer-btn" onclick="navD('notes')">📝 הערות</button>
+    <button class="m-drawer-btn" id="m-drawer-reports" onclick="navD('reports')">📈 דוחות</button>
+    <div class="m-drawer-sec">מערכת</div>
+    <button class="m-drawer-btn" onclick="navD('settings')">⚙️ הגדרות</button>
+    <button class="m-drawer-btn" id="m-drawer-log" style="display:none" onclick="navD('log')">📋 לוג שינויים</button>
+    <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer()">🔍 חיפוש גלובלי</button>
+    <button class="m-drawer-btn m-drawer-logout" onclick="logout()">🚪 התנתק</button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<!-- ══ GLOBAL SEARCH MODAL ══ -->
+<div class="modal" id="M-gsearch">
+  <div class="mbox" style="max-width:640px">
+    <div class="mhd">
+      <h2>🔍 חיפוש גלובלי</h2>
+      <button class="btn bs btn-sm" onclick="closeM('M-gsearch')">✕</button>
+    </div>
+    <div class="mbody">
+      <input class="finp" id="gs-inp" placeholder="חפש לקוח, משימה או הערה..." oninput="runGlobalSearch()" autofocus>
+      <div id="gs-results" style="margin-top:14px"></div>
+    </div>
   </div>
 </div>
 
 <!-- ══ SIDEBAR ══ -->
-<aside class="sidebar" id="sidebar" style="display:none">
+<aside class="sidebar">
   <div class="logo">
-    <div class="logo-mark">
-      <span class="logo-top">VIDEO</span>
-      <span class="logo-bot">DESIGN</span>
-    </div>
-    <p>ניהול לקוחות</p>
-    <div id="user-badge">👑 אופיר</div>
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wgARCALqBJsDASIAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAAAAUGAQMEAv/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAp8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//Z"
+         class="sidebar-logo-img" alt="Video Design">
+    <div id="user-badge"></div>
   </div>
   <nav class="nav">
     <div style="padding:8px 0 12px">
-      <button class="sidebar-search-btn">
+      <button onclick="openGlobalSearch()" class="sidebar-search-btn">
         <span>🔍</span><span>חיפוש גלובלי...</span>
       </button>
     </div>
     <div class="nav-sec">ניהול</div>
-    <button class="nav-btn on">📊 לוח בקרה</button>
-    <button class="nav-btn">👥 לקוחות</button>
-    <button class="nav-btn">🔧 משימות</button>
-    <button class="nav-btn">✅ ארכיון</button>
+    <button class="nav-btn on" id="nb-dashboard"  onclick="nav('dashboard')">📊 לוח בקרה</button>
+    <button class="nav-btn"    id="nb-customers"  onclick="nav('customers')">👥 לקוחות</button>
+    <button class="nav-btn"    id="nb-faults"     onclick="nav('faults')">🔧 משימות</button>
+    <button class="nav-btn"    id="nb-archive"    onclick="nav('archive')">✅ ארכיון</button>
     <div class="nav-sec">דוחות</div>
-    <button class="nav-btn">🛡️ אחריות</button>
-    <button class="nav-btn">💰 חובות</button>
-    <button class="nav-btn">📝 הערות</button>
-    <button class="nav-btn">📈 דוחות</button>
+    <button class="nav-btn"    id="nb-warranties" onclick="nav('warranties')">🛡️ אחריות</button>
+    <button class="nav-btn"    id="nb-debts"      onclick="nav('debts')">💰 חובות</button>
+    <button class="nav-btn"    id="nb-notes"      onclick="nav('notes')">📝 הערות</button>
+    <button class="nav-btn"    id="nb-reports"    onclick="nav('reports')">📈 דוחות</button>
     <div class="nav-sec">מערכת</div>
-    <button class="nav-btn">⚙️ הגדרות</button>
-    <button class="nav-btn">📋 לוג שינויים</button>
-    <button class="nav-btn nav-btn-logout">🚪 התנתק</button>
+    <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
+    <button class="nav-btn"    id="nb-log"        onclick="nav('log')" style="display:none">📋 לוג שינויים</button>
+    <button class="nav-btn nav-btn-logout"         onclick="logout()">🚪 התנתק</button>
   </nav>
 </aside>
 
 <!-- ══ MAIN CONTENT ══ -->
-<main class="main" id="main-area" style="display:none">
+<main class="main">
+
+  <!-- ── DASHBOARD ── -->
   <div class="pg on" id="pg-dashboard">
-
     <div class="ph">
-      <div>
-        <div class="pt">לוח בקרה</div>
-        <div class="ps">שלום, אופיר — סקירה כללית</div>
-      </div>
-      <button class="btn bp">+ לקוח חדש</button>
+      <div><div class="pt">לוח בקרה</div><div class="ps">סקירה כללית</div></div>
     </div>
-
-    <!-- Stats row -->
     <div class="stats">
-      <div class="sc info">
-        <div class="sc-lbl">סה״כ לקוחות</div>
-        <div class="sc-val">247</div>
-        <div class="sc-sub">במערכת</div>
-      </div>
-      <div class="sc warn">
-        <div class="sc-lbl">אחריות פגה/בקרוב</div>
-        <div class="sc-val">12</div>
-        <div class="sc-sub">⚠️ דורש טיפול</div>
-      </div>
-      <div class="sc danger">
-        <div class="sc-lbl">לקוחות עם חוב</div>
-        <div class="sc-val">8</div>
-        <div class="sc-sub">חובות פתוחים</div>
-      </div>
-      <div class="sc success">
-        <div class="sc-lbl">סה״כ חוב</div>
-        <div class="sc-val">₪14,200</div>
-        <div class="sc-sub">₪ לגבייה</div>
-      </div>
-      <div class="sc orange">
-        <div class="sc-lbl">משימות פתוחות</div>
-        <div class="sc-val">5</div>
-        <div class="sc-sub">🔧 ממתינות</div>
-      </div>
+      <div class="sc info">   <div class="sc-lbl">סה״כ לקוחות</div>      <div class="sc-val" id="st-total">—</div>    <div class="sc-sub">במערכת</div></div>
+      <div class="sc warn">   <div class="sc-lbl">אחריות פגה/בקרוב</div> <div class="sc-val" id="st-warr">—</div>     <div class="sc-sub">⚠️ דורש טיפול</div></div>
+      <div class="sc danger"> <div class="sc-lbl">לקוחות עם חוב</div>    <div class="sc-val" id="st-debts">—</div>    <div class="sc-sub">חובות פתוחים</div></div>
+      <div class="sc success"><div class="sc-lbl">סה״כ חוב</div>         <div class="sc-val" id="st-debt-sum">—</div> <div class="sc-sub">₪ לגבייה</div></div>
+      <div class="sc orange"> <div class="sc-lbl">משימות פתוחות</div>    <div class="sc-val" id="st-faults">—</div>   <div class="sc-sub">🔧 ממתינות</div></div>
     </div>
-
-    <!-- Dashboard panels -->
     <div class="dash3">
-      <!-- Warranties panel -->
-      <div class="tw" style="border-top:2px solid rgba(184,114,16,0.6)">
-        <div class="panel-title">
+      <div class="tw" style="border-top:3px solid var(--acc)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
           <span>⚠️ אחריות בפתח</span>
-          <button class="panel-link-btn">הכל ›</button>
+          <button onclick="nav('warranties')" class="panel-link-btn">הכל ›</button>
         </div>
-        <div class="panel-body">
-          <div class="ai warn">
-            <span>🔴</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:13px">דוד לוי</div>
-              <div style="font-size:11px;color:var(--tx3)">פגה לפני 14 ימים</div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-          <div class="ai warn">
-            <span>🟡</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:13px">רחל כהן</div>
-              <div style="font-size:11px;color:var(--tx3)">עוד 23 ימים</div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-          <div class="ai warn">
-            <span>🟡</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:13px">שלמה אברהם</div>
-              <div style="font-size:11px;color:var(--tx3)">עוד 51 ימים</div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-        </div>
+        <div class="panel-body" id="pan-warr"></div>
       </div>
-
-      <!-- Debts panel -->
-      <div class="tw" style="border-top:2px solid rgba(26,122,80,0.6)">
-        <div class="panel-title">
+      <div class="tw" style="border-top:3px solid var(--grn)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
           <span>💰 חובות פתוחים</span>
-          <button class="panel-link-btn" style="color:var(--grn)">הכל ›</button>
+          <button onclick="nav('debts')" class="panel-link-btn" style="color:var(--grn)">הכל ›</button>
         </div>
-        <div class="panel-body">
-          <div class="ai danger">
-            <span>💰</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:13px">משה גרינברג</div>
-              <div style="font-size:11px;color:var(--tx3)">₪3,500</div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-          <div class="ai danger">
-            <span>💰</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:13px">יוסי פרץ</div>
-              <div style="font-size:11px;color:var(--tx3)">₪1,200 — התקנת מצלמות</div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-        </div>
+        <div class="panel-body" id="pan-debts"></div>
       </div>
-
-      <!-- Faults panel -->
-      <div class="tw" style="border-top:2px solid rgba(181,91,40,0.6)">
-        <div class="panel-title">
+      <div class="tw" style="border-top:3px solid var(--ora)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
           <span>🔧 משימות פתוחות</span>
-          <button class="panel-link-btn" style="color:var(--ora)">הכל ›</button>
+          <button onclick="nav('faults')" class="panel-link-btn" style="color:var(--ora)">הכל ›</button>
         </div>
-        <div class="panel-body">
-          <div class="ai warn">
-            <span>🔧</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:13px">נחמה ברקוביץ</div>
-              <div style="font-size:11px;color:var(--tx3)">בדיקת מצלמה #3 לא עובדת</div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-          <div class="ai warn">
-            <span>🔧</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:13px">אבי שפירא</div>
-              <div style="font-size:11px;color:var(--tx3)">אינטרקום לא מגיב</div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-        </div>
+        <div class="panel-body" id="pan-faults"></div>
       </div>
     </div>
-
-    <!-- Notes panels -->
     <div class="dash3" style="margin-top:14px">
-      <div class="tw" style="border-top:2px solid rgba(58,110,191,0.6)">
-        <div class="panel-title">
+      <div class="tw" style="border-top:3px solid var(--acc)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
           <span>📌 כללי</span>
-          <button class="panel-link-btn">כל ההערות ›</button>
+          <button onclick="nav('notes')" class="panel-link-btn">כל ההערות ›</button>
         </div>
-        <div class="panel-body">
-          <div class="ai" style="border-right:3px solid var(--acc)">
-            <div style="flex:1;min-width:0">
-              <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">בדיקת מערכת גיבוי שבועית</div>
-              <div style="font-size:11px;color:var(--tx3);margin-top:3px;display:flex;gap:8px">
-                <span style="color:#5A8FD4;font-weight:600">✏️ רז</span>
-                <span>01/04/2026</span>
-              </div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-        </div>
+        <div class="panel-body" id="pan-notes-general"></div>
       </div>
-      <div class="tw" style="border-top:2px solid rgba(26,122,80,0.6)">
-        <div class="panel-title">
+      <div class="tw" style="border-top:3px solid var(--grn)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
           <span>🤝 פגישות</span>
-          <button class="panel-link-btn" style="color:var(--grn)">כל ההערות ›</button>
+          <button onclick="nav('notes')" class="panel-link-btn" style="color:var(--grn)">כל ההערות ›</button>
         </div>
-        <div class="panel-body">
-          <div class="ai" style="border-right:3px solid var(--grn)">
-            <div style="flex:1;min-width:0">
-              <div style="font-weight:600;font-size:13px">פגישה עם לקוח חדש — מרכז</div>
-              <div style="font-size:11px;color:var(--tx3);margin-top:3px;display:flex;gap:8px">
-                <span style="color:#2DBD82;font-weight:600">✏️ אופיר</span>
-                <span>03/04/2026</span>
-              </div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-        </div>
+        <div class="panel-body" id="pan-notes-meeting"></div>
       </div>
-      <div class="tw" style="border-top:2px solid rgba(184,114,16,0.6)">
-        <div class="panel-title">
+      <div class="tw" style="border-top:3px solid var(--yel)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
           <span>⏰ תזכורות</span>
-          <button class="panel-link-btn" style="color:var(--yel)">כל ההערות ›</button>
+          <button onclick="nav('notes')" class="panel-link-btn" style="color:var(--yel)">כל ההערות ›</button>
         </div>
-        <div class="panel-body">
-          <div class="ai" style="border-right:3px solid var(--yel)">
-            <div style="flex:1;min-width:0">
-              <div style="font-weight:600;font-size:13px">לחדש רישיון תוכנה עד סוף חודש</div>
-              <div style="font-size:11px;color:var(--tx3);margin-top:3px;display:flex;gap:8px">
-                <span style="color:#D4960E;font-weight:600">✏️ רז</span>
-                <span>30/04/2026</span>
-              </div>
-            </div>
-            <span style="color:var(--tx3)">›</span>
-          </div>
-        </div>
+        <div class="panel-body" id="pan-notes-reminder"></div>
       </div>
     </div>
-
-    <!-- Sample fault cards -->
-    <div style="margin-top:22px">
-      <div class="ph" style="margin-bottom:14px">
-        <div class="pt" style="font-size:16px">🔧 משימות אחרונות</div>
-        <div style="display:flex;gap:8px">
-          <button class="btn bs btn-sm">☑️ בחר מרובה</button>
-          <button class="btn bp">+ משימה חדשה</button>
+    <!-- Google Calendar -->
+    <div class="tw" style="margin-top:16px">
+      <div class="gcal-header">
+        <div class="gcal-title">📅 יומן שבועי — Google Calendar</div>
+        <div class="gcal-nav">
+          <button class="btn bs btn-sm" onclick="wkPrev()">&#8249; קודם</button>
+          <button class="btn bs btn-sm" onclick="wkToday()">היום</button>
+          <button class="btn bs btn-sm" onclick="wkNext()">הבא &#8250;</button>
+          <span id="wk-label"></span>
         </div>
       </div>
-      <div class="fg-grid">
-        <div class="fc">
-          <div class="fch">
-            <div>
-              <span class="badge br">🚨 דחוף!</span>
-              <span style="margin-right:6px" class="badge bb">🔧 משימה</span>
-            </div>
-            <span style="font-size:11px;color:var(--tx3)">02/04/2026</span>
-          </div>
-          <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:var(--tx)">מצלמה #2 לא מציגה תמונה</div>
-          <div class="fdesc">לקוח מדווח שמצלמת הכניסה הפסיקה לעבוד אחרי גשמים. דורש בדיקת כבלים ואולי החלפת יחידה.</div>
-          <div class="fmeta">
-            <span>👤 נחמה ברקוביץ</span>
-            <span>📍 חיפה</span>
-            <span>💰 ₪350</span>
-          </div>
-          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:11px;color:var(--tx3)">גלאל</span>
-            <div style="display:flex;gap:6px">
-              <button class="btn bs btn-sm">✏️ ערוך</button>
-              <button class="btn bp btn-sm">✅ סמן כטופל</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="fc">
-          <div class="fch">
-            <div>
-              <span class="badge by">🟡 בינונית</span>
-              <span style="margin-right:6px" class="badge bb">🛠️ שירות</span>
-            </div>
-            <span style="font-size:11px;color:var(--tx3)">03/04/2026</span>
-          </div>
-          <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:var(--tx)">בדיקת אינטרקום תקופתית</div>
-          <div class="fdesc">ביקור שירות שנתי, בדיקת כל היחידות ועדכון קושחה אם נדרש.</div>
-          <div class="fmeta">
-            <span>👤 אבי שפירא</span>
-            <span>📍 תל אביב</span>
-          </div>
-          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:11px;color:var(--tx3)">מוטי</span>
-            <div style="display:flex;gap:6px">
-              <button class="btn bs btn-sm">✏️ ערוך</button>
-              <button class="btn bp btn-sm">✅ סמן כטופל</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="fc">
-          <div class="fch">
-            <div>
-              <span class="badge bg">🟢 נמוכה</span>
-              <span style="margin-right:6px" class="badge bb">📦 המשך התקנה</span>
-            </div>
-            <span style="font-size:11px;color:var(--tx3)">05/04/2026</span>
-          </div>
-          <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:var(--tx)">השלמת התקנת 4 מצלמות נוספות</div>
-          <div class="fdesc">שלב ב׳ בפרויקט — התקנת 4 מצלמות חוץ בכניסות הצדדיות. כל הציוד אצל הלקוח.</div>
-          <div class="fmeta">
-            <span>👤 חברת ABC</span>
-            <span>📍 ירושלים</span>
-            <span>💰 ₪2,800</span>
-          </div>
-          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:11px;color:var(--tx3)">גלאל + מוטי</span>
-            <div style="display:flex;gap:6px">
-              <button class="btn bs btn-sm">✏️ ערוך</button>
-              <button class="btn bp btn-sm">✅ סמן כטופל</button>
-            </div>
-          </div>
-        </div>
+      <div id="gcal-signin">
+        <div class="gcal-signin-text">התחבר עם Google כדי לראות את היומן</div>
+        <button onclick="gcalSignIn()" class="gcal-signin-btn">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.2l6.6-6.6C35.4 2.4 30.1 0 24 0 14.8 0 6.9 5.4 3 13.3l7.7 6C12.5 13.2 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-16.9z"/><path fill="#FBBC05" d="M10.7 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7L2.6 13.3A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.6 10.6l8.1-5.9z"/><path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.4l-7.4-5.7c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.3-9.8l-7.7 6C6.9 42.6 14.8 48 24 48z"/></svg>
+          כניסה עם Google
+        </button>
+      </div>
+      <div id="gcal-grid"></div>
+      <div id="gcal-out">
+        <button onclick="gcalSignOut()" class="gcal-signout-btn">התנתק מ-Google</button>
       </div>
     </div>
-
   </div><!-- /pg-dashboard -->
-</main>
 
-<div id="toast"></div>
+  <!-- ── CUSTOMERS ── -->
+  <div class="pg" id="pg-customers">
+    <div class="ph">
+      <div><div class="pt">לקוחות</div><div class="ps" id="cnt-custs"></div></div>
+      <button class="btn bp" onclick="openNewCust()">+ לקוח חדש</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-custs" placeholder="חפש שם, טלפון, עיר..." oninput="renderCusts()"><span class="si">🔍</span></div>
+      <select class="fsel" id="f-warr" onchange="renderCusts()">
+        <option value="">כל האחריות</option><option value="expired">פגה</option>
+        <option value="soon">פגה בקרוב</option><option value="valid">בתוקף</option>
+      </select>
+      <select class="fsel" id="f-debt" onchange="renderCusts()">
+        <option value="">כל החובות</option><option value="has">יש חוב</option><option value="no">ללא חוב</option>
+      </select>
+    </div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>לקוח</th><th>טלפון</th><th>עיר</th><th>אחריות</th><th>חוב</th><th>פעולות</th></tr></thead>
+      <tbody id="tb-custs"></tbody>
+    </table></div></div>
+  </div><!-- /pg-customers -->
 
-<script>
-function showLogin() {
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('sidebar').style.display = 'none';
-  document.getElementById('main-area').style.display = 'none';
-  document.getElementById('btn-login').classList.add('active');
-  document.getElementById('btn-dash').classList.remove('active');
-}
+  <!-- ── WARRANTIES ── -->
+  <div class="pg" id="pg-warranties">
+    <div class="ph"><div><div class="pt">אחריות</div><div class="ps" id="cnt-warr"></div></div></div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>לקוח</th><th>התקנה</th><th>שנות אחריות</th><th>תפוגה</th><th>סטטוס</th><th>התקדמות</th></tr></thead>
+      <tbody id="tb-warr"></tbody>
+    </table></div></div>
+  </div><!-- /pg-warranties -->
 
-function showDash() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('sidebar').style.display = 'flex';
-  document.getElementById('main-area').style.display = 'block';
-  document.getElementById('btn-dash').classList.add('active');
-  document.getElementById('btn-login').classList.remove('active');
-}
-</script>
+  <!-- ── DEBTS ── -->
+  <div class="pg" id="pg-debts">
+    <div class="ph"><div><div class="pt">חובות</div><div class="ps" id="cnt-debts"></div></div></div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>לקוח</th><th>טלפון</th><th>סכום חוב</th><th>הערות</th><th>פעולות</th></tr></thead>
+      <tbody id="tb-debts"></tbody>
+    </table></div></div>
+  </div><!-- /pg-debts -->
+
+  <!-- ── FAULTS ── -->
+  <div class="pg" id="pg-faults">
+    <div class="ph">
+      <div><div class="pt">משימות</div><div class="ps" id="cnt-faults"></div></div>
+      <button class="btn bp" onclick="openNewFault(null)">+ משימה חדשה</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-faults" placeholder="חפש..." oninput="renderFaults()"><span class="si">🔍</span></div>
+      <select class="fsel" id="f-fstatus" onchange="renderFaults()">
+        <option value="">כל הסטטוסים</option><option value="open">פתוחה</option><option value="scheduled">נקבע תאריך</option>
+      </select>
+      <button class="btn bs btn-sm" id="select-mode-btn" onclick="toggleSelectMode(true)">☑️ בחר מרובה</button>
+    </div>
+    <div id="bulk-bar">
+      <span id="bulk-count" style="font-size:13px;color:var(--tx2)">0 נבחרו</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn bs btn-sm" onclick="toggleSelectMode(false)">ביטול</button>
+        <button class="btn bd btn-sm" onclick="deleteSelected()">🗑️ מחק נבחרים</button>
+      </div>
+    </div>
+    <div id="list-faults"></div>
+  </div><!-- /pg-faults -->
+
+  <!-- ── NOTES ── -->
+  <div class="pg" id="pg-notes">
+    <div class="ph">
+      <div><div class="pt">📝 הערות כלליות</div><div class="ps" id="notes-sub"></div></div>
+      <button class="btn bp" onclick="openNewNote()">+ הערה חדשה</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="note-search" placeholder="חפש..." oninput="renderNotes()"><span class="si">🔍</span></div>
+      <select class="fsel" id="note-filter-cat" onchange="renderNotes()">
+        <option value="">כל הקטגוריות</option>
+        <option value="general">📌 כללי</option><option value="meeting">🤝 פגישה</option><option value="reminder">⏰ תזכורת</option>
+      </select>
+      <select class="fsel" id="note-filter-user" onchange="renderNotes()">
+        <option value="">כל המשתמשים</option>
+        <option value="רז">רז</option><option value="אופיר">אופיר</option><option value="גלאל">גלאל</option><option value="מוטי">מוטי</option>
+      </select>
+      <button class="btn bs btn-sm" id="note-select-mode-btn" onclick="toggleNoteSelectMode(true)">☑️ בחר מרובה</button>
+    </div>
+    <div id="note-bulk-bar" style="display:none">
+      <span id="note-bulk-count" style="font-size:13px;color:var(--tx2)">0 נבחרו</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn bs btn-sm" onclick="toggleNoteSelectMode(false)">ביטול</button>
+        <button class="btn bd btn-sm" onclick="deleteSelectedNotes()">🗑️ מחק נבחרים</button>
+      </div>
+    </div>
+    <div id="list-notes" class="fg-grid"></div>
+  </div><!-- /pg-notes -->
+
+  <!-- ── ARCHIVE ── -->
+  <div class="pg" id="pg-archive">
+    <div class="ph">
+      <div><div class="pt">✅ ארכיון משימות</div><div class="ps" id="cnt-archive"></div></div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-archive" placeholder="חפש..." oninput="renderArchive()"><span class="si">🔍</span></div>
+      <select class="fsel" id="f-archive-user" onchange="renderArchive()">
+        <option value="">כל הטכנאים</option>
+        <option value="רז">רז</option><option value="אופיר">אופיר</option><option value="גלאל">גלאל</option><option value="מוטי">מוטי</option>
+      </select>
+    </div>
+    <div id="list-archive" class="fg-grid"></div>
+  </div><!-- /pg-archive -->
+
+  <!-- ── LOG ── -->
+  <div class="pg" id="pg-log">
+    <div class="ph">
+      <div><div class="pt">📋 לוג שינויים</div><div class="ps" id="cnt-log"></div></div>
+      <button class="btn bd btn-sm" onclick="if(confirm('למחוק את כל הלוג?'))clearLog()">🗑️ נקה לוג</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-log" placeholder="חפש..." oninput="renderLog()"><span class="si">🔍</span></div>
+      <select class="fsel" id="f-log-user" onchange="renderLog()">
+        <option value="">כל המשתמשים</option>
+        <option value="רז">רז</option><option value="אופיר">אופיר</option><option value="גלאל">גלאל</option><option value="מוטי">מוטי</option>
+      </select>
+      <select class="fsel" id="f-log-type" onchange="renderLog()">
+        <option value="">כל הפעולות</option>
+        <option value="customer">לקוח</option><option value="fault">משימה</option><option value="note">הערה</option>
+      </select>
+    </div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>תאריך ושעה</th><th>משתמש</th><th>פעולה</th><th>פרטים</th></tr></thead>
+      <tbody id="tb-log"></tbody>
+    </table></div></div>
+  </div><!-- /pg-log -->
+
+  <!-- ── REPORTS ── -->
+  <div class="pg" id="pg-reports">
+    <div class="ph">
+      <div><div class="pt">📈 דוחות</div><div class="ps" id="cnt-reports"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn bs btn-sm" onclick="exportCustomersExcel()">📥 ייצוא לקוחות Excel</button>
+        <button class="btn bs btn-sm" onclick="exportBackup()">💾 גיבוי נתונים</button>
+      </div>
+    </div>
+    <div class="toolbar" style="margin-bottom:14px">
+      <select class="fsel" id="rep-month" onchange="renderReports()"></select>
+      <select class="fsel" id="rep-year"  onchange="renderReports()"></select>
+    </div>
+    <div class="stats" id="rep-stats" style="margin-bottom:16px"></div>
+    <div class="dash3" style="margin-bottom:16px">
+      <div class="tw"><div class="panel-title">🔧 משימות לפי טכנאי</div>  <div id="rep-by-tech"     class="panel-body"></div></div>
+      <div class="tw"><div class="panel-title">💰 הכנסות לפי טכנאי</div><div id="rep-income-tech" class="panel-body"></div></div>
+      <div class="tw"><div class="panel-title">📋 סטטוס משימות</div>    <div id="rep-status"      class="panel-body"></div></div>
+    </div>
+  </div><!-- /pg-reports -->
+
+  <!-- ── SETTINGS ── -->
+  <div class="pg" id="pg-settings">
+    <div class="tw" style="padding:22px">
+      <div class="stit">פרטי החברה</div>
+      <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
+      <div style="margin-bottom:12px"><label class="flbl">טלפון</label>    <input class="finp" id="s-phone"   placeholder="050-0000000"></div>
+      <div style="margin-bottom:20px"><label class="flbl">מייל שולח</label><input class="finp" type="email" id="s-email" placeholder="info@videodesign.co.il"></div>
+      <div class="stit">יומן Google</div>
+      <div style="margin-bottom:6px"><label class="flbl">כתובת Gmail</label><input class="finp" type="email" id="s-gcal" placeholder="yourname@gmail.com"></div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
+      <button class="btn bp" onclick="saveSettings()">💾 שמור הגדרות</button>
+      <div class="stit" style="margin-top:24px">🔔 התראות</div>
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:12px">קבל התראה בטלפון כשמתווספת משימה חדשה</div>
+      <button class="btn bs" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
+    </div>
+    <div class="tw" id="s-users-panel" style="padding:22px;display:none;margin-top:16px">
+      <div class="stit">👥 ניהול משתמשים</div>
+      <div id="s-users-list" style="margin-bottom:16px"></div>
+      <button class="btn bs" onclick="openAddUser()">➕ הוסף משתמש</button>
+    </div>
+  </div><!-- /pg-settings -->
+
+</main><!-- /main -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- Customer Edit/New -->
+<div class="modal" id="M-cust">
+  <div class="mbox">
+    <div class="mhd"><h2 id="M-cust-title">לקוח חדש</h2><button class="btn bs btn-sm" onclick="closeM('M-cust')">✕</button></div>
+    <div class="mbody"><div class="fgrid">
+      <div><label class="flbl">שם מלא *</label><input class="finp" id="mc-name"></div>
+      <div><label class="flbl">טלפון</label>   <input class="finp" id="mc-phone" type="tel"></div>
+      <div><label class="flbl">מייל</label>    <input class="finp" id="mc-email" type="email"></div>
+      <div><label class="flbl">עיר</label>     <input class="finp" id="mc-city"></div>
+      <div class="fg1"><label class="flbl">כתובת ראשית</label><input class="finp" id="mc-address"></div>
+      <div class="fg1">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <label class="flbl" style="margin-bottom:0">כתובות נוספות</label>
+          <button type="button" class="btn bs btn-sm" onclick="addAddressRow()">+ הוסף כתובת</button>
+        </div>
+        <div id="mc-addresses-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <div><label class="flbl">תאריך התקנה</label><input class="finp" id="mc-install" type="date"></div>
+      <div><label class="flbl">שנות אחריות</label><input class="finp" id="mc-warr" type="number" value="0" min="0" max="20"></div>
+      <div><label class="flbl">סוג פרויקט</label><input class="finp" id="mc-project" placeholder="מצלמות / אינטרקום..."></div>
+      <div><label class="flbl">ציוד</label><input class="finp" id="mc-equip"></div>
+      <div><label class="flbl">חוב (₪)</label><input class="finp" id="mc-debt" type="number" value="0" min="0" placeholder="0"></div>
+      <div class="fg1"><label class="flbl">הערות חוב</label><input class="finp" id="mc-debt-desc"></div>
+      <div class="fg1"><label class="flbl">הערות טכנאי</label><textarea class="finp" id="mc-notes" rows="3"></textarea></div>
+      <div class="fg1">
+        <div class="stit" style="margin-top:4px">👥 אנשי קשר נוספים</div>
+        <div id="mc-contacts-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+        <button type="button" class="btn bs btn-sm" onclick="addContactRow()">+ הוסף איש קשר</button>
+      </div>
+    </div></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="mc-del" style="display:none;margin-left:auto" onclick="delCust()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-cust')">ביטול</button>
+      <button class="btn bp" onclick="saveCust()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Customer View -->
+<div class="modal" id="M-view">
+  <div class="mbox">
+    <div class="mhd"><h2 id="Mv-name">פרטי לקוח</h2><button class="btn bs btn-sm" onclick="closeM('M-view')">✕</button></div>
+    <div class="mbody" id="Mv-body"></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="Mv-del"   style="margin-left:auto">🗑️ מחק</button>
+      <button class="btn bs btn-sm" id="Mv-edit">✏️ ערוך</button>
+      <button class="btn bp btn-sm" id="Mv-fault">🔧 משימה חדשה</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fault Edit/New -->
+<div class="modal" id="M-fault">
+  <div class="mbox">
+    <div class="mhd"><h2 id="M-fault-title">משימה חדשה</h2><button class="btn bs btn-sm" onclick="closeM('M-fault')">✕</button></div>
+    <div class="mbody"><div class="fgrid">
+      <div class="fg1"><label class="flbl">סוג קריאה *</label>
+        <select class="finp" id="mf-type">
+          <option value="fault">🔧 משימה</option><option value="service">🛠️ שירות</option>
+          <option value="installation">📦 המשך התקנה</option><option value="other">📋 אחר</option>
+        </select>
+      </div>
+      <div class="fg1"><label class="flbl">לקוח</label>
+        <select class="finp" id="mf-cust" onchange="toggleGuestFields()"></select>
+      </div>
+      <div class="fg1" id="mf-guest-fields">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="flbl">שם לקוח מזדמן</label><input class="finp" id="mf-guest-name" placeholder="שם מלא"></div>
+          <div><label class="flbl">טלפון</label><input class="finp" id="mf-guest-phone" type="tel" placeholder="050-0000000"></div>
+        </div>
+      </div>
+      <div class="fg1"><label class="flbl">תיאור *</label><textarea class="finp" id="mf-desc" rows="3"></textarea></div>
+      <div><label class="flbl">דחיפות</label>
+        <select class="finp" id="mf-pri">
+          <option value="low">🟢 נמוכה</option><option value="medium" selected>🟡 בינונית</option>
+          <option value="high">🔴 גבוהה</option><option value="urgent">🚨 דחוף!</option>
+        </select>
+      </div>
+      <div><label class="flbl">סטטוס</label>
+        <select class="finp" id="mf-status">
+          <option value="open">פתוחה</option><option value="scheduled">נקבע תאריך</option><option value="done">טופלה</option>
+        </select>
+      </div>
+      <div><label class="flbl">תאריך הגעה</label><input class="finp" id="mf-date" type="date"></div>
+      <div><label class="flbl">שעה</label>         <input class="finp" id="mf-time" type="time"></div>
+      <div><label class="flbl">💰 סכום שירות (₪)</label><input class="finp" id="mf-amount" type="number" min="0" placeholder="לא חובה"></div>
+      <div><label class="flbl">שולם?</label>
+        <select class="finp" id="mf-paid">
+          <option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option>
+        </select>
+      </div>
+      <div class="fg1"><label class="flbl">הערות</label><textarea class="finp" id="mf-notes" rows="2"></textarea></div>
+    </div></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="mf-del" style="display:none;margin-left:auto" onclick="delFault()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-fault')">ביטול</button>
+      <button class="btn bp" onclick="saveFault()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Note Edit/New -->
+<div class="modal" id="M-note">
+  <div class="mbox">
+    <div class="mhd">
+      <h2 id="M-note-title">הערה חדשה</h2>
+      <button onclick="closeM('M-note')" class="modal-close-btn">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="fg1"><label class="flbl">קטגוריה</label>
+          <select class="finp" id="mn-cat">
+            <option value="general">📌 כללי</option><option value="meeting">🤝 פגישה</option><option value="reminder">⏰ תזכורת</option>
+          </select>
+        </div>
+        <div class="fg1"><label class="flbl">קישור ללקוח (אופציונלי)</label>
+          <select class="finp" id="mn-cust"><option value="">ללא קישור</option></select>
+        </div>
+        <div class="fg1"><label class="flbl">תוכן ההערה</label>
+          <textarea class="finp" id="mn-text" rows="4" placeholder="כתוב כאן את ההערה..."></textarea>
+        </div>
+        <div><label class="flbl">תאריך (אופציונלי)</label><input class="finp" id="mn-date" type="date"></div>
+        <div><label class="flbl">שעה (אופציונלי)</label>    <input class="finp" id="mn-time" type="time"></div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="mn-del" style="display:none;margin-left:auto" onclick="delNote()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-note')">ביטול</button>
+      <button class="btn bp" onclick="saveNote()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Management -->
+<div class="modal" id="M-user">
+  <div class="mbox" style="max-width:400px">
+    <div class="mhd">
+      <h2 id="M-user-title">עריכת משתמש</h2>
+      <button class="btn bs btn-sm" onclick="closeM('M-user')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="fg1"><label class="flbl">שם</label><input class="finp" id="u-name" placeholder="שם המשתמש"></div>
+        <div><label class="flbl">סיסמה</label><input class="finp" id="u-pass" placeholder="סיסמה" type="text"></div>
+        <div><label class="flbl">צבע</label><input class="finp" id="u-color" type="color" value="#3b82f6" style="height:42px;padding:4px"></div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:6px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--tx2)">
+            <input type="checkbox" id="u-nopass"
+              onchange="document.getElementById('u-pass').disabled=this.checked;if(this.checked)document.getElementById('u-pass').value='';"
+              style="width:16px;height:16px;cursor:pointer">
+            כניסה ללא סיסמה
+          </label>
+        </div>
+        <div><label class="flbl">תפקיד</label>
+          <select class="finp" id="u-role">
+            <option value="owner">👑 בעלים</option><option value="admin">🔧 אדמין</option>
+            <option value="manager">📋 מנהל</option><option value="installer">🔨 מתקין</option>
+          </select>
+        </div>
+      </div>
+      <div class="stit" style="margin-top:16px">🔐 הרשאות גישה</div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">1 = צפייה בלבד &nbsp;|&nbsp; 2 = צפייה + הוספה + עריכה &nbsp;|&nbsp; 3 = גישה מלאה (כולל מחיקה)</div>
+      <div id="u-perms-grid"></div>
+    </div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="u-del-btn" onclick="deleteUser()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-user')">ביטול</button>
+      <button class="btn bp" onclick="saveUser()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SINGLE MODULE ENTRY POINT ══ -->
+<script type="module" src="js/main.js"></script>
+
 </body>
 </html>
