@@ -1,0 +1,27 @@
+{
+  "name": "לקוחות וידאו דיזיין",
+  "short_name": "וידאו דיזיין",
+  "description": "מערכת ניהול לקוחות",
+  "start_url": "/Client-PRO/",
+  "scope": "/Client-PRO/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
