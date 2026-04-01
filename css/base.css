@@ -1,28 +1,47 @@
-/* ══ base.css — reset, :root variables, body ══ */
+/* ══ base.css — Dark Neon Gold theme ══ */
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:   #0a0e1a;
-  --sur:  #111827;
-  --sur2: #1a2235;
-  --sur3: #1f2d45;
-  --acc:  #3b82f6;
-  --grn:  #10b981;
-  --red:  #ef4444;
-  --yel:  #f59e0b;
-  --ora:  #fb923c;
-  --cya:  #06b6d4;
-  --tx:   #f1f5f9;
-  --tx2:  #94a3b8;
-  --tx3:  #64748b;
-  --brd:  #1e293b;
-  --brd2: #2d3f5e;
-  --r:    12px;
+  /* ── Core surfaces ──────────────────────────────── */
+  --bg:    #0A0D11;
+  --sur:   #0F1318;
+  --sur2:  #141A22;
+  --sur3:  #1A2130;
+  --sur4:  #1F283C;
+
+  /* ── Gold accent system ─────────────────────────── */
+  --gld:        #D4AF37;
+  --gld2:       #E8C07A;
+  --gld3:       #F5D98B;
+  --gld-dim:    rgba(212,175,55,0.10);
+  --gld-med:    rgba(212,175,55,0.20);
+  --gld-glow:   rgba(232,192,122,0.30);
+  --gld-bright: rgba(232,192,122,0.55);
+
+  /* ── Semantic colors (desaturated for gold harmony) */
+  --acc:   #3A6EBF;
+  --grn:   #1A7A50;
+  --red:   #A8312A;
+  --yel:   #B87210;
+  --ora:   #B55B28;
+  --cya:   #16697A;
+
+  /* ── Text ───────────────────────────────────────── */
+  --tx:    #EAE6DE;
+  --tx2:   #9E9888;
+  --tx3:   #585248;
+  --tx-gld: #F5D98B;
+
+  /* ── Borders ────────────────────────────────────── */
+  --brd:   rgba(212,175,55,0.10);
+  --brd2:  rgba(212,175,55,0.22);
+  --brd3:  rgba(212,175,55,0.48);
+
+  /* ── Layout ─────────────────────────────────────── */
+  --r:     10px;
+  --r-lg:  14px;
+  --sidebar-w: 230px;
 }
 
 body {
@@ -33,4 +52,39 @@ body {
   direction: rtl;
 }
 
+/* Ambient gold noise texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Radial glow at top-center */
+body::after {
+  content: '';
+  position: fixed;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(212,175,55,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes goldPulse {
+  0%, 100% { box-shadow: 0 0 6px var(--gld-glow); }
+  50%       { box-shadow: 0 0 18px var(--gld-glow), 0 0 32px rgba(212,175,55,0.12); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
