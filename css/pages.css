@@ -350,3 +350,81 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
+
+/* ══ BRANDING UPDATE — Premium Dark Metal ══ */
+
+/* ── Enhanced login screen ───────────────────────────────────────────────── */
+#login-screen {
+  background-image:
+    radial-gradient(ellipse 80% 55% at 30% 15%, rgba(200,168,75,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 45% at 75% 88%, rgba(160,120,30,0.07) 0%, transparent 55%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+.login-card {
+  animation: cardReveal 0.55s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Logo pulse on load */
+.login-logo {
+  animation: logoPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%,100% { filter: drop-shadow(0 0 10px rgba(200,168,75,0.40)); }
+  50%      { filter: drop-shadow(0 0 22px rgba(200,168,75,0.70)); }
+}
+
+/* Larger, more prominent user selection buttons */
+#user-btns button {
+  padding: 20px 12px;
+  font-size: 22px;
+  font-weight: 800;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Letter avatar */
+#user-btns button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(200,168,75,0.06), transparent);
+  pointer-events: none;
+}
+
+/* The "כנס" / Enter button — glowing gold like in mockup */
+.login-full-btn.btn.bp {
+  background: linear-gradient(135deg, rgba(200,168,75,0.25), rgba(200,168,75,0.10));
+  border: 1px solid var(--goldb2);
+  color: var(--gold2);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  animation: goldPulse 2.8s ease-in-out infinite;
+  box-shadow: 0 0 22px rgba(200,168,75,0.18), inset 0 1px 0 rgba(200,168,75,0.2);
+}
+
+.login-full-btn.btn.bp:hover {
+  background: linear-gradient(135deg, rgba(200,168,75,0.35), rgba(200,168,75,0.18));
+  box-shadow: 0 0 38px rgba(200,168,75,0.40), inset 0 1px 0 rgba(200,168,75,0.3);
+  transform: translateY(-2px);
+}
+
+/* ── Enhanced sidebar logo ────────────────────────────────────────────────── */
+.sidebar-logo-img {
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 1px solid var(--goldb2) !important;
+  box-shadow: 0 0 18px rgba(200,168,75,0.25) !important;
+}
+
+/* ── Favicon link in head (runtime injection) ─────────────────────────────── */
