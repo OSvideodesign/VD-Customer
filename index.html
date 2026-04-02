@@ -46,20 +46,61 @@ document.head.appendChild(_apl);
 <!-- ══ LOGIN SCREEN ══ -->
 <div id="login-screen">
   <div class="login-card">
-    <img class="login-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wgARCALqBJsDASIAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAAAAUGAQMEAv/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAp8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//Z"
-         alt="Video Design">
-    <p class="login-sub">ניהול לקוחות</p>
+
+    <!-- Animated shimmer line across top -->
+    <div class="login-card-shimmer"></div>
+
+    <!-- Brand block (replaces the old <img> logo) -->
+    <div class="login-brand">
+      <div class="login-brand-title">
+        <span class="lb-video">VIDEO</span><span class="lb-icon">⏻</span><br>
+        <span class="lb-design">DESIGN</span>
+      </div>
+      <p class="login-sub">ניהול לקוחות</p>
+    </div>
+
+    <!-- 2×2 User buttons - populated by initLogin() in js/auth.js -->
     <div id="user-btns"></div>
+
+    <!-- Password area (shown after user selection when user has a password) -->
     <div id="pass-area">
       <p id="pass-label"></p>
-      <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="סיסמה"
-             onkeydown="if(event.key==='Enter')doLogin()">
-      <button class="btn bp login-full-btn" onclick="doLogin()">כניסה →</button>
+      <input type="password" id="pass-inp" class="finp login-pass-inp"
+             placeholder="סיסמה" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn bp login-full-btn" onclick="doLogin()">כנס</button>
       <button class="btn bs btn-sm login-full-btn" onclick="backToUsers()">חזור</button>
-      <p id="pass-err">סיסמה שגויה ❌</p>
+      <p id="pass-err">סיסמה שגויה</p>
     </div>
+
+    <!-- Enter button shown on user-select step -->
+    <button class="login-enter-btn" id="login-enter-btn" onclick="doLogin()">כנס</button>
+
   </div>
 </div>
+
+<!--
+  ════════════════════════════════════════════════════════════════════
+  JS UPDATE — js/auth.js
+
+  In your renderUserBtns() or initLogin() function, update the
+  button innerHTML to use two spans so the large letter and small
+  name label are styled independently:
+
+    btn.innerHTML = `
+      <span class="ub-letter">${u.name[0]}</span>
+      <span class="ub-name">${u.name}</span>
+    `;
+
+  Also toggle #login-enter-btn visibility:
+
+    Show on user-select:
+      document.getElementById('login-enter-btn').style.display = 'block';
+
+    Hide when showing #pass-area:
+      document.getElementById('login-enter-btn').style.display = 'none';
+  ════════════════════════════════════════════════════════════════════
+-->
+
 
 <!-- ══ MOBILE BOTTOM NAV ══ -->
 <div id="mnav">
