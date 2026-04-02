@@ -7,48 +7,52 @@
 }
 
 :root {
-  /* ── Core palette ── */
-  --bg:   #080c14;
-  --sur:  #0d1526;
-  --sur2: #111d35;
-  --sur3: #172340;
-  --sur-rgb: 13, 21, 38;
+  /* ── Core surfaces ── */
+  --bg:   #080b10;
+  --sur:  #0f1420;
+  --sur2: #141c2e;
+  --sur3: #192236;
 
-  /* ── Accent colors ── */
-  --acc:  #00c8f0;
-  --acc2: #0080ff;
+  /* ── Gold accent system ── */
+  --gold:    #c8a84b;
+  --gold2:   #e2c97e;
+  --gold3:   #f5e0a0;
+  --goldf:   rgba(200,168,75,0.08);
+  --goldf2:  rgba(200,168,75,0.14);
+  --goldb:   rgba(200,168,75,0.22);
+  --goldb2:  rgba(200,168,75,0.42);
+  --gold-glow: 0 0 18px rgba(200,168,75,0.28);
+  --gold-glow-lg: 0 0 32px rgba(200,168,75,0.35);
+
+  /* ── Semantic colors ── */
+  --acc:  #c8a84b;   /* reuse gold as primary accent */
   --grn:  #10b981;
   --red:  #ef4444;
   --yel:  #f59e0b;
   --ora:  #fb923c;
-  --cya:  #00c8f0;
+  --cya:  #06b6d4;
+  --blu:  #3b82f6;
 
   /* ── Text ── */
-  --tx:   #e8f0fe;
-  --tx2:  #8ba0c4;
-  --tx3:  #4d6080;
+  --tx:   #e8edf5;
+  --tx2:  #8a94aa;
+  --tx3:  #4a5268;
 
   /* ── Borders ── */
-  --brd:  rgba(0,200,240,0.08);
-  --brd2: rgba(0,200,240,0.15);
-  --brd3: rgba(0,200,240,0.25);
+  --brd:  rgba(200,168,75,0.12);
+  --brd2: rgba(200,168,75,0.22);
+  --brd3: rgba(200,168,75,0.40);
 
-  /* ── Glass effect ── */
-  --glass-bg: rgba(13, 21, 38, 0.72);
-  --glass-border: rgba(0, 200, 240, 0.12);
+  /* ── Glass ── */
+  --glass-bg:     rgba(10,13,20,0.75);
+  --glass-border: rgba(200,168,75,0.18);
 
-  /* ── Gold accent (for premium touches) ── */
-  --gold: #c8a84b;
-  --gold2: #e2c97e;
-
-  /* ── Shadows & glows ── */
-  --glow-acc: 0 0 20px rgba(0,200,240,0.25);
-  --glow-sm:  0 0 10px rgba(0,200,240,0.15);
-  --shadow:   0 4px 24px rgba(0,0,0,0.5);
-  --shadow-sm:0 2px 12px rgba(0,0,0,0.35);
+  /* ── Shadow ── */
+  --shadow:    0 6px 28px rgba(0,0,0,0.6);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.4);
 
   /* ── Radius ── */
-  --r:   14px;
+  --r:    13px;
   --r-sm: 8px;
 }
 
@@ -60,14 +64,14 @@ body {
   direction: rtl;
 }
 
-/* Subtle noise texture overlay on body */
+/* Subtle atmospheric gradients */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,200,240,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,128,255,0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 75% 45% at 25% 5%,  rgba(200,168,75,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 35% at 80% 95%, rgba(180,130,40,0.04) 0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
 }
@@ -75,10 +79,10 @@ body::before {
 /* Scrollbar */
 ::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--brd3); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--acc); }
+::-webkit-scrollbar-thumb { background: var(--goldb); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-@keyframes spin       { to { transform: rotate(360deg); } }
-@keyframes fadeIn     { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes glowPulse  { 0%,100% { box-shadow: var(--glow-sm); } 50% { box-shadow: var(--glow-acc); } }
-@keyframes shimmer    { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+/* Animations */
+@keyframes spin      { to { transform: rotate(360deg); } }
+@keyframes fadeIn    { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+@keyframes goldPulse { 0%,100% { box-shadow: var(--gold-glow); } 50% { box-shadow: var(--gold-glow-lg); } }
