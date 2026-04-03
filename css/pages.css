@@ -30,6 +30,7 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
+  filter: invert(1); /* הפכנו חזרה את הצבעים כדי שיתאים ללוגו הישן */
 }
 
 .login-sub {
@@ -98,12 +99,17 @@
 .m-drawer-logout  { color: var(--red); margin-top: 8px; }
 
 /* ── Sidebar components ───────────────────────────────────────────────────── */
+/* שינויים למיקום והגדלת הלוגו בתפריט צד */
+.sidebar .logo {
+  padding: 10px; /* צמצמנו את השוליים סביב הלוגו */
+  border-bottom: 1px solid var(--brd);
+}
+
 .sidebar-logo-img {
-  width: 140px;
-  margin-bottom: 6px;
+  width: 100%;
+  max-width: 180px; /* הגדלנו את המקסימום כדי שיתפוס את רוב הרוחב */
+  margin: 0 auto;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .sidebar-search-btn {
@@ -233,13 +239,12 @@
   gap: 8px;
 }
 
-/* ── User badge in sidebar ────────────────────────────────────────────────── */
+/* ── User badge in sidebar (הותאם למיקום החדש למטה) ───────────────────────── */
 #user-badge {
   display: inline-block;
-  margin-top: 4px;
-  padding: 3px 10px;
+  padding: 6px 16px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 

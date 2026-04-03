@@ -22,7 +22,7 @@ const _manifest = {
   name:"Video Design CRM", short_name:"VD CRM", start_url:".", display:"standalone",
   background_color:"#0a0e1a", theme_color:"#0a0e1a",
   icons:[
-    {"src":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAABEB0lEQVR4nO19d3xUVdr/uXd6MiG9J4T0nkDovYMCQpQSBHXFVVzd11XRFxc/q7vqR0B0V8UGuC8qCEivS+8ECCAlhDRITyY9mUza9Ht/fzy/e97DJLlzZzIJ+vvN9498JjP3nvqc5zznaQchJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xw4v9l0DRNURRCiKIomqbhg8NrETu8RCd+CxCJRAghlmVFIhFQDwbLso+oUU78fkDTtFQqlUgk+BuxWGxBSY6pyOElOvFbAMMwsGFFRUUtXrw4PDzcZDIhhGiaFoud244T1gByj1KpXLt2bUNDw7vvgt7mUgkchKQE9ZBURRFUSEhIZmZmSzLnj171svLi6IokI0cCOcW9v8mQPphGMbV1ZVlWTc3N5lMBjK1Y89iTgJyMPriqGxrXRRFMQyDEILdymw2UxTVR4cvvu0Q9lGGYcRisdFoBK7Isiy0G5ooBCKRCGQ63DEonGVZi16JxWJ4hmEYqAgWDfzbU/mg8IBhshgp/umEBlAc4F/osn3DDSKq0WiEz7YW0nVA+GHROzzC8BcPIIg+ULLZbMYvwl9cIzk7wsHHgaBuoGKsV4CjoE39hLeguWKxGKikKzuFL4F6EEcWAnsFowYnVYoAzyuwPHDDEEJSqRS62Rsxk2EYmDDhr0BLYDRsZWD4Fei7xVjBsJBThtcMQogUqOF7OyQkvpGiadpkMtE0TWQL7SOZkEAyYllWIpHo9XpEEKXBYOhKGWT3MGCMoA09lQ/NM5vNti5iAJYYRCKRyWSCE68dgBFD3GKw9XUQcvESsgryMXxux0VZlEx+xsyJ/Ne+NvMREMuyAQEBAwcOZFnWYDAUFhbqdDpMTAIrg6abzebk5GQXFxexWFxdXV1eXt61BMxvBg8enJKSYjQaVapVVlaWyWQSyIR8fHzi4uLI6e+JnoAiOzs729raGhsbOzs7KYpSKBR6vR4aZt8W5uPjEx0dbTAYxGIxULOQt8hdOz8/v7Oz06ZKocFisVgikXR0dABTEbIGFAqF0WgErg+0C5uvTeiRgIAex4wZ8/7771MUVVVV9Ze//KWoqAiaK1xKgNFxd3f/8MMPo6OjzWbzd999t3HjRolEAq3HTwILNZvNs2bNev/992ma3rdv37Vr1zDbs1rL4MGDP/roI7lcbrEcuwJIpLOzs7a2Njs7++bNmzk5OVVVVWKx2Oq73QLY8/Dhw1evXm0ymSiKMhqNQrZCYMmwk96/f/+NN94AahY4vLD3mUwmvV6v1+sxq8b7Rk81IoTa2toQQhKJhOdhq7BCQM3NzSEhIV5eXjExMfHx8UVFRViktYkDRUVFjR479A==","sizes":"192x192","type":"image/png"}
+    {"src":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAABEB0lEQVR4nO19d3xUVdr/uXd6MiG9J4T0nkDovYMCQpQSBHXFVVzd11XRFxc/q7vqR0B0V8UGuC8qCEivS+8ECCAlhDRITyY9mUza9Ht/fzy/e97DJLlzZzIJ+vvN9498JjP3nvqc5zznaQchJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xw4v9l0DRNURRCiKIomqbhg8NrETu8RCd+CxCJRAghlmVFIhFQDwbLso+oUU78fkDTtFQqlUgk+BuxWGxBSY6pyOElOvFbAMMwsGFFRUUtXrw4PDzcZDIhhGiaFoud244T1gByj1KpXLt2bUNDw7vvvgt7mUgkchKQE9ZBURRFUSEhIZmZmSzLnj171svLi6IokI0cCOcW9v8mQPphGMbV1ZVlWTc3N5lMBjK1Y89iTgJyMPriqGxrXRRFMQyDEILdymw2UxTVR4cvvu0Q9lGGYcRisdFoBK7Isiy0G5ooBCKRCGQ63DEonGVZi16JxWJ4hmEYqAgWDfzbU/mg8IBhshgp/umEBlAc4F/osn3DDSKq0WiEz7YW0nVA+GHROzzC8BcPIIg+ULLZbMYvwl9cIzk7wsHHgaBuoGKsV4CjoE39hLeguWKxGKikKzuFL4F6EEcWAnsFowYnVYoAzyuwPHDDEEJSqRS62Rsxk2EYmDDhr0BLYDRsZWD4Fei7xVjBsJBThtcMQogUqOF7OyQkvpGiadpkMtE0TWQL7SOZkEAyYllWIpHo9XpEEKXBYOhKGWT3MGCMoA09lQ/NM5vNti5iAJYYRCKRyWSCE68dgBFD3GKw9XUQcvESsgryMXxux0VZlEx+xsyJ/Ne+NvMREMuyAQEBAwcOZFnWYDAUFhbqdDpMTAIrg6abzebk5GQXFxexWFxdXV1eXt61BMxvBg8enJKSYjQaVapVVlaWyWQSyIR8fHzi4uLI6e+JnoAiOzs729raGhsbOzs7KYpSKBR6vR4aZt8W5uPjEx0dbTAYxGIxULOQt8hdOz8/v7Oz06ZKocFisVgikXR0dABTEbIGFAqF0WgErg+0C5uvTeiRgIAex4wZ8/7771MUVVVV9Ze//KWoqAiaK1xKgNFxd3f/8MMPo6OjzWbzd999t3HjRolEAq3HTwILNZvNs2bNev/992ma3rdv37Vr1zDbs1rL4MGDP/roI7lcbrEcuwJIpLOzs7a2Njs7++bNmzk5OVVVVWKx2Oq73QLY8/Dhw1evXm0ymSiKMhqNQrZCYMmwk96/f/+NN94AahY4vLD3mUwmvV6v1+sxq8b7Rk81IoTa2toQQhKJhOdhq7BCQM3NzSEhIV5eXjExMfHx8UVFRViktYkDRUVFjR479A==","sizes":"192x192","type":"image/png"}
   ]
 };
 const _blob = new Blob([JSON.stringify(_manifest)], {type:'application/json'});
@@ -41,7 +41,7 @@ document.head.appendChild(_apl);
 
 <div id="login-screen">
   <div class="login-card">
-    <img class="login-logo" src="logo.jpg" alt="Video Design">
+    <img class="login-logo" src="login-logo.png" alt="Video Design">
     <p class="login-sub">ניהול לקוחות</p>
     <div id="user-btns"></div>
     <div id="pass-area">
@@ -108,7 +108,6 @@ document.head.appendChild(_apl);
 <aside class="sidebar">
   <div class="logo">
     <img src="logo.jpg" class="sidebar-logo-img" alt="Video Design">
-    <div id="user-badge"></div>
   </div>
   <nav class="nav">
     <div style="padding:8px 0 12px">
@@ -130,6 +129,10 @@ document.head.appendChild(_apl);
     <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
     <button class="nav-btn"    id="nb-log"        onclick="nav('log')" style="display:none">📋 לוג שינויים</button>
     <button class="nav-btn nav-btn-logout"         onclick="logout()">🚪 התנתק</button>
+    
+    <div style="text-align:center; margin-top:30px; padding-bottom: 20px;">
+      <div id="user-badge"></div>
+    </div>
   </nav>
 </aside>
 
