@@ -4,7 +4,7 @@
 #login-screen {
   position: fixed;
   inset: 0;
-  background: transparent; /* שינינו משקיפות אטומה לשקוף כדי שהרקע ייראה */
+  background: transparent;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -13,21 +13,20 @@
 }
 
 .login-card {
-  background: rgba(17, 24, 39, 0.85); /* הוספנו טיפה שקיפות לכרטיס עצמו */
-  backdrop-filter: blur(8px); /* אפקט טשטוש יוקרתי מאחורי הכרטיס */
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--brd);
   border-radius: 16px;
   padding: 32px;
   width: 100%;
   max-width: 360px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5); /* הוספנו צללית קלה */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
 .login-logo {
-  width: 140px;
-  filter: invert(1);
-  margin-bottom: 8px;
+  width: 160px;
+  margin-bottom: 12px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -100,8 +99,7 @@
 
 /* ── Sidebar components ───────────────────────────────────────────────────── */
 .sidebar-logo-img {
-  width: 120px;
-  filter: invert(1);
+  width: 140px;
   margin-bottom: 6px;
   display: block;
   margin-left: auto;
