@@ -13,6 +13,13 @@ let _loginTarget = null;
 export function loadUsers() {
     const saved = localStorage.getItem('cv_users');
     _users = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_USERS));
+    return _users;
+}
+
+// פונקציה שחסרה ל-settings.js
+export function getPerms(name) {
+    const u = _users.find(x => x.name === name);
+    return u ? (u.perms || {}) : {};
 }
 
 export function initLogin() {
@@ -58,7 +65,13 @@ window.doLogin = async function() {
 export function applyUser(name) {
     localStorage.setItem('cv_user', name);
     window._currentUser = name;
+    const u = _users.find(x => x.name === name);
+    window._currentRole = u?.role || 'user';
+    
     document.getElementById('login-screen').style.display = 'none';
+    const shell = document.getElementById('app-shell');
+    if (shell) shell.style.display = 'block';
+    
     if (window.initNav) window.initNav();
     window.dispatchEvent(new Event('app-ready'));
 }
@@ -69,4 +82,9 @@ export function canDo(mod, lvl) {
     if (!u) return false;
     if (u.role === 'owner') return true;
     return (u.perms?.[mod] || 0) >= lvl;
+}
+
+export function logout() {
+    localStorage.removeItem('cv_user');
+    location.reload();
 }
