@@ -4,75 +4,73 @@
 #login-screen {
   position: fixed;
   inset: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(40, 30, 10, 0.6) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(20, 15, 5, 0.5) 0%, transparent 60%),
+    #0a0c10;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-image:
-    radial-gradient(ellipse 75% 50% at 25% 10%, rgba(200,168,75,0.05) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(180,130,30,0.05) 0%, transparent 55%);
 }
 
+/* ── The Card ─────────────────────────────────────────────────────────────── */
 .login-card {
-  background: linear-gradient(160deg, var(--sur), #090c15);
-  border: 1px solid var(--goldb2);
+  position: relative;
+  background-image:
+    repeating-linear-gradient(
+      92deg,
+      rgba(255,255,255,0.012) 0px,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    linear-gradient(160deg,
+      rgba(68, 64, 56, 0.95) 0%,
+      rgba(42, 40, 36, 0.98) 30%,
+      rgba(28, 26, 22, 1) 60%,
+      rgba(20, 18, 15, 1) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.55);
   border-radius: 18px;
-  padding: 36px 30px;
+  padding: 32px 28px 28px;
   width: 100%;
-  max-width: 400px;
+  max-width: 340px;
   text-align: center;
   box-shadow:
-    0 28px 64px rgba(0,0,0,0.75),
-    0 0 0 1px rgba(200,168,75,0.07),
-    inset 0 1px 0 rgba(200,168,75,0.14);
-  position: relative;
-  overflow: hidden;
+    0 0 0 1px rgba(212, 175, 55, 0.12),
+    0 8px 40px rgba(0, 0, 0, 0.85),
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 245, 200, 0.08),
+    inset 0 0 60px rgba(0, 0, 0, 0.3);
 }
 
-/* Top gold line */
-.login-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 12%; right: 12%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+/* ── Logo ─────────────────────────────────────────────────────────────────── */
+.login-logo-wrap {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Bottom ambient glow */
-.login-card::after {
-  content: '';
-  position: absolute;
-  bottom: -50px; right: -50px;
-  width: 140px; height: 140px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(200,168,75,0.07), transparent 70%);
-  pointer-events: none;
-}
-
-.login-logo {
-  width: 170px;
-  height: auto;
+.login-logo-img {
+  width: 200px;
+  max-width: 100%;
   display: block;
-  margin: 0 auto 8px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(200,168,75,0.4));
-  transition: filter 0.3s;
+  filter: drop-shadow(0 2px 12px rgba(212, 175, 55, 0.35));
 }
 
-.login-logo:hover {
-  filter: drop-shadow(0 0 18px rgba(200,168,75,0.65));
-}
-
-.login-sub {
-  font-size: 11px;
-  color: var(--tx3);
-  margin-bottom: 26px;
+/* ── Subtitle ─────────────────────────────────────────────────────────────── */
+.login-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(212, 195, 140, 0.85);
   letter-spacing: 2px;
-  text-transform: uppercase;
+  margin-bottom: 24px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
+/* ── 2x2 User Button Grid ─────────────────────────────────────────────────── */
 #user-btns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -80,47 +78,107 @@
   margin-bottom: 16px;
 }
 
-/* User selection buttons */
-#user-btns button {
-  background: rgba(200,168,75,0.05);
-  border: 1px solid var(--brd);
-  border-radius: var(--r);
-  padding: 16px 10px;
-  color: var(--tx2);
-  font-family: 'Heebo', sans-serif;
+/* Individual user button */
+.ub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 18px 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  font-family: 'Heebo', sans-serif;
+  overflow: hidden;
+  background-image:
+    linear-gradient(
+      160deg,
+      rgba(255,255,255,0.18) 0%,
+      rgba(255,255,255,0.04) 40%,
+      rgba(0,0,0,0.15) 100%
+    );
+}
+
+.ub::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.06) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.ub:hover {
+  transform: translateY(-2px) scale(1.03);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.ub:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Color variants */
+.ub-gray  { background-color: #333c4d; box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
+.ub-blue  { background-color: #2d4a7a; box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
+.ub-teal  { background-color: #1a8a98; box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
+.ub-green { background-color: #236b50; box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
+
+/* Large Hebrew initial */
+.ub-letter {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* Full name below initial */
+.ub-name {
+  font-size: 12px;
   font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.5px;
 }
 
-#user-btns button:hover {
-  background: var(--goldf2);
-  border-color: var(--goldb2);
-  color: var(--gold2);
-  box-shadow: var(--gold-glow);
-  transform: translateY(-1px);
+/* ── Password Area ────────────────────────────────────────────────────────── */
+#pass-area {
+  display: none;
 }
-
-#pass-area { display: none; }
 
 #pass-label {
   font-size: 13px;
-  color: var(--tx2);
+  color: rgba(212, 195, 140, 0.85);
   margin-bottom: 10px;
 }
 
 .login-pass-inp {
   text-align: center;
-  font-size: 20px;
-  letter-spacing: 6px;
+  font-size: 18px;
+  letter-spacing: 4px;
   margin-bottom: 12px;
+  background: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+  color: #f1f5f9 !important;
+}
+
+.login-pass-inp:focus {
+  border-color: rgba(212, 175, 55, 0.7) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
 }
 
 .login-full-btn {
   width: 100%;
   margin-bottom: 8px;
-  justify-content: center;
 }
 
 #pass-err {
@@ -130,104 +188,119 @@
   display: none;
 }
 
+/* ── Golden "כנס" Enter Button ────────────────────────────────────────────── */
+.login-enter-btn {
+  width: 100%;
+  margin-top: 4px;
+  padding: 13px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Heebo', sans-serif;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  color: #fff8e0;
+  background:
+    linear-gradient(
+      160deg,
+      rgba(60, 48, 16, 0.95) 0%,
+      rgba(30, 24, 8, 0.98) 100%
+    );
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.25),
+    0 0 16px 4px rgba(212, 175, 55, 0.55),
+    0 0 40px 8px rgba(180, 140, 20, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 245, 180, 0.12);
+  transition: box-shadow 0.2s ease, transform 0.15s ease, background 0.2s ease;
+}
+
+.login-enter-btn:hover {
+  background:
+    linear-gradient(
+      160deg,
+      rgba(80, 62, 18, 0.98) 0%,
+      rgba(48, 36, 10, 1) 100%
+    );
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.45),
+    0 0 24px 8px rgba(212, 175, 55, 0.75),
+    0 0 60px 14px rgba(180, 140, 20, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 245, 180, 0.18);
+  transform: translateY(-1px);
+}
+
+.login-enter-btn:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.35),
+    0 0 12px 3px rgba(212, 175, 55, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
 /* ── Drawer header / close ────────────────────────────────────────────────── */
 .m-drawer-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px 16px;
+  padding: 12px 20px 16px;
   border-bottom: 1px solid var(--brd);
   font-weight: 700;
-  font-size: 14px;
-  color: var(--gold2);
-  letter-spacing: 0.5px;
+  font-size: 15px;
 }
 
 .m-drawer-close {
   background: none;
   border: none;
   color: var(--tx3);
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   line-height: 1;
-  transition: color 0.15s;
 }
 
-.m-drawer-close:hover { color: var(--tx); }
+.m-drawer-search { color: var(--acc); }
+.m-drawer-logout  { color: var(--red); margin-top: 8px; }
 
-.m-drawer-search { color: var(--gold2); }
-.m-drawer-logout  { color: rgba(239,68,68,0.6); margin-top: 8px; }
-.m-drawer-logout:hover { color: var(--red) !important; }
-
-/* ── Sidebar logo & badge ─────────────────────────────────────────────────── */
+/* ── Sidebar components ───────────────────────────────────────────────────── */
 .sidebar-logo-img {
-  width: 130px;
-  height: auto;
+  width: 120px;
+  filter: invert(1);
+  margin-bottom: 6px;
   display: block;
-  margin: 0 auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(200,168,75,0.35));
-  transition: filter 0.3s;
-}
-
-.sidebar-logo-img:hover {
-  filter: drop-shadow(0 0 14px rgba(200,168,75,0.6));
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .sidebar-search-btn {
   width: 100%;
-  background: rgba(200,168,75,0.04);
-  border: 1px solid var(--brd);
-  border-radius: var(--r-sm);
+  background: var(--sur2);
+  border: 1px solid var(--brd2);
+  border-radius: 8px;
   padding: 8px 12px;
   color: var(--tx3);
-  font-size: 12px;
+  font-size: 13px;
   font-family: Heebo, sans-serif;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s;
-}
-
-.sidebar-search-btn:hover {
-  background: var(--goldf);
-  border-color: var(--brd2);
-  color: var(--tx2);
 }
 
 .nav-btn-logout {
-  color: rgba(239,68,68,0.55);
+  color: var(--red);
   margin-top: 8px;
 }
 
 /* ── Dashboard panel link buttons ─────────────────────────────────────────── */
 .panel-link-btn {
   font-size: 11px;
-  color: var(--gold2);
+  color: var(--acc);
   background: none;
   border: none;
   cursor: pointer;
   font-family: Heebo, sans-serif;
-  opacity: 0.65;
-  transition: opacity 0.15s;
-  padding: 2px 6px;
-}
-
-.panel-link-btn:hover { opacity: 1; }
-
-/* ── User badge in sidebar ────────────────────────────────────────────────── */
-#user-badge {
-  display: inline-block;
-  margin-top: 7px;
-  padding: 3px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--gold2);
-  background: var(--goldf);
-  border: 1px solid var(--goldb);
-  letter-spacing: 0.3px;
 }
 
 /* ── Google Calendar section ──────────────────────────────────────────────── */
@@ -245,7 +318,7 @@
   gap: 8px;
 }
 
-.gcal-title { font-weight: 700; font-size: 14px; color: var(--tx); }
+.gcal-title { font-weight: 700; font-size: 14px; }
 
 .gcal-nav {
   display: flex;
@@ -273,10 +346,7 @@
   font-weight: 600;
   cursor: pointer;
   font-family: Heebo, sans-serif;
-  transition: box-shadow 0.2s;
 }
-
-.gcal-signin-btn:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
 
 .gcal-signout-btn {
   font-size: 11px;
@@ -285,28 +355,21 @@
   border: none;
   cursor: pointer;
   font-family: Heebo, sans-serif;
-  transition: color 0.15s;
 }
 
-.gcal-signout-btn:hover { color: var(--tx2); }
-
-#wk-label { font-size: 12px; color: var(--tx3); }
-
-/* ── Modal close button ───────────────────────────────────────────────────── */
+/* ── Modal generic close button ───────────────────────────────────────────── */
 .modal-close-btn {
   background: none;
   border: none;
-  color: var(--tx3);
+  color: var(--tx2);
   font-size: 20px;
   cursor: pointer;
-  transition: color 0.15s;
-  line-height: 1;
 }
 
-.modal-close-btn:hover { color: var(--tx); }
-
-/* ── Reports stats (4 cols) ───────────────────────────────────────────────── */
-#rep-stats { grid-template-columns: repeat(4, 1fr); }
+/* ── Reports stats override (4 cols) ─────────────────────────────────────── */
+#rep-stats {
+  grid-template-columns: repeat(4, 1fr);
+}
 
 @media (max-width: 768px) {
   #rep-stats { grid-template-columns: 1fr 1fr; }
@@ -315,116 +378,37 @@
 /* ── Fault guest fields ───────────────────────────────────────────────────── */
 #mf-guest-fields { display: none; }
 
-/* ── Note bulk bar ────────────────────────────────────────────────────────── */
+/* ── Note bulk bar (flex) ─────────────────────────────────────────────────── */
 #note-bulk-bar {
-  background: rgba(10,13,20,0.92);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--goldb2);
-  border-radius: var(--r);
+  background: var(--sur2);
+  border: 1px solid var(--acc);
+  border-radius: 10px;
   padding: 10px 16px;
   margin-bottom: 12px;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  box-shadow: var(--gold-glow);
 }
 
 /* ── Settings panel max-width ─────────────────────────────────────────────── */
-#pg-settings .tw { max-width: 480px; }
+#pg-settings .tw { max-width: 460px; }
 
-/* ── Perms grid (user modal) ──────────────────────────────────────────────── */
+/* ── Perms grid in user modal ─────────────────────────────────────────────── */
 #u-perms-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
-/* ── Section titles inside modals / settings ──────────────────────────────── */
-.stit {
+/* ── User badge in sidebar ────────────────────────────────────────────────── */
+#user-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--gold2);
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--brd);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
 }
 
-/* ══ BRANDING UPDATE — Premium Dark Metal ══ */
-
-/* ── Enhanced login screen ───────────────────────────────────────────────── */
-#login-screen {
-  background-image:
-    radial-gradient(ellipse 80% 55% at 30% 15%, rgba(200,168,75,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 45% at 75% 88%, rgba(160,120,30,0.07) 0%, transparent 55%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-}
-
-.login-card {
-  animation: cardReveal 0.55s cubic-bezier(0.22,1,0.36,1) both;
-}
-
-@keyframes cardReveal {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* Logo pulse on load */
-.login-logo {
-  animation: logoPulse 3.5s ease-in-out infinite;
-}
-
-@keyframes logoPulse {
-  0%,100% { filter: drop-shadow(0 0 10px rgba(200,168,75,0.40)); }
-  50%      { filter: drop-shadow(0 0 22px rgba(200,168,75,0.70)); }
-}
-
-/* Larger, more prominent user selection buttons */
-#user-btns button {
-  padding: 20px 12px;
-  font-size: 22px;
-  font-weight: 800;
-  border-radius: 14px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Letter avatar */
-#user-btns button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, rgba(200,168,75,0.06), transparent);
-  pointer-events: none;
-}
-
-/* The "כנס" / Enter button — glowing gold like in mockup */
-.login-full-btn.btn.bp {
-  background: linear-gradient(135deg, rgba(200,168,75,0.25), rgba(200,168,75,0.10));
-  border: 1px solid var(--goldb2);
-  color: var(--gold2);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  animation: goldPulse 2.8s ease-in-out infinite;
-  box-shadow: 0 0 22px rgba(200,168,75,0.18), inset 0 1px 0 rgba(200,168,75,0.2);
-}
-
-.login-full-btn.btn.bp:hover {
-  background: linear-gradient(135deg, rgba(200,168,75,0.35), rgba(200,168,75,0.18));
-  box-shadow: 0 0 38px rgba(200,168,75,0.40), inset 0 1px 0 rgba(200,168,75,0.3);
-  transform: translateY(-2px);
-}
-
-/* ── Enhanced sidebar logo ────────────────────────────────────────────────── */
-.sidebar-logo-img {
-  width: 100px !important;
-  height: 100px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  border: 1px solid var(--goldb2) !important;
-  box-shadow: 0 0 18px rgba(200,168,75,0.25) !important;
-}
-
-/* ── Favicon link in head (runtime injection) ─────────────────────────────── */
+/* ── wk-label (calendar week range label) ────────────────────────────────── */
+#wk-label { font-size: 12px; color: var(--tx3); }
