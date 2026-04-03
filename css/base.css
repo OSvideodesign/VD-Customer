@@ -28,7 +28,7 @@
 body {
   font-family: 'Heebo', sans-serif;
   background-color: var(--bg);
-  background-image: url('../Back ground Silver.jpg');
+  background-image: url('../bg-silver.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
