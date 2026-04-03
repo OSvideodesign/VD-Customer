@@ -2,7 +2,7 @@
 
 import { USERS }       from './config.js';
 import { toast, openWA, openNav } from './utils.js';
-import { initLogin, selectUser, doLogin, backToUsers, logout, applyUser } from './auth.js';
+import { initLogin, selectUser, doLogin, backToUsers, logout } from './auth.js';
 import { nav, jumpTo, openM, closeM, openDrawer, closeDrawer, navD, openGlobalSearch, runGlobalSearch } from './nav.js';
 import { renderDash } from './dashboard.js';
 import { renderCusts, openNewCust, editCustById, saveCust, viewCust, delCust, addContactRow, addAddressRow } from './customers.js';

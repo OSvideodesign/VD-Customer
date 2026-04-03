@@ -1,130 +1,226 @@
-// ══ auth.js — login, logout, session, permissions ══
+// ══ auth.js — authentication & permission management ══
 
-import { USERS, DEFAULT_PERMS } from './config.js';
-import { toast } from './utils.js';
-import { addLog } from './log.js';
+const DEFAULT_USERS = [
+  { name: 'רז',    pass: '',     color: '#6366f1', role: 'owner',
+    perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
+  { name: 'אופיר', pass: '',     color: '#3b82f6', role: 'admin',
+    perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
+  { name: 'גלאל',  pass: '1234', color: '#10b981', role: 'installer',
+    perms: { customers:2, faults:3, archive:2, notes:2, warranties:1, debts:1, reports:1 } },
+  { name: 'מוטי',  pass: '1234', color: '#06b6d4', role: 'installer',
+    perms: { customers:2, faults:3, archive:2, notes:2, warranties:1, debts:1, reports:1 } },
+];
 
-let _loginTarget = null;
+let _users       = [];
+let _currentUser = null;
+let _pendingUser = null;
 
-// ── Clean corrupt session on load ──────────────────────────────────────────
-(function () {
+// ── Load / save ────────────────────────────────────────────────────────────
+export function loadUsers() {
   try {
-    const s = sessionStorage.getItem('crm_user');
-    if (s) {
-      const u = JSON.parse(s);
-      if (!u || !u.name || u.pass === undefined) sessionStorage.removeItem('crm_user');
-    }
-  } catch (e) { sessionStorage.removeItem('crm_user'); }
-})();
-
-// ── Public: getPerms, canDo ────────────────────────────────────────────────
-export function getPerms(u) {
-  return u.perms || DEFAULT_PERMS[u.role || 'tech'] || DEFAULT_PERMS.tech;
-}
-
-export function canDo(module, level) {
-  const u = USERS.find(x => x.name === window._currentUser);
-  if (!u) return false;
-  return (getPerms(u)[module] || 0) >= level;
-}
-
-// ── initLogin — show user buttons or restore session ───────────────────────
-export function initLogin() {
-  const saved = sessionStorage.getItem('crm_user');
-  if (saved) {
-    try {
-      const u = JSON.parse(saved);
-      if (u && u.name && u.pass !== undefined && USERS.find(x => x.name === u.name && x.pass === u.pass)) {
-        applyUser(u);
-        return;
-      } else {
-        sessionStorage.removeItem('crm_user');
-      }
-    } catch (e) { sessionStorage.removeItem('crm_user'); }
+    const saved = localStorage.getItem('cv_users');
+    _users = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_USERS));
+  } catch {
+    _users = JSON.parse(JSON.stringify(DEFAULT_USERS));
   }
+  _users.forEach(u => {
+    u.perms = u.perms || {};
+    ['customers','faults','archive','notes','warranties','debts','reports']
+      .forEach(k => { if (u.perms[k] == null) u.perms[k] = 1; });
+  });
+}
 
-  const btns = document.getElementById('user-btns');
-  btns.innerHTML = USERS.map(u =>
-    `<button onclick="window._selectUser('${u.name}')"
-       style="background:${u.color}22;border:2px solid ${u.color};border-radius:10px;padding:14px 8px;cursor:pointer;font-family:Heebo,sans-serif;color:${u.color};font-weight:700;font-size:15px">
-       <div style="font-size:24px;margin-bottom:4px">${u.name[0]}</div>${u.name}</button>`
-  ).join('');
-  document.getElementById('login-screen').style.display = 'flex';
+export function saveUsersToStorage() {
+  localStorage.setItem('cv_users', JSON.stringify(_users));
+}
+
+export function getUsers()       { return _users; }
+export function getCurrentUser() { return _currentUser; }
+
+// ── Permissions ────────────────────────────────────────────────────────────
+// level: 1=view  2=edit  3=full (delete)
+export function canDo(module, level = 1) {
+  if (!_currentUser) return false;
+  const u = _users.find(x => x.name === _currentUser);
+  if (!u) return false;
+  if (u.role === 'owner') return true;
+  return (u.perms?.[module] ?? 0) >= level;
+}
+
+// ── getPerms — used by settings.js ────────────────────────────────────────
+export function getPerms(user) {
+  return user?.perms || {};
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+export function initLogin() {
+  loadUsers();
+  const saved = localStorage.getItem('cv_user');
+  if (saved && _users.find(u => u.name === saved)) {
+    _currentUser = saved;
+    window._currentUser = saved;
+    _showApp();
+    return;
+  }
+  _renderUserBtns();
+}
+
+// ── Login-screen rendering ─────────────────────────────────────────────────
+function _renderUserBtns() {
+  const container = document.getElementById('user-btns');
+  if (!container) return;
+  container.innerHTML = '';
+  container.style.cssText =
+    'display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px';
+
+  _users.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'login-user-btn';
+    btn.style.cssText =
+      'display:flex;flex-direction:column;align-items:center;gap:8px;' +
+      'padding:16px 12px;border-radius:14px;border:2px solid transparent;' +
+      'background:rgba(255,255,255,0.05);cursor:pointer;transition:all .2s;' +
+      'color:#fff;font-family:inherit';
+    btn.innerHTML = `
+      <div style="width:52px;height:52px;border-radius:50%;background:${u.color};
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:22px;font-weight:700;color:#fff">
+        ${u.name.charAt(0)}
+      </div>
+      <span style="font-size:14px;font-weight:600">${u.name}</span>`;
+    btn.onmouseover = () => {
+      btn.style.borderColor = u.color;
+      btn.style.background  = 'rgba(255,255,255,0.1)';
+    };
+    btn.onmouseout = () => {
+      btn.style.borderColor = 'transparent';
+      btn.style.background  = 'rgba(255,255,255,0.05)';
+    };
+    btn.onclick = () => selectUser(u.name);
+    container.appendChild(btn);
+  });
+
+  _hidePassArea();
 }
 
 export function selectUser(name) {
-  _loginTarget = USERS.find(u => u.name === name);
-  if (!_loginTarget) return;
-  if (!_loginTarget.pass || _loginTarget.pass === '') {
-    sessionStorage.setItem('crm_user', JSON.stringify(_loginTarget));
-    applyUser(_loginTarget);
-    return;
-  }
-  document.getElementById('pass-label').textContent = 'שלום ' + name + ', הכנס סיסמה:';
-  document.getElementById('pass-area').style.display = 'block';
-  document.getElementById('user-btns').style.display = 'none';
-  document.getElementById('pass-err').style.display = 'none';
-  document.getElementById('pass-inp').value = '';
-  setTimeout(() => document.getElementById('pass-inp').focus(), 100);
+  _pendingUser = name;
+  const u = _users.find(x => x.name === name);
+  if (!u) return;
+
+  document.querySelectorAll('.login-user-btn').forEach((b, i) => {
+    const sel = _users[i]?.name === name;
+    b.style.borderColor = sel ? u.color : 'transparent';
+    b.style.background  = sel ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)';
+  });
+
+  if (!u.pass) { _doLogin(name); return; }
+
+  const label = document.getElementById('pass-label');
+  if (label) label.textContent = `סיסמה עבור ${name}`;
+  const inp = document.getElementById('pass-inp');
+  if (inp)  inp.value = '';
+  const err = document.getElementById('pass-err');
+  if (err)  err.style.display = 'none';
+  const area = document.getElementById('pass-area');
+  if (area) area.style.display = 'block';
+  if (inp)  setTimeout(() => inp.focus(), 50);
+}
+
+function _hidePassArea() {
+  const area = document.getElementById('pass-area');
+  if (area) area.style.display = 'none';
+  const err  = document.getElementById('pass-err');
+  if (err)  err.style.display  = 'none';
 }
 
 export function doLogin() {
-  const inp = document.getElementById('pass-inp').value;
-  if (!_loginTarget || inp !== _loginTarget.pass) {
-    document.getElementById('pass-err').style.display = 'block';
-    return;
+  if (!_pendingUser) return;
+  const u       = _users.find(x => x.name === _pendingUser);
+  if (!u) return;
+  const inp     = document.getElementById('pass-inp');
+  const entered = (inp?.value || '').trim();
+  if (entered === u.pass) {
+    _doLogin(_pendingUser);
+  } else {
+    const err = document.getElementById('pass-err');
+    if (err) err.style.display = 'block';
+    if (inp) { inp.value = ''; inp.focus(); }
   }
-  sessionStorage.setItem('crm_user', JSON.stringify(_loginTarget));
-  applyUser(_loginTarget);
 }
 
 export function backToUsers() {
-  _loginTarget = null;
-  document.getElementById('pass-area').style.display = 'none';
-  document.getElementById('user-btns').style.display = 'grid';
+  _pendingUser = null;
+  _renderUserBtns();
 }
 
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const area = document.getElementById('pass-area');
+  if (area && area.style.display !== 'none') doLogin();
+});
+
+// ── Core login / show-app ──────────────────────────────────────────────────
+function _doLogin(name) {
+  _currentUser        = name;
+  window._currentUser = name;
+  localStorage.setItem('cv_user', name);
+  _showApp();
+}
+
+function _showApp() {
+  const ls = document.getElementById('login-screen');
+  if (ls) ls.style.display = 'none';
+
+  document.querySelector('.sidebar')?.style.removeProperty('display');
+  document.querySelector('.main')?.style.removeProperty('display');
+  document.getElementById('mnav')?.style.removeProperty('display');
+
+  _updateBadge();
+
+  const isAdmin = ['רז', 'אופיר'].includes(_currentUser);
+  const logBtn    = document.getElementById('nb-log');
+  const drawerLog = document.getElementById('m-drawer-log');
+  if (logBtn)    logBtn.style.display    = isAdmin ? '' : 'none';
+  if (drawerLog) drawerLog.style.display = isAdmin ? '' : 'none';
+
+  const u  = _users.find(x => x.name === _currentUser);
+  window._currentRole = u?.role || '';
+  const up = document.getElementById('s-users-panel');
+  if (up) up.style.display = (u?.role === 'owner') ? '' : 'none';
+
+  window.dispatchEvent(new Event('app-ready'));
+}
+
+function _updateBadge() {
+  const badge = document.getElementById('user-badge');
+  if (!badge || !_currentUser) return;
+  const u     = _users.find(x => x.name === _currentUser);
+  const color = u?.color || '#6366f1';
+  badge.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;
+                background:rgba(255,255,255,0.06);border-radius:10px;margin:0 12px 8px">
+      <div style="width:32px;height:32px;border-radius:50%;background:${color};
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:14px;font-weight:700;color:#fff;flex-shrink:0">
+        ${_currentUser.charAt(0)}
+      </div>
+      <div style="min-width:0">
+        <div style="font-size:13px;font-weight:600;color:#fff;
+                    white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          ${_currentUser}
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.45)">${u?.role || ''}</div>
+      </div>
+    </div>`;
+}
+
+// ── Logout ─────────────────────────────────────────────────────────────────
 export function logout() {
-  sessionStorage.removeItem('crm_user');
-  document.getElementById('login-screen').style.display = 'flex';
-  backToUsers();
+  localStorage.removeItem('cv_user');
+  location.reload();
 }
 
-// ── applyUser — set globals, show/hide nav, log entry ─────────────────────
-export function applyUser(u) {
-  if (!u || !u.name) return;
-  window._currentUser  = u.name;
-  window._currentColor = u.color;
-  window._currentRole  = u.role || 'tech';
-
-  document.getElementById('login-screen').style.display = 'none';
-
-  const b = document.getElementById('user-badge');
-  if (b) {
-    b.textContent = u.name;
-    b.style.background = u.color + '22';
-    b.style.color = u.color;
-    b.style.border = '1px solid ' + u.color + '44';
-  }
-
-  const perms = getPerms(u);
-  const moduleToNav = {
-    customers: 'nb-customers', faults: 'nb-faults', archive: 'nb-archive',
-    notes: 'nb-notes', warranties: 'nb-warranties', debts: 'nb-debts', reports: 'nb-reports',
-  };
-  Object.entries(moduleToNav).forEach(([mod, nbId]) => {
-    const el = document.getElementById(nbId);
-    if (el) el.style.display = (perms[mod] || 0) >= 1 ? '' : 'none';
-  });
-
-  const canSeeLog = ['רז', 'אופיר'].includes(u.name) || ['owner', 'admin'].includes(u.role);
-  ['nb-log', 'm-drawer-log'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = canSeeLog ? '' : 'none';
-  });
-
-  const isMobile = /iPhone|iPad|Android/.test(navigator.userAgent);
-  setTimeout(() => {
-    try { addLog('other', 'כניסה למערכת', u.name + ' — ' + (isMobile ? '📱 מובייל' : '💻 מחשב')); } catch (e) {}
-  }, 3000);
-}
+// ── User-management (called from settings.js) ──────────────────────────────
+export function openAddUser()      { window.openAddUser?.(); }
+export function openEditUser(name) { window._openEditUser?.(name); }

@@ -5,11 +5,28 @@
 import { canDo } from './auth.js';
 import { toast }  from './utils.js';
 
+// ── One-time nav init (called from main.js after DOM is ready) ─────────────
+export function initNav() {
+  // Fix logo — replace the placeholder base64 src with the real asset
+  const logoImg = document.querySelector('.sidebar-logo-img');
+  if (logoImg) {
+    logoImg.src   = 'assets/Main Header-Desktop Logo.jpg';
+    logoImg.alt   = 'Video Design';
+    logoImg.onerror = () => { logoImg.style.display = 'none'; }; // graceful fallback
+  }
+}
+
 // ── Page navigation ────────────────────────────────────────────────────────
 export function nav(page) {
-  const restricted = ['customers', 'faults', 'archive', 'notes', 'warranties', 'debts', 'reports'];
-  if (restricted.includes(page) && !canDo(page, 1)) { toast('אין הרשאה לדף זה ❌', 'err'); return; }
-  if (page === 'log' && !['רז', 'אופיר'].includes(window._currentUser)) { toast('אין הרשאה ❌', 'err'); return; }
+  const restricted = ['customers','faults','archive','notes','warranties','debts','reports'];
+  if (restricted.includes(page) && !canDo(page, 1)) {
+    toast('אין הרשאה לדף זה ❌', 'err');
+    return;
+  }
+  if (page === 'log' && !['רז','אופיר'].includes(window._currentUser)) {
+    toast('אין הרשאה ❌', 'err');
+    return;
+  }
 
   document.querySelectorAll('.pg').forEach(e => e.classList.remove('on'));
   document.querySelectorAll('.nav-btn,.mnb').forEach(e => e.classList.remove('on'));
@@ -24,7 +41,7 @@ export function nav(page) {
     if (b.getAttribute('onclick') === `nav('${page}')`) b.classList.add('on');
   });
 
-  // Dispatch to window.* render functions (set up by main.js after all modules load)
+  // Dispatch to window.* render functions (registered by main.js)
   const R = {
     dashboard:  () => window.renderDash?.(),
     customers:  () => window.renderCusts?.(),
@@ -37,7 +54,7 @@ export function nav(page) {
     reports:    () => window.renderReports?.(),
     settings:   () => window.loadSettings?.(),
   };
-  if (R[page]) R[page]();
+  R[page]?.();
 }
 
 export function jumpTo(id) {
@@ -48,6 +65,10 @@ export function jumpTo(id) {
 // ── Modals ─────────────────────────────────────────────────────────────────
 export function openM(id)  { document.getElementById(id)?.classList.add('open'); }
 export function closeM(id) { document.getElementById(id)?.classList.remove('open'); }
+
+// Make accessible from inline HTML onclick=""
+window.openM  = openM;
+window.closeM = closeM;
 
 // ── Drawer ─────────────────────────────────────────────────────────────────
 export function openDrawer()  { document.getElementById('m-drawer')?.classList.add('open'); }
@@ -65,15 +86,19 @@ export function openGlobalSearch() {
 }
 
 export function runGlobalSearch() {
-  const q = (document.getElementById('gs-inp').value || '').trim().toLowerCase();
+  const q  = (document.getElementById('gs-inp').value || '').trim().toLowerCase();
   const el = document.getElementById('gs-results');
   if (!q || q.length < 2) { el.innerHTML = ''; return; }
 
   const results = [];
 
   (window.custs || []).forEach(c => {
-    if ((c.name || '').toLowerCase().includes(q) || (c.phone || '').includes(q) ||
-        (c.city || '').toLowerCase().includes(q) || (c.address || '').toLowerCase().includes(q)) {
+    if (
+      (c.name    || '').toLowerCase().includes(q) ||
+      (c.phone   || '').includes(q)               ||
+      (c.city    || '').toLowerCase().includes(q) ||
+      (c.address || '').toLowerCase().includes(q)
+    ) {
       results.push({
         icon: '👤', title: c.name,
         sub: (c.phone || '') + (c.city ? ' | ' + c.city : ''),
@@ -83,20 +108,29 @@ export function runGlobalSearch() {
   });
 
   (window.faults || []).forEach(f => {
-    const c = f.custId ? (window.custs || []).find(x => x.id === f.custId) : null;
+    const c    = f.custId ? (window.custs || []).find(x => x.id === f.custId) : null;
     const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-    if ((f.desc || '').toLowerCase().includes(q) || name.toLowerCase().includes(q) ||
-        (f.notes || '').toLowerCase().includes(q)) {
+    if (
+      (f.desc  || '').toLowerCase().includes(q) ||
+      name.toLowerCase().includes(q)            ||
+      (f.notes || '').toLowerCase().includes(q)
+    ) {
       results.push({
         icon: '🔧', title: f.desc || 'משימה',
         sub: name + (f.status === 'done' ? ' | ✅ טופל' : ' | פתוחה'),
-        action: () => { closeM('M-gsearch'); f.status === 'done' ? nav('archive') : nav('faults'); },
+        action: () => {
+          closeM('M-gsearch');
+          f.status === 'done' ? nav('archive') : nav('faults');
+        },
       });
     }
   });
 
   (window.notes || []).forEach(n => {
-    if ((n.text || '').toLowerCase().includes(q) || (n.owner || '').toLowerCase().includes(q)) {
+    if (
+      (n.text  || '').toLowerCase().includes(q) ||
+      (n.owner || '').toLowerCase().includes(q)
+    ) {
       results.push({
         icon: '📝', title: (n.text || '').slice(0, 60), sub: n.owner || '',
         action: () => {
@@ -115,11 +149,17 @@ export function runGlobalSearch() {
 
   el.innerHTML = results.slice(0, 15).map((r, i) => `
     <div onclick="window._gsClick(${i})"
-         style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sur2);border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid var(--brd2)"
-         onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--brd2)'">
+         style="display:flex;align-items:center;gap:10px;padding:10px 12px;
+                background:var(--sur2);border-radius:8px;margin-bottom:6px;
+                cursor:pointer;border:1px solid var(--brd2)"
+         onmouseover="this.style.borderColor='var(--acc)'"
+         onmouseout="this.style.borderColor='var(--brd2)'">
       <span style="font-size:18px">${r.icon}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
+        <div style="font-weight:600;font-size:13px;
+                    white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          ${r.title}
+        </div>
         <div style="font-size:11px;color:var(--tx3)">${r.sub}</div>
       </div>
       <span style="color:var(--tx3)">›</span>
@@ -128,4 +168,4 @@ export function runGlobalSearch() {
   window._gsResults = results;
 }
 
-window._gsClick = (i) => { if (window._gsResults?.[i]) window._gsResults[i].action(); };
+window._gsClick = i => { if (window._gsResults?.[i]) window._gsResults[i].action(); };
