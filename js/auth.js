@@ -17,6 +17,7 @@ export function loadUsers() {
 }
 
 export function getPerms(name) {
+    if (_users.length === 0) loadUsers();
     const u = _users.find(x => x.name === name);
     return u ? (u.perms || {}) : {};
 }
@@ -26,7 +27,6 @@ export function initLogin() {
     if (!ub) return;
     loadUsers();
     ub.innerHTML = '';
-    
     _users.forEach(u => {
         const btn = document.createElement('button');
         btn.className = 'user-btn-silver';
@@ -35,25 +35,23 @@ export function initLogin() {
             <span class="ub-letter" style="color: ${u.color}; text-shadow: 0 0 10px ${u.color}66;">${u.name.charAt(0)}</span>
             <span class="ub-name" style="color: ${u.color};">${u.name}</span>
         `;
-        btn.onclick = () => window.selectUser(u.name);
+        btn.onclick = () => selectUser(u.name);
         ub.appendChild(btn);
     });
 }
 
-window.selectUser = function(name) {
+export function selectUser(name) {
     _loginTarget = name;
     document.querySelectorAll('.user-btn-silver').forEach(b => {
         b.classList.remove('selected');
         if (b.querySelector('.ub-name').textContent === name) b.classList.add('selected');
     });
-    
     document.getElementById('pass-area').style.display = 'block';
     document.getElementById('login-enter-btn').style.display = 'block';
     const inp = document.getElementById('pass-inp');
     if (inp) { inp.value = ''; inp.focus(); }
-};
+}
 
-// פונקציית ה"חזור" שגרמה לשגיאה ב-main.js
 export function backToUsers() {
     _loginTarget = null;
     document.getElementById('pass-area').style.display = 'none';
@@ -61,7 +59,7 @@ export function backToUsers() {
     document.querySelectorAll('.user-btn-silver').forEach(b => b.classList.remove('selected'));
 }
 
-window.doLogin = async function() {
+export async function doLogin() {
     const p = document.getElementById('pass-inp').value;
     const u = _users.find(x => x.name === _loginTarget);
     if (!u) return;
@@ -70,11 +68,12 @@ window.doLogin = async function() {
         return;
     }
     applyUser(u.name);
-};
+}
 
 export function applyUser(name) {
     localStorage.setItem('cv_user', name);
     window._currentUser = name;
+    if (_users.length === 0) loadUsers();
     const u = _users.find(x => x.name === name);
     window._currentRole = u?.role || 'user';
     
@@ -101,4 +100,7 @@ export function logout() {
     location.reload();
 }
 
+// חשיפה ל-window כדי שה-HTML הישן לא יישבר
+window.selectUser = selectUser;
+window.doLogin = doLogin;
 window.backToUsers = backToUsers;
