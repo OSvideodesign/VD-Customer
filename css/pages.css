@@ -263,14 +263,20 @@
 .m-drawer-search { color: var(--acc); }
 .m-drawer-logout  { color: var(--red); margin-top: 8px; }
 
-/* ── Sidebar components ───────────────────────────────────────────────────── */
-.sidebar-logo-img {
-  width: 120px;
-  filter: invert(1);
-  margin-bottom: 6px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+/* ── Sidebar logo ─────────────────────────────────────────────────────────── */
+.sidebar-logo-img {  
+  width: 140px;  
+  max-width: 100%;  
+  display: block;  
+  margin: 0 auto 6px;  
+  background: transparent;  
+  /* הסרת ה-invert הישן והוספת הילה מוזהבת עדינה */
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.4)) brightness(1.2);
+}
+
+/* הוספת כלל לביטול רקע במיכל הלוגו */
+.logo {  
+  background: transparent !important;
 }
 
 .sidebar-search-btn {
