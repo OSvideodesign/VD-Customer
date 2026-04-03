@@ -53,16 +53,52 @@ export function getPerms(user) {
 }
 
 // ── Boot ───────────────────────────────────────────────────────────────────
+// ── initLogin — show user buttons or restore session ───────────────────────
 export function initLogin() {
-  loadUsers();
-  const saved = localStorage.getItem('cv_user');
-  if (saved && _users.find(u => u.name === saved)) {
-    _currentUser = saved;
-    window._currentUser = saved;
-    _showApp();
-    return;
+  const ub = document.getElementById('user-btns');
+  if (!ub) return;
+  
+  ub.innerHTML = '';
+  // וודא שיש לך את המערך _users מעודכן (רז, אופיר, גלאל, מוטי)
+  _users.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'user-btn';
+    // יצירת מבנה ה-HTML של כל כפתור עם הקלאסים לעיצוב הכסוף
+    btn.innerHTML = `
+      <span class="ub-letter">${u.name.charAt(0)}</span>
+      <span class="ub-name">${u.name}</span>
+    `;
+    btn.onclick = () => selectUser(u.name);
+    ub.appendChild(btn);
+  });
+}
+
+// ── selectUser — בחירת משתמש מהגריד ────────────────────────────────────────
+window.selectUser = function(name) {
+  _loginTarget = name;
+  
+  // מסמן את הכפתור שנבחר עם הגבול המוזהב
+  document.querySelectorAll('.user-btn').forEach(b => {
+    b.classList.remove('selected');
+    if (b.querySelector('.ub-name').textContent === name) {
+      b.classList.add('selected');
+    }
+  });
+
+  const u = _users.find(x => x.name === name);
+  
+  // מציג את אזור הסיסמה ואת כפתור הכניסה
+  const passArea = document.getElementById('pass-area');
+  const enterBtn = document.getElementById('login-enter-btn');
+  
+  if (passArea) passArea.style.display = 'block';
+  if (enterBtn) enterBtn.style.display = 'block';
+  
+  const passInput = document.getElementById('pass-inp');
+  if (passInput) {
+    passInput.value = '';
+    passInput.focus();
   }
-  _renderUserBtns();
 }
 
 // ── Login-screen rendering ─────────────────────────────────────────────────

@@ -4,15 +4,130 @@
 #login-screen {
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(40, 30, 10, 0.6) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 80%, rgba(20, 15, 5, 0.5) 0%, transparent 60%),
-    #0a0c10;
+  background: #000;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+}
+
+.login-card {
+  background: linear-gradient(160deg, #2a2d35 0%, #1a1c23 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  padding: 40px 32px 32px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05);
+}
+
+/* ── Silver Logos ── */
+.login-logo-main {
+  width: 220px;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto 15px auto;
+  /* מעלים את הרקע השחור של תמונת ה-JPG וממזג אותה לרקע! */
+  mix-blend-mode: screen; 
+}
+
+.login-logo-sub {
+  width: 150px;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto 30px auto;
+}
+
+/* ── Silver User Buttons Grid ── */
+.user-grid-silver {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.user-btn {
+  position: relative;
+  /* הגרדיאנט המטאלי הכסוף */
+  background: linear-gradient(145deg, #e6e9f0 0%, #bdc3c7 50%, #8b939a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  padding: 20px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 2px 5px rgba(255,255,255,0.9),
+    inset 0 -3px 8px rgba(0,0,0,0.3),
+    0 8px 15px rgba(0,0,0,0.4);
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+/* אפקט השתקפות "זכוכית" על הכפתור הכסוף */
+.user-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%);
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+}
+
+.user-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 2px 5px rgba(255,255,255,0.9),
+    inset 0 -3px 8px rgba(0,0,0,0.3),
+    0 12px 20px rgba(0,0,0,0.5);
+}
+
+.user-btn.selected {
+  transform: scale(0.96);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  border: 2px solid #d4af37;
+}
+
+.ub-letter {
+  font-size: 38px;
+  font-weight: 800;
+  color: #1a1e29;
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+  line-height: 1;
+  margin-bottom: 5px;
+  z-index: 1;
+}
+
+.ub-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2c3242;
+  z-index: 1;
+}
+
+/* ── Golden Enter Button ── */
+.login-enter-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #c8a84b 0%, #e2c97e 50%, #c8a84b 100%);
+  color: #080b10;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  margin-top: 20px;
+  display: none;
+  transition: all 0.2s;
+}
+
+.login-enter-btn:hover {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+  transform: translateY(-2px);
 }
 
 /* ── The Card ─────────────────────────────────────────────────────────────── */
