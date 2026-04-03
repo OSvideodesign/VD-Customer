@@ -14,19 +14,23 @@
 
 <div id="login-screen">
     <div class="login-card">
-        <img src="assets/logo-silver.jpg" class="login-logo-main" alt="Video Design">
-        <img src="assets/sub-silver.png" class="login-logo-sub" alt="Management">
+        <img src="assets/logo-silver.jpg" class="login-logo-main">
+        <img src="assets/sub-silver.png" class="login-logo-sub">
         
         <div id="user-btns" class="user-grid-silver"></div>
 
         <div id="pass-area" style="display: none; margin-top: 20px;">
             <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="••••">
             <p id="pass-err" style="display:none; color:#ff4d4d; font-size:13px; margin-top:10px;">סיסמה שגויה</p>
+            <button class="btn bs btn-sm" onclick="window.backToUsers()" style="margin-top:10px; width:100%; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:8px; cursor:pointer;">חזור</button>
         </div>
 
         <button class="login-enter-btn" id="login-enter-btn" onclick="window.doLogin()">כנס</button>
     </div>
 </div>
+
+<div id="app-shell" style="display:none;">
+    </div>
 
 <script type="module" src="js/main.js"></script>
 </body>

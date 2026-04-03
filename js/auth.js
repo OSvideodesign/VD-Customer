@@ -16,7 +16,6 @@ export function loadUsers() {
     return _users;
 }
 
-// מחזיר הרשאות - פותר את השגיאה ב-settings.js
 export function getPerms(name) {
     const u = _users.find(x => x.name === name);
     return u ? (u.perms || {}) : {};
@@ -31,7 +30,6 @@ export function initLogin() {
     _users.forEach(u => {
         const btn = document.createElement('button');
         btn.className = 'user-btn-silver';
-        // עיצוב פנימי: כפתור כסוף עם אות ושם בצבע המשתמש
         btn.innerHTML = `
             <div class="ub-glass"></div>
             <span class="ub-letter" style="color: ${u.color}; text-shadow: 0 0 10px ${u.color}66;">${u.name.charAt(0)}</span>
@@ -46,26 +44,29 @@ window.selectUser = function(name) {
     _loginTarget = name;
     document.querySelectorAll('.user-btn-silver').forEach(b => {
         b.classList.remove('selected');
-        const bName = b.querySelector('.ub-name').textContent;
-        if (bName === name) b.classList.add('selected');
+        if (b.querySelector('.ub-name').textContent === name) b.classList.add('selected');
     });
     
-    const passArea = document.getElementById('pass-area');
-    const enterBtn = document.getElementById('login-enter-btn');
-    if (passArea) passArea.style.display = 'block';
-    if (enterBtn) enterBtn.style.display = 'block';
-    
+    document.getElementById('pass-area').style.display = 'block';
+    document.getElementById('login-enter-btn').style.display = 'block';
     const inp = document.getElementById('pass-inp');
     if (inp) { inp.value = ''; inp.focus(); }
 };
+
+// פונקציית ה"חזור" שגרמה לשגיאה ב-main.js
+export function backToUsers() {
+    _loginTarget = null;
+    document.getElementById('pass-area').style.display = 'none';
+    document.getElementById('login-enter-btn').style.display = 'none';
+    document.querySelectorAll('.user-btn-silver').forEach(b => b.classList.remove('selected'));
+}
 
 window.doLogin = async function() {
     const p = document.getElementById('pass-inp').value;
     const u = _users.find(x => x.name === _loginTarget);
     if (!u) return;
     if (u.pass && p !== u.pass) {
-        const err = document.getElementById('pass-err');
-        if (err) err.style.display = 'block';
+        document.getElementById('pass-err').style.display = 'block';
         return;
     }
     applyUser(u.name);
@@ -77,11 +78,9 @@ export function applyUser(name) {
     const u = _users.find(x => x.name === name);
     window._currentRole = u?.role || 'user';
     
-    const loginScr = document.getElementById('login-screen');
-    if (loginScr) loginScr.style.display = 'none';
-    
-    const appShell = document.getElementById('app-shell');
-    if (appShell) appShell.style.display = 'block';
+    document.getElementById('login-screen').style.display = 'none';
+    const shell = document.getElementById('app-shell');
+    if (shell) shell.style.display = 'block';
     
     if (window.initNav) window.initNav();
     window.dispatchEvent(new Event('app-ready'));
@@ -101,3 +100,5 @@ export function logout() {
     localStorage.removeItem('cv_user');
     location.reload();
 }
+
+window.backToUsers = backToUsers;
