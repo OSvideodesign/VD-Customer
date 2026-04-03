@@ -21,6 +21,7 @@ export function nav(page) {
   const pg = document.getElementById('pg-' + page);
   if (pg) pg.classList.add('on');
 
+  // קריאה לפונקציות הרינדור של כל דף
   const R = {
     dashboard:  () => window.renderDash?.(),
     customers:  () => window.renderCusts?.(),
@@ -37,7 +38,7 @@ export function nav(page) {
   if (window.innerWidth <= 1024) closeDrawer();
 }
 
-// פונקציות המודלים - חייבות Export
+// פונקציות מודלים - מיוצאות כדי שקבצים אחרים יוכלו להשתמש בהן
 export const openM = (id) => { 
   const m = document.getElementById(id);
   if (m) m.classList.add('open');
@@ -48,9 +49,16 @@ export const closeM = (id) => {
   if (m) m.classList.remove('open');
 };
 
-export function openDrawer() { document.getElementById('m-drawer').classList.add('open'); }
-export function closeDrawer() { document.getElementById('m-drawer').classList.remove('open'); }
+export function openDrawer() { 
+    const d = document.getElementById('m-drawer');
+    if (d) d.classList.add('open'); 
+}
+export function closeDrawer() { 
+    const d = document.getElementById('m-drawer');
+    if (d) d.classList.remove('open'); 
+}
 
+// חשיפה ל-window עבור onclick ב-HTML
 window.nav = nav;
 window.openM = openM;
 window.closeM = closeM;

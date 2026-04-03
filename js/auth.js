@@ -1,4 +1,4 @@
-// ══ auth.js — Premium Silver Design ══
+// ══ auth.js — Premium Silver Design with User Colors ══
 
 const DEFAULT_USERS = [
   { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'owner', perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
@@ -16,7 +16,7 @@ export function loadUsers() {
     return _users;
 }
 
-// פונקציה שחסרה ל-settings.js
+// מחזיר הרשאות - פותר את השגיאה ב-settings.js
 export function getPerms(name) {
     const u = _users.find(x => x.name === name);
     return u ? (u.perms || {}) : {};
@@ -27,12 +27,15 @@ export function initLogin() {
     if (!ub) return;
     loadUsers();
     ub.innerHTML = '';
+    
     _users.forEach(u => {
         const btn = document.createElement('button');
         btn.className = 'user-btn-silver';
+        // עיצוב פנימי: כפתור כסוף עם אות ושם בצבע המשתמש
         btn.innerHTML = `
-            <span class="ub-letter">${u.name.charAt(0)}</span>
-            <span class="ub-name">${u.name}</span>
+            <div class="ub-glass"></div>
+            <span class="ub-letter" style="color: ${u.color}; text-shadow: 0 0 10px ${u.color}66;">${u.name.charAt(0)}</span>
+            <span class="ub-name" style="color: ${u.color};">${u.name}</span>
         `;
         btn.onclick = () => window.selectUser(u.name);
         ub.appendChild(btn);
@@ -43,12 +46,17 @@ window.selectUser = function(name) {
     _loginTarget = name;
     document.querySelectorAll('.user-btn-silver').forEach(b => {
         b.classList.remove('selected');
-        if (b.querySelector('.ub-name').textContent === name) b.classList.add('selected');
+        const bName = b.querySelector('.ub-name').textContent;
+        if (bName === name) b.classList.add('selected');
     });
-    document.getElementById('pass-area').style.display = 'block';
-    document.getElementById('login-enter-btn').style.display = 'block';
+    
+    const passArea = document.getElementById('pass-area');
+    const enterBtn = document.getElementById('login-enter-btn');
+    if (passArea) passArea.style.display = 'block';
+    if (enterBtn) enterBtn.style.display = 'block';
+    
     const inp = document.getElementById('pass-inp');
-    inp.value = ''; inp.focus();
+    if (inp) { inp.value = ''; inp.focus(); }
 };
 
 window.doLogin = async function() {
@@ -56,7 +64,8 @@ window.doLogin = async function() {
     const u = _users.find(x => x.name === _loginTarget);
     if (!u) return;
     if (u.pass && p !== u.pass) {
-        document.getElementById('pass-err').style.display = 'block';
+        const err = document.getElementById('pass-err');
+        if (err) err.style.display = 'block';
         return;
     }
     applyUser(u.name);
@@ -68,9 +77,11 @@ export function applyUser(name) {
     const u = _users.find(x => x.name === name);
     window._currentRole = u?.role || 'user';
     
-    document.getElementById('login-screen').style.display = 'none';
-    const shell = document.getElementById('app-shell');
-    if (shell) shell.style.display = 'block';
+    const loginScr = document.getElementById('login-screen');
+    if (loginScr) loginScr.style.display = 'none';
+    
+    const appShell = document.getElementById('app-shell');
+    if (appShell) appShell.style.display = 'block';
     
     if (window.initNav) window.initNav();
     window.dispatchEvent(new Event('app-ready'));
@@ -78,6 +89,8 @@ export function applyUser(name) {
 
 export function canDo(mod, lvl) {
     const user = localStorage.getItem('cv_user');
+    if (!user) return false;
+    if (_users.length === 0) loadUsers();
     const u = _users.find(x => x.name === user);
     if (!u) return false;
     if (u.role === 'owner') return true;

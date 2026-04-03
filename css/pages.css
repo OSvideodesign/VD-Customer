@@ -1,4 +1,4 @@
-/* ── Login Screen - Ultimate Silver 3D ── */
+/* ── Login Screen - Premium Silver 3D ── */
 #login-screen {
     position: fixed;
     inset: 0;
@@ -12,7 +12,7 @@
 
 .login-card {
     background: linear-gradient(160deg, #2a2d35 0%, #111318 100%);
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.2);
     border-radius: 28px;
     padding: 45px 35px;
     width: 100%;
@@ -57,8 +57,7 @@
     overflow: hidden;
 }
 
-.user-btn-silver::after {
-    content: '';
+.ub-glass {
     position: absolute;
     top: 0; left: 0; right: 0; height: 50%;
     background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%);
@@ -72,17 +71,16 @@
 }
 
 .ub-letter {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: 900;
-    color: #1a1c22;
     line-height: 1;
     z-index: 2;
+    margin-bottom: 2px;
 }
 
 .ub-name {
     font-size: 16px;
     font-weight: 800;
-    color: #2c313c;
     z-index: 2;
 }
 
@@ -98,14 +96,17 @@
     cursor: pointer;
     margin-top: 20px;
     display: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .login-pass-inp {
     background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
     text-align: center;
     color: white;
-    padding: 10px;
+    padding: 12px;
     width: 100%;
-    border-radius: 8px;
+    border-radius: 10px;
+    font-size: 20px;
+    letter-spacing: 5px;
 }
