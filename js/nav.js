@@ -1,16 +1,11 @@
 // ══ nav.js — navigation, modals, drawer, global search ══
-// Deliberately avoids importing feature modules to prevent circular deps.
-// Feature render functions are called via window.* (registered in main.js).
-
 import { canDo } from './auth.js';
 import { toast }  from './utils.js';
 
-// ── One-time nav init (called from main.js after DOM is ready) ─────────────
+// ── One-time nav init ──────────────────────────────────────────────────────
 export function initNav() {
-  // Fix logo — updating to the correct branding asset
   const logoImg = document.querySelector('.sidebar-logo-img');
   if (logoImg) {
-    // השורה המעודכנת עם השם הנכון:
     logoImg.src   = 'assets/Main Header 2.png';
     logoImg.alt   = 'Video Design';
     logoImg.onerror = () => { 
@@ -27,11 +22,7 @@ export function nav(page) {
     toast('אין הרשאה לדף זה ❌', 'err');
     return;
   }
-  if (page === 'log' && !['רז','אופיר'].includes(window._currentUser)) {
-    toast('אין הרשאה ❌', 'err');
-    return;
-  }
-
+  
   document.querySelectorAll('.pg').forEach(e => e.classList.remove('on'));
   document.querySelectorAll('.nav-btn,.mnb').forEach(e => e.classList.remove('on'));
 
@@ -41,11 +32,7 @@ export function nav(page) {
 
   const nb = document.getElementById('nb-' + page);
   if (nb) nb.classList.add('on');
-  document.querySelectorAll('.mnb').forEach(b => {
-    if (b.getAttribute('onclick') === `nav('${page}')`) b.classList.add('on');
-  });
-
-  // Dispatch to window.* render functions
+  
   const R = {
     dashboard:  () => window.renderDash?.(),
     customers:  () => window.renderCusts?.(),
@@ -59,24 +46,27 @@ export function nav(page) {
     log:        () => window.renderLog?.(),
   };
   if (R[page]) R[page]();
-
   if (window.innerWidth <= 1024) closeDrawer();
   window.scrollTo(0,0);
 }
 
-// ── Globals exposed for HTML ───────────────────────────────────────────────
-window.nav = nav;
-window.openM = (id) => { 
+// ── Modals (FIXED: Added Exports) ──────────────────────────────────────────
+export const openM = (id) => { 
   const m = document.getElementById(id);
   if (m) m.classList.add('open');
 };
-window.closeM = (id) => {
+
+export const closeM = (id) => {
   const m = document.getElementById(id);
   if (m) m.classList.remove('open');
 };
 
-// ── Drawer & Search logic below remains unchanged...
 export function openDrawer() { document.getElementById('m-drawer').classList.add('open'); }
 export function closeDrawer() { document.getElementById('m-drawer').classList.remove('open'); }
+
+// Expose to window for HTML onclicks
+window.nav = nav;
+window.openM = openM;
+window.closeM = closeM;
 window.openDrawer = openDrawer;
 window.closeDrawer = closeDrawer;

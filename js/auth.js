@@ -7,7 +7,7 @@ const DEFAULT_USERS = [
   { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer', perms: { customers:2, faults:3, archive:2, notes:2, warranties:1, debts:1, reports:1 } },
 ];
 
-let _users       = [];
+let _users = [];
 let _loginTarget = null;
 
 export function loadUsers() {
@@ -16,13 +16,10 @@ export function loadUsers() {
 }
 
 export function initLogin() {
-    console.log("Initializing Login Screen...");
     const ub = document.getElementById('user-btns');
     if (!ub) return;
-    
     loadUsers();
     ub.innerHTML = '';
-    
     _users.forEach(u => {
         const btn = document.createElement('button');
         btn.className = 'user-btn-silver';
@@ -60,9 +57,10 @@ window.doLogin = async function() {
 
 export function applyUser(name) {
     localStorage.setItem('cv_user', name);
+    window._currentUser = name;
     document.getElementById('login-screen').style.display = 'none';
-    if (document.getElementById('app-shell')) document.getElementById('app-shell').style.display = 'block';
     if (window.initNav) window.initNav();
+    window.dispatchEvent(new Event('app-ready'));
 }
 
 export function canDo(mod, lvl) {
