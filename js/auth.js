@@ -57,13 +57,11 @@ export function getPerms(user) {
 export function initLogin() {
   const ub = document.getElementById('user-btns');
   if (!ub) return;
-  
+  loadUsers();
   ub.innerHTML = '';
-  // וודא שיש לך את המערך _users מעודכן (רז, אופיר, גלאל, מוטי)
   _users.forEach(u => {
     const btn = document.createElement('button');
-    btn.className = 'user-btn';
-    // יצירת מבנה ה-HTML של כל כפתור עם הקלאסים לעיצוב הכסוף
+    btn.className = 'user-btn-silver'; // הקלאס החדש
     btn.innerHTML = `
       <span class="ub-letter">${u.name.charAt(0)}</span>
       <span class="ub-name">${u.name}</span>
