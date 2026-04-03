@@ -1,4 +1,4 @@
-// ══ nav.js — navigation, modals, drawer ══
+// ══ nav.js — navigation & modals ══
 import { canDo } from './auth.js';
 import { toast }  from './utils.js';
 
@@ -16,7 +16,6 @@ export function nav(page) {
     toast('אין הרשאה לדף זה ❌', 'err');
     return;
   }
-  
   document.querySelectorAll('.pg').forEach(e => e.classList.remove('on'));
   const pg = document.getElementById('pg-' + page);
   if (pg) pg.classList.add('on');
@@ -34,6 +33,7 @@ export function nav(page) {
     log:        () => window.renderLog?.(),
   };
   if (R[page]) R[page]();
+  if (window.innerWidth <= 1024) closeDrawer();
 }
 
 export const openM = (id) => { 
@@ -54,9 +54,3 @@ export function closeDrawer() {
     const d = document.getElementById('m-drawer');
     if (d) d.classList.remove('open'); 
 }
-
-window.nav = nav;
-window.openM = openM;
-window.closeM = closeM;
-window.openDrawer = openDrawer;
-window.closeDrawer = closeDrawer;

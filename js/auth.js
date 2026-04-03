@@ -1,4 +1,4 @@
-// ══ auth.js — Premium Silver Design with User Colors ══
+// ══ auth.js — Full Stable Version ══
 
 const DEFAULT_USERS = [
   { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'owner', perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
@@ -77,7 +77,9 @@ export function applyUser(name) {
     const u = _users.find(x => x.name === name);
     window._currentRole = u?.role || 'user';
     
-    document.getElementById('login-screen').style.display = 'none';
+    const loginScr = document.getElementById('login-screen');
+    if (loginScr) loginScr.style.display = 'none';
+    
     const shell = document.getElementById('app-shell');
     if (shell) shell.style.display = 'block';
     
@@ -100,7 +102,8 @@ export function logout() {
     location.reload();
 }
 
-// חשיפה ל-window כדי שה-HTML הישן לא יישבר
+// חשיפה ל-window כדי ששום קובץ לא יתלונן
 window.selectUser = selectUser;
 window.doLogin = doLogin;
 window.backToUsers = backToUsers;
+window.logout = logout;

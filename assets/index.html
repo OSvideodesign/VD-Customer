@@ -14,16 +14,16 @@
 
 <div id="login-screen">
     <div class="login-card">
-        <img src="assets/logo-silver.jpg" class="login-logo-main">
-        <img src="assets/sub-silver.png" class="login-logo-sub">
+        <img src="assets/logo-silver.jpg" class="login-logo-main" alt="Video Design">
+        <img src="assets/sub-silver.png" class="login-logo-sub" alt="Management">
         
         <div id="user-btns" class="user-grid-silver"></div>
 
-        <div id="pass-area" style="display: none; margin-top: 20px;">
-            <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="••••">
+        <form id="pass-area" style="display: none; margin-top: 20px;" onsubmit="event.preventDefault(); window.doLogin();">
+            <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="••••" autocomplete="current-password">
             <p id="pass-err" style="display:none; color:#ff4d4d; font-size:13px; margin-top:10px;">סיסמה שגויה</p>
-            <button class="btn bs btn-sm" onclick="window.backToUsers()" style="margin-top:10px; width:100%; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:8px; cursor:pointer;">חזור</button>
-        </div>
+            <button type="button" class="btn bs btn-sm" onclick="window.backToUsers()" style="margin-top:10px; width:100%; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:8px; cursor:pointer;">חזור</button>
+        </form>
 
         <button class="login-enter-btn" id="login-enter-btn" onclick="window.doLogin()">כנס</button>
     </div>
@@ -34,4 +34,4 @@
 
 <script type="module" src="js/main.js"></script>
 </body>
-</html><!--  -->
+</html>
