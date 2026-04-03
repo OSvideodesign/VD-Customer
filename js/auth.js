@@ -1,4 +1,4 @@
-// ══ auth.js — הליבה של ניהול המשתמשים ══
+// ══ auth.js — Full Stable Version with Silver UI ══
 
 const DEFAULT_USERS = [
   { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'owner', perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
@@ -16,8 +16,10 @@ export function loadUsers() {
     return _users;
 }
 
-export function getPerms(name) {
+// תיקון קריטי עבור settings.js - תומך גם באובייקט וגם בשם
+export function getPerms(userOrName) {
     if (_users.length === 0) loadUsers();
+    const name = (typeof userOrName === 'string') ? userOrName : userOrName?.name;
     const u = _users.find(x => x.name === name);
     return u ? (u.perms || {}) : {};
 }
@@ -29,13 +31,13 @@ export function initLogin() {
     ub.innerHTML = '';
     _users.forEach(u => {
         const btn = document.createElement('button');
-        btn.className = 'user-btn-silver';
+        btn.className = 'user-btn-silver'; // העיצוב הכסוף
         btn.innerHTML = `
             <div class="ub-glass"></div>
             <span class="ub-letter" style="color: ${u.color}; text-shadow: 0 0 10px ${u.color}66;">${u.name.charAt(0)}</span>
-            <span class="ub-name" style="color: ${u.color};">${u.name}</span>
+            <span class="ub-name" style="color: ${u.color}; font-weight:800;">${u.name}</span>
         `;
-        btn.onclick = () => window.selectUser(u.name);
+        btn.onclick = () => selectUser(u.name);
         ub.appendChild(btn);
     });
 }
@@ -77,8 +79,7 @@ export function applyUser(name) {
     const u = _users.find(x => x.name === name);
     window._currentRole = u?.role || 'user';
     
-    const loginScr = document.getElementById('login-screen');
-    if (loginScr) loginScr.style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
     const shell = document.getElementById('app-shell');
     if (shell) shell.style.display = 'block';
     
@@ -100,3 +101,9 @@ export function logout() {
     localStorage.removeItem('cv_user');
     location.reload();
 }
+
+// חשיפה גלובלית כדי שה-HTML לא יישבר
+window.selectUser = selectUser;
+window.doLogin = doLogin;
+window.backToUsers = backToUsers;
+window.logout = logout;
