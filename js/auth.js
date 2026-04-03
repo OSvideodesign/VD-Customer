@@ -1,4 +1,4 @@
-// ══ auth.js — Full Stable Version ══
+// ══ auth.js — הליבה של ניהול המשתמשים ══
 
 const DEFAULT_USERS = [
   { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'owner', perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
@@ -35,7 +35,7 @@ export function initLogin() {
             <span class="ub-letter" style="color: ${u.color}; text-shadow: 0 0 10px ${u.color}66;">${u.name.charAt(0)}</span>
             <span class="ub-name" style="color: ${u.color};">${u.name}</span>
         `;
-        btn.onclick = () => selectUser(u.name);
+        btn.onclick = () => window.selectUser(u.name);
         ub.appendChild(btn);
     });
 }
@@ -79,7 +79,6 @@ export function applyUser(name) {
     
     const loginScr = document.getElementById('login-screen');
     if (loginScr) loginScr.style.display = 'none';
-    
     const shell = document.getElementById('app-shell');
     if (shell) shell.style.display = 'block';
     
@@ -101,9 +100,3 @@ export function logout() {
     localStorage.removeItem('cv_user');
     location.reload();
 }
-
-// חשיפה ל-window כדי ששום קובץ לא יתלונן
-window.selectUser = selectUser;
-window.doLogin = doLogin;
-window.backToUsers = backToUsers;
-window.logout = logout;
