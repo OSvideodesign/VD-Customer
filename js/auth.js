@@ -1,109 +1,130 @@
-// ══ auth.js — Full Stable Version with Silver UI ══
+// ══ auth.js — login, logout, session, permissions ══
 
-const DEFAULT_USERS = [
-  { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'owner', perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
-  { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'admin', perms: { customers:3, faults:3, archive:3, notes:3, warranties:3, debts:3, reports:3 } },
-  { name: 'גלאל',  pass: 'Jalal4123', color: '#10b981', role: 'installer', perms: { customers:2, faults:3, archive:2, notes:2, warranties:1, debts:1, reports:1 } },
-  { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer', perms: { customers:2, faults:3, archive:2, notes:2, warranties:1, debts:1, reports:1 } },
-];
+import { USERS, DEFAULT_PERMS } from './config.js';
+import { toast } from './utils.js';
+import { addLog } from './log.js';
 
-let _users = [];
 let _loginTarget = null;
 
-export function loadUsers() {
-    const saved = localStorage.getItem('cv_users');
-    _users = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_USERS));
-    return _users;
+// ── Clean corrupt session on load ──────────────────────────────────────────
+(function () {
+  try {
+    const s = sessionStorage.getItem('crm_user');
+    if (s) {
+      const u = JSON.parse(s);
+      if (!u || !u.name || u.pass === undefined) sessionStorage.removeItem('crm_user');
+    }
+  } catch (e) { sessionStorage.removeItem('crm_user'); }
+})();
+
+// ── Public: getPerms, canDo ────────────────────────────────────────────────
+export function getPerms(u) {
+  return u.perms || DEFAULT_PERMS[u.role || 'tech'] || DEFAULT_PERMS.tech;
 }
 
-// תיקון קריטי עבור settings.js - תומך גם באובייקט וגם בשם
-export function getPerms(userOrName) {
-    if (_users.length === 0) loadUsers();
-    const name = (typeof userOrName === 'string') ? userOrName : userOrName?.name;
-    const u = _users.find(x => x.name === name);
-    return u ? (u.perms || {}) : {};
+export function canDo(module, level) {
+  const u = USERS.find(x => x.name === window._currentUser);
+  if (!u) return false;
+  return (getPerms(u)[module] || 0) >= level;
 }
 
+// ── initLogin — show user buttons or restore session ───────────────────────
 export function initLogin() {
-    const ub = document.getElementById('user-btns');
-    if (!ub) return;
-    loadUsers();
-    ub.innerHTML = '';
-    _users.forEach(u => {
-        const btn = document.createElement('button');
-        btn.className = 'user-btn-silver'; // העיצוב הכסוף
-        btn.innerHTML = `
-            <div class="ub-glass"></div>
-            <span class="ub-letter" style="color: ${u.color}; text-shadow: 0 0 10px ${u.color}66;">${u.name.charAt(0)}</span>
-            <span class="ub-name" style="color: ${u.color}; font-weight:800;">${u.name}</span>
-        `;
-        btn.onclick = () => selectUser(u.name);
-        ub.appendChild(btn);
-    });
+  const saved = sessionStorage.getItem('crm_user');
+  if (saved) {
+    try {
+      const u = JSON.parse(saved);
+      if (u && u.name && u.pass !== undefined && USERS.find(x => x.name === u.name && x.pass === u.pass)) {
+        applyUser(u);
+        return;
+      } else {
+        sessionStorage.removeItem('crm_user');
+      }
+    } catch (e) { sessionStorage.removeItem('crm_user'); }
+  }
+
+  const btns = document.getElementById('user-btns');
+  btns.innerHTML = USERS.map(u =>
+    `<button onclick="window._selectUser('${u.name}')"
+       style="background:${u.color}22;border:2px solid ${u.color};border-radius:10px;padding:14px 8px;cursor:pointer;font-family:Heebo,sans-serif;color:${u.color};font-weight:700;font-size:15px">
+       <div style="font-size:24px;margin-bottom:4px">${u.name[0]}</div>${u.name}</button>`
+  ).join('');
+  document.getElementById('login-screen').style.display = 'flex';
 }
 
 export function selectUser(name) {
-    _loginTarget = name;
-    document.querySelectorAll('.user-btn-silver').forEach(b => {
-        b.classList.remove('selected');
-        if (b.querySelector('.ub-name').textContent === name) b.classList.add('selected');
-    });
-    document.getElementById('pass-area').style.display = 'block';
-    document.getElementById('login-enter-btn').style.display = 'block';
-    const inp = document.getElementById('pass-inp');
-    if (inp) { inp.value = ''; inp.focus(); }
+  _loginTarget = USERS.find(u => u.name === name);
+  if (!_loginTarget) return;
+  if (!_loginTarget.pass || _loginTarget.pass === '') {
+    sessionStorage.setItem('crm_user', JSON.stringify(_loginTarget));
+    applyUser(_loginTarget);
+    return;
+  }
+  document.getElementById('pass-label').textContent = 'שלום ' + name + ', הכנס סיסמה:';
+  document.getElementById('pass-area').style.display = 'block';
+  document.getElementById('user-btns').style.display = 'none';
+  document.getElementById('pass-err').style.display = 'none';
+  document.getElementById('pass-inp').value = '';
+  setTimeout(() => document.getElementById('pass-inp').focus(), 100);
+}
+
+export function doLogin() {
+  const inp = document.getElementById('pass-inp').value;
+  if (!_loginTarget || inp !== _loginTarget.pass) {
+    document.getElementById('pass-err').style.display = 'block';
+    return;
+  }
+  sessionStorage.setItem('crm_user', JSON.stringify(_loginTarget));
+  applyUser(_loginTarget);
 }
 
 export function backToUsers() {
-    _loginTarget = null;
-    document.getElementById('pass-area').style.display = 'none';
-    document.getElementById('login-enter-btn').style.display = 'none';
-    document.querySelectorAll('.user-btn-silver').forEach(b => b.classList.remove('selected'));
-}
-
-export async function doLogin() {
-    const p = document.getElementById('pass-inp').value;
-    const u = _users.find(x => x.name === _loginTarget);
-    if (!u) return;
-    if (u.pass && p !== u.pass) {
-        document.getElementById('pass-err').style.display = 'block';
-        return;
-    }
-    applyUser(u.name);
-}
-
-export function applyUser(name) {
-    localStorage.setItem('cv_user', name);
-    window._currentUser = name;
-    if (_users.length === 0) loadUsers();
-    const u = _users.find(x => x.name === name);
-    window._currentRole = u?.role || 'user';
-    
-    document.getElementById('login-screen').style.display = 'none';
-    const shell = document.getElementById('app-shell');
-    if (shell) shell.style.display = 'block';
-    
-    if (window.initNav) window.initNav();
-    window.dispatchEvent(new Event('app-ready'));
-}
-
-export function canDo(mod, lvl) {
-    const user = localStorage.getItem('cv_user');
-    if (!user) return false;
-    if (_users.length === 0) loadUsers();
-    const u = _users.find(x => x.name === user);
-    if (!u) return false;
-    if (u.role === 'owner') return true;
-    return (u.perms?.[mod] || 0) >= lvl;
+  _loginTarget = null;
+  document.getElementById('pass-area').style.display = 'none';
+  document.getElementById('user-btns').style.display = 'grid';
 }
 
 export function logout() {
-    localStorage.removeItem('cv_user');
-    location.reload();
+  sessionStorage.removeItem('crm_user');
+  document.getElementById('login-screen').style.display = 'flex';
+  backToUsers();
 }
 
-// חשיפה גלובלית כדי שה-HTML לא יישבר
-window.selectUser = selectUser;
-window.doLogin = doLogin;
-window.backToUsers = backToUsers;
-window.logout = logout;
+// ── applyUser — set globals, show/hide nav, log entry ─────────────────────
+export function applyUser(u) {
+  if (!u || !u.name) return;
+  window._currentUser  = u.name;
+  window._currentColor = u.color;
+  window._currentRole  = u.role || 'tech';
+
+  document.getElementById('login-screen').style.display = 'none';
+
+  const b = document.getElementById('user-badge');
+  if (b) {
+    b.textContent = u.name;
+    b.style.background = u.color + '22';
+    b.style.color = u.color;
+    b.style.border = '1px solid ' + u.color + '44';
+  }
+
+  const perms = getPerms(u);
+  const moduleToNav = {
+    customers: 'nb-customers', faults: 'nb-faults', archive: 'nb-archive',
+    notes: 'nb-notes', warranties: 'nb-warranties', debts: 'nb-debts', reports: 'nb-reports',
+  };
+  Object.entries(moduleToNav).forEach(([mod, nbId]) => {
+    const el = document.getElementById(nbId);
+    if (el) el.style.display = (perms[mod] || 0) >= 1 ? '' : 'none';
+  });
+
+  const canSeeLog = ['רז', 'אופיר'].includes(u.name) || ['owner', 'admin'].includes(u.role);
+  ['nb-log', 'm-drawer-log'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = canSeeLog ? '' : 'none';
+  });
+
+  const isMobile = /iPhone|iPad|Android/.test(navigator.userAgent);
+  setTimeout(() => {
+    try { addLog('other', 'כניסה למערכת', u.name + ' — ' + (isMobile ? '📱 מובייל' : '💻 מחשב')); } catch (e) {}
+  }, 3000);
+}
