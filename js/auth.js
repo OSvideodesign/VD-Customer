@@ -6,6 +6,15 @@ import { addLog } from './log.js';
 
 let _loginTarget = null;
 
+// ── Helper to hide/show app content ────────────────────────────────────────
+function toggleAppView(show) {
+  const els = ['.sidebar', '.main', '#mnav'];
+  els.forEach(sel => {
+    const el = document.querySelector(sel);
+    if (el) el.style.display = show ? '' : 'none';
+  });
+}
+
 // ── Clean corrupt session on load ──────────────────────────────────────────
 (function () {
   try {
@@ -30,6 +39,9 @@ export function canDo(module, level) {
 
 // ── initLogin — show user buttons or restore session ───────────────────────
 export function initLogin() {
+  // מסתיר את המערכת כדי להציג רק את מסך ההתחברות והרקע
+  toggleAppView(false);
+
   const saved = sessionStorage.getItem('crm_user');
   if (saved) {
     try {
@@ -87,6 +99,8 @@ export function backToUsers() {
 export function logout() {
   sessionStorage.removeItem('crm_user');
   document.getElementById('login-screen').style.display = 'flex';
+  // מסתיר מחדש את המערכת כשמתנתקים
+  toggleAppView(false); 
   backToUsers();
 }
 
@@ -98,6 +112,9 @@ export function applyUser(u) {
   window._currentRole  = u.role || 'tech';
 
   document.getElementById('login-screen').style.display = 'none';
+  
+  // ברגע שהמשתמש התחבר בהצלחה, מציגים את לוח הבקרה והתפריטים
+  toggleAppView(true);
 
   const b = document.getElementById('user-badge');
   if (b) {
