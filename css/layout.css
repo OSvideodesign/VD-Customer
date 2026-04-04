@@ -16,19 +16,16 @@
   overflow: hidden;
 }
 
-/* הלוגו עם פס ההפרדה הכסוף מתחתיו */
+/* הלוגו - עם פס ההפרדה היחיד בדיוק מתחתיו */
 .sidebar .logo {
-  padding: 20px 16px 20px;
+  padding: 25px 16px 20px;
   text-align: center;
-  border-bottom: 2px solid #8a9097; 
-  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.1); 
+  box-shadow: 0 1px 0 rgba(0,0,0,0.8);
 }
 
-/* הסרת פס ההפרדה הישן והשקוף אם היה */
-.sidebar .logo::after { display: none; }
-
 .logo h1 {
-  font-size: 17px;
+  font-size: calc(17px * var(--fz-scale, 1));
   font-weight: 800;
   background: linear-gradient(135deg, var(--acc), var(--cya));
   -webkit-background-clip: text;
@@ -36,7 +33,11 @@
   background-clip: text;
 }
 
-.logo p { font-size: 11px; color: var(--tx3); margin-top: 2px; }
+.logo p { 
+  font-size: calc(11px * var(--fz-scale, 1)); 
+  color: var(--tx3); 
+  margin-top: 2px; 
+}
 
 /* ── Nav ─────────────────────────────────────────────────────────────────── */
 .nav {
@@ -45,28 +46,22 @@
   overflow-y: auto;
 }
 
-/* אזור החיפוש עם פס ההפרדה הכסוף מתחתיו */
+/* אזור החיפוש - ללא קו מתחתיו */
 .sidebar-search-div {
   padding: 10px 0px 18px;
-  border-bottom: 2px solid #8a9097; 
   margin-bottom: 8px;
 }
 
-/* כותרות הניווט עם פס הפרדה כסוף מעליהן */
+/* כותרות הניווט - עכשיו בלי שום קו מעליהן */
 .nav-sec {
-  font-size: 13px; 
+  font-size: calc(13px * var(--fz-scale, 1)); 
   font-weight: 700;
   color: #8a9097;
   text-transform: uppercase;
   letter-spacing: 1px;
   padding: 16px 12px 8px;
   margin-top: 8px;
-  border-top: 2px solid #8a9097;
-  position: relative;
 }
-
-/* הסרת הקו המעוצב הישן של הניווט */
-.nav-sec::before { display: none; }
 
 .nav-btn {
   display: flex;
@@ -75,7 +70,7 @@
   padding: 11px 14px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 15px; 
+  font-size: calc(15px * var(--fz-scale, 1)); 
   font-weight: 500;
   color: #a0a5ab;
   background: none;
@@ -130,17 +125,24 @@
   gap: 10px;
 }
 
+/* אופציה א': כותרת דף עם צללית כהה מאחור לבולטות מעל רקע אבן */
 .pt { 
-    font-size: 28px; 
+    font-size: calc(28px * var(--fz-scale, 1)); 
     font-weight: 800; 
     color: #e5e7eb; 
     background: linear-gradient(180deg, #fff 0%, #8a9097 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 2px 5px rgba(0,0,0,0.9);
+    /* הילה שחורה ועמוקה שמפרידה מהאבן */
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.9)) drop-shadow(0 1px 3px rgba(0,0,0,0.9));
 }
-.ps { font-size: 14px; color: #8a9097; margin-top: 2px; }
+
+.ps { 
+  font-size: calc(14px * var(--fz-scale, 1)); 
+  color: #8a9097; 
+  margin-top: 2px; 
+}
 
 .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
 .dash3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
@@ -161,7 +163,7 @@
 .mnb {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 2px; background: none; border: none; color: #8a9097; font-family: 'Heebo', sans-serif;
-  font-size: 12px; cursor: pointer; padding: 4px; transition: color .15s;
+  font-size: calc(10px * var(--fz-scale, 1)); cursor: pointer; padding: 4px; transition: color .15s;
 }
 .mnb.on { color: var(--acc); text-shadow: 0 0 10px var(--acc); }
 
@@ -177,16 +179,19 @@
 .m-drawer-btn {
   display: block; width: 100%; text-align: right; padding: 12px 20px;
   background: none; border: none; color: #a0a5ab; font-family: 'Heebo', sans-serif;
-  font-size: 15px; cursor: pointer; transition: background .15s;
+  font-size: calc(15px * var(--fz-scale, 1)); cursor: pointer; transition: background .15s;
 }
 .m-drawer-btn:hover, .m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
 .m-drawer-sec {
-  font-size: 13px; color: #8a9097; padding: 14px 20px 4px; font-weight: 700;
-  letter-spacing: .5px; border-top: 2px solid #8a9097;
+  font-size: calc(13px * var(--fz-scale, 1)); color: #8a9097; padding: 14px 20px 4px; font-weight: 700;
+  letter-spacing: .5px; border-top: 1px solid #000; position: relative;
+}
+.m-drawer-sec::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(255, 255, 255, 0.08);
 }
 .m-drawer-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px 16px; border-bottom: 2px solid #8a9097; font-weight: 700; font-size: 15px;
+  padding: 12px 20px 16px; border-bottom: 2px solid #8a9097; font-weight: 700; font-size: calc(15px * var(--fz-scale, 1));
 }
 .m-drawer-close { background: none; border: none; color: #a0a5ab; font-size: 22px; cursor: pointer; }
 
@@ -198,7 +203,7 @@
   .dash3   { grid-template-columns: 1fr; }
   .fg-grid { grid-template-columns: 1fr; }
   .ph      { flex-direction: column; align-items: flex-start; }
-  .pt      { font-size: 20px; }
+  .pt      { font-size: calc(20px * var(--fz-scale, 1)); }
 }
 @media (min-width: 769px) {
   #mnav    { display: none !important; }
@@ -206,31 +211,14 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════ */
-/* ── FONT SCALING (הגדלה והקטנה של טקסט) ─────────────────────────────────── */
-.fz-plus .pt { font-size: 34px; }
-.fz-plus .ps { font-size: 16px; }
-.fz-plus .nav-sec { font-size: 14px; }
-.fz-plus .nav-btn, .fz-plus .m-drawer-btn { font-size: 17px; }
-.fz-plus #user-badge-display { font-size: 16px; }
-
-.fz-minus .pt { font-size: 24px; }
-.fz-minus .ps { font-size: 12px; }
-.fz-minus .nav-sec { font-size: 11px; }
-.fz-minus .nav-btn, .fz-minus .m-drawer-btn { font-size: 13px; }
-.fz-minus #user-badge-display { font-size: 12px; }
-
-/* ══════════════════════════════════════════════════════════════════════════ */
 /* ── DESIGN SETTINGS THEMES (מערכת עיצוב ורקעים) ─────────────────────────── */
 
-/* 1. אפשרויות רקע המערכת (Backgrounds) */
 body[data-bg="stone"] {
     /* נשען על רקע האבן המקורי שמוגדר ב-base.css */
 }
-
 body[data-bg="metal"] {
     background: linear-gradient(135deg, #7b838c 0%, #b2b8c0 50%, #51585f 100%) !important;
 }
-
 body[data-bg="carbon"] {
     background: 
       linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
@@ -242,12 +230,10 @@ body[data-bg="carbon"] {
     background-color: #131313 !important;
     background-size: 20px 20px !important;
 }
-
 body[data-bg="dark"] {
     background: #111315 !important;
 }
 
-/* 2. כיבוי הברקות תלת-ממד (Skeuomorphism = Flat Mode) */
 body[data-glow="false"] .sc,
 body[data-glow="false"] .tw,
 body[data-glow="false"] .fc,
@@ -257,7 +243,6 @@ body[data-glow="false"] #bulk-bar {
     border: 1px solid #333 !important;
     background: #1d2024 !important;
 }
-
 body[data-glow="false"] .finp,
 body[data-glow="false"] .sw input,
 body[data-glow="false"] .fsel {
@@ -265,27 +250,18 @@ body[data-glow="false"] .fsel {
     box-shadow: none !important;
     border: 1px solid #444 !important;
 }
-
 body[data-glow="false"] .btn.bp {
     background: var(--acc) !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
     border: none !important;
 }
-
 body[data-glow="false"] .btn.bs {
     background: #4a5057 !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
     border: none !important;
 }
-
 body[data-glow="false"] .sidebar {
     background: #1d2024 !important;
     border-left: 1px solid #333 !important;
-    box-shadow: none !important;
-}
-
-body[data-glow="false"] .nav-sec,
-body[data-glow="false"] .sidebar .logo {
-    border-color: #333 !important;
     box-shadow: none !important;
 }
