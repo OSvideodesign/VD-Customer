@@ -14,22 +14,21 @@
   text-align: center;
 }
 
-/* הדגשות צבע למסגרות של כרטיסיות הסטטיסטיקה */
 .sc.info    { border-color: rgba(59,130,246,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(59,130,246,.2), 0 8px 20px rgba(0,0,0,0.6); }
 .sc.warn    { border-color: rgba(245,158,11,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(245,158,11,.2), 0 8px 20px rgba(0,0,0,0.6); }
 .sc.danger  { border-color: rgba(239,68,68,.6);  box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(239,68,68,.2),  0 8px 20px rgba(0,0,0,0.6); }
 .sc.success { border-color: rgba(16,185,129,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(16,185,129,.2), 0 8px 20px rgba(0,0,0,0.6); }
 .sc.orange  { border-color: rgba(251,146,60,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(251,146,60,.2), 0 8px 20px rgba(0,0,0,0.6); }
 
-/* נקודה 1: הגדלת פונטים בכרטיסיות הסטטיסטיקה */
+/* פונטים מוגדלים בכרטיסיות הסטטיסטיקה */
 .sc-lbl { font-size: 13px; color: #9ca3af; margin-bottom: 6px; }
-.sc-val { font-size: 32px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); } /* מ-28px ל-32px */
+.sc-val { font-size: 32px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
 .sc-sub { font-size: 12px; color: #8a9097; margin-top: 4px; }
 
 /* ── Panel (dashboard cards) ─────────────────────────────────────────────── */
 .tw { overflow: hidden; }
 
-/* נקודה 1: הגדלת כותרות הפאנלים */
+/* כותרות הפאנלים מוגדלות */
 .panel-title {
   padding: 12px 16px;
   border-bottom: 1px solid #111;
@@ -56,7 +55,7 @@
   border-bottom: 1px solid rgba(255,255,255,0.05);
   cursor: pointer;
   transition: background .15s;
-  font-size: 14px; /* נקודה 1: הגדלת פונט בשורות הפאנל */
+  font-size: 14px; /* פונט מוגדל לשורות הפאנל */
 }
 
 .ai:hover       { background: rgba(255,255,255,0.03); }
@@ -69,7 +68,7 @@
 
 table  { width: 100%; border-collapse: collapse; min-width: 520px; }
 
-/* נקודה 1: הגדלת פונט בטבלאות */
+/* הגדלת פונט בטבלאות */
 th {
   padding: 10px 12px;
   text-align: right;
@@ -104,7 +103,7 @@ tr:last-child td { border-bottom: none; }
 
 .sw { position: relative; flex: 1; min-width: 180px; }
 
-/* נקודה 1: הגדלת שדות הטקסט / חיפוש */
+/* שדות טקסט מוגדלים */
 .sw input, .fsel, .finp {
   background: linear-gradient(180deg, #4a5057 0%, #2a2e33 40%, #1d2024 60%, #3a4047 100%);
   border: 1px solid #111;
@@ -178,7 +177,7 @@ textarea.finp    { resize: vertical; min-height: 80px; }
   gap: 6px;
   padding: 8px 16px;
   border-radius: 8px;
-  font-size: 14px; /* נקודה 1: הגדלת פונט כפתורים */
+  font-size: 14px; /* פונט כפתורים מוגדל */
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -190,7 +189,7 @@ textarea.finp    { resize: vertical; min-height: 80px; }
   box-shadow: 0 4px 6px rgba(0,0,0,0.4);
 }
 
-.bp { background: linear-gradient(to bottom, #3b82f6, #1d4ed8); border: 1px solid #1e3a8a; box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 66px rgba(0,0,0,0.4); }
+.bp { background: linear-gradient(to bottom, #3b82f6, #1d4ed8); border: 1px solid #1e3a8a; box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 6px rgba(0,0,0,0.4); }
 .bp:hover { background: linear-gradient(to bottom, #60a5fa, #2563eb); transform: translateY(-1px); }
 .bp:active { transform: translateY(1px); }
 
@@ -220,7 +219,7 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 }
 
 .fch  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
-.fdesc { font-size: 14px; color: #d1d5db; margin-bottom: 10px; line-height: 1.5; } /* הגדלה */
+.fdesc { font-size: 14px; color: #d1d5db; margin-bottom: 10px; line-height: 1.5; } /* מוגדל */
 .fmeta { display: flex; gap: 10px; flex-wrap: wrap; }
 .fmeta span { font-size: 12px; color: #9ca3af; }
 
@@ -284,7 +283,7 @@ textarea.finp    { resize: vertical; min-height: 80px; }
   z-index: 1;
 }
 
-.mhd h2  { font-size: 18px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); } /* הגדלה */
+.mhd h2  { font-size: 18px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); } /* מוגדל */
 .mbody   { padding: 20px; }
 .mft     { padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 8px; justify-content: flex-end; }
 
@@ -294,14 +293,14 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 
 .flbl {
   display: block;
-  font-size: 13px; /* הגדלה */
+  font-size: 13px; /* מוגדל */
   font-weight: 600;
   color: #9ca3af;
   margin-bottom: 4px;
 }
 
 .stit {
-  font-size: 15px; /* הגדלה */
+  font-size: 15px; /* מוגדל */
   font-weight: 700;
   color: #9ca3af;
   margin-bottom: 12px;
