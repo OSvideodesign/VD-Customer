@@ -134,14 +134,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* מחיקת פקודת ההיפוך והריווח השגויים שעשיתי! הכותרת תהיה בימין */
   margin-bottom: 20px;
+  /* כאן הגדלתי את הריווח ל-60 פיקסלים כדי לדחוף עוד שמאלה */
+  padding-right: 60px; 
   flex-wrap: wrap;
   gap: 10px;
 }
 
 .pt { 
-    font-size: calc(28px * var(--fz-scale, 1)); 
+    /* כאן הגדלתי את הפונט הבסיסי ל-34 פיקסלים */
+    font-size: calc(34px * var(--fz-scale, 1)); 
     font-weight: 800; 
     color: #e5e7eb; 
     background: linear-gradient(180deg, #fff 0%, #8a9097 100%);
@@ -212,8 +214,8 @@
   .stats   { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash3   { grid-template-columns: 1fr; }
   .fg-grid { grid-template-columns: 1fr; }
-  .ph      { flex-direction: column; align-items: flex-start; }
-  .pt      { font-size: calc(20px * var(--fz-scale, 1)); }
+  .ph      { flex-direction: column; align-items: flex-start; padding-right: 0; }
+  .pt      { font-size: calc(24px * var(--fz-scale, 1)); }
 }
 @media (min-width: 769px) {
   #mnav    { display: none !important; }
