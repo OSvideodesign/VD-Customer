@@ -311,14 +311,15 @@
   grid-template-columns: repeat(3, 1fr); 
   gap: 20px;
   align-items: start;
-  margin-top: 20px; 
+  margin-top: 20px; /* מוריד את הפאנלים למטה לטובת הכותרת */
 }
 
 .settings-panel {
   padding: 22px;
-  min-height: 520px; 
+  min-height: 520px; /* גובה אחיד לפאנלים בשורה */
 }
 
+/* התאמה למסכים קטנים/מובייל - חזרה למבנה טור */
 @media (max-width: 1100px) {
   .settings-grid {
     grid-template-columns: 1fr;
@@ -328,15 +329,45 @@
   }
 }
 
-/* ── תיקון אייקונים: צביעה בצבע הנושא (סעיף 5) ────────────────────────────── */
-.pt::before, 
-.stit::before, 
-.ph span[style*="font-size:20px"], 
-.ph .pt + span,
-.ph div div:first-child::before {
+/* ── תיקון סופי לאייקונים של הכותרות (סעיף 5) ─────────────────────────────── */
+/* יצירת מקום לאייקון ועיצובו */
+.ph .pt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ph .pt::after {
+  font-size: 28px;
+  color: var(--acc); /* שימוש בצבע הנושא הנבחר */
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+  opacity: 1 !important;
+  display: inline-block;
+}
+
+/* הגדרת האייקון הספציפי לכל דף */
+#pg-dashboard .pt::after  { content: "🏠"; }
+#pg-customers .pt::after  { content: "👥"; }
+#pg-faults    .pt::after  { content: "🔧"; }
+#pg-warranties .pt::after { content: "🛡️"; }
+#pg-debts     .pt::after  { content: "💰"; }
+#pg-notes     .pt::after  { content: "📝"; }
+#pg-archive   .pt::after  { content: "✅"; }
+#pg-reports   .pt::after  { content: "📈"; }
+#pg-settings  .pt::after  { content: "⚙️"; }
+#pg-log       .pt::after  { content: "📋"; }
+
+/* צביעת אייקונים בתוך פאנלים (stit) */
+.stit::before {
     color: var(--acc) !important;
-    opacity: 1 !important;
-    filter: none !important;
+    margin-left: 8px;
+}
+
+/* ── Perms grid in user modal ─────────────────────────────────────────────── */
+#u-perms-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 /* ── User badge in sidebar ────────────────────────────────────────────────── */
