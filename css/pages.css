@@ -19,23 +19,24 @@
   border-radius: 24px; /* פינות מעוגלות יותר */
   padding: 40px;
   width: 100%;
-  max-width: 420px; /* הגדלנו את רוחב התיבה (נקודה 1) */
+  max-width: 420px;
   text-align: center;
   box-shadow: 0 20px 50px rgba(0,0,0,0.7); /* צללית חזקה ועמוקה */
 }
 
-/* הגדלת הלוגו הראשי (נקודה 2) */
+/* הגדלת הלוגו הראשי עוד קצת (נקודה 1) */
 .login-header-img {
   width: 100%;
-  max-width: 300px;
-  margin: 0 auto 10px; /* צמצמנו את המרווח התחתון */
+  max-width: 370px; /* הגדלנו מ-300 ל-370 */
+  margin: 0 auto 5px; /* צמצמנו עוד את המרווח התחתון */
   display: block;
 }
 
-/* עיצוב גרפיקת הטקסט "ניהול לקוחות" (נקודה 3) */
+/* הגדלת "ניהול לקוחות" לאותו רוחב של הלוגו (נקודה 2) */
 .login-sub-text-img {
-  height: 22px; /* גובה קבוע לטקסט */
-  width: auto;
+  width: 100%; /* תופס את כל הרוחב הזמין */
+  max-width: 370px; /* אחיד עם הלוגו שמעליו */
+  height: auto; /* שומר על פרופורציות (ביטלנו גובה קבוע) */
   margin: 0 auto 35px; /* מרווח גדול יותר לפני המשתמשים */
   display: block;
   opacity: 0.9;
@@ -48,8 +49,7 @@
   margin-bottom: 20px;
 }
 
-/* עיצוב גרפי של כפתורי המשתמשים (נקודה 4) */
-/* (הערה: חלק מהעיצוב מוזרק ב-JS בקובץ auth.js, כאן אנו מגדירים את הכללים הבסיסיים) */
+/* עיצוב גרפי של כפתורי המשתמשים */
 #user-btns button {
   position: relative;
   overflow: hidden;
@@ -85,7 +85,7 @@
   position: relative;
   z-index: 2;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* פונט נקי יותר לאות */
-  font-weight: 300; /* דק יותר, כמו בתמונה */
+  font-weight: 300; /* דק יותר */
   text-shadow: 0 2px 10px rgba(0,0,0,0.3); /* צללית עדינה לאות */
 }
 
