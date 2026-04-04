@@ -135,14 +135,13 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  /* כאן הגדלתי את הריווח ל-60 פיקסלים כדי לדחוף עוד שמאלה */
-  padding-right: 60px; 
+  /* כאן הוגדל הריווח ל-100 פיקסלים לדחיפה משמעותית שמאלה */
+  padding-right: 100px; 
   flex-wrap: wrap;
   gap: 10px;
 }
 
 .pt { 
-    /* כאן הגדלתי את הפונט הבסיסי ל-34 פיקסלים */
     font-size: calc(34px * var(--fz-scale, 1)); 
     font-weight: 800; 
     color: #e5e7eb; 
