@@ -12,7 +12,7 @@
   padding: 20px;
 }
 
-/* ── המסגרת המתכתית המעודכנת (כהה יותר וצרה יותר) ── */
+/* ── המסגרת המתכתית (צמצום גובה) ── */
 .login-card {
   /* רקע מתכת מוברשת כהה ועמוק יותר עם ברק אלכסוני */
   background: linear-gradient(160deg, 
@@ -23,55 +23,57 @@
     #2a2e33 100%
   );
   
-  border: 2px solid #a0a5ab; /* גבול כסוף קצת יותר מעודן שיתאים לגודל */
+  border: 2px solid #a0a5ab;
   border-radius: 20px;
   
-  /* הקטנת המסגרת (צרה וארוכה כמו בתמונה) */
-  padding: 20px; 
+  /* צמצום ה-padding הכללי כדי להקטין גובה */
+  padding: 15px; /* הוקטן מ-20px */
   width: 100%;
-  max-width: 280px; /* הקטנו משמעותית את הרוחב המקסימלי */
+  max-width: 280px;
   
   text-align: center;
   overflow: hidden;
   
   box-shadow: 
-    inset 0 1px 3px rgba(255, 255, 255, 0.3), /* הברקה פנימית עדינה */
-    inset 0 -2px 5px rgba(0, 0, 0, 0.6),      /* הצללה פנימית תחתונה חזקה */
-    0 25px 50px rgba(0, 0, 0, 0.95);          /* צללית חיצונית חזקה מאוד לעומק */
+    inset 0 1px 3px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.6),
+    0 25px 50px rgba(0, 0, 0, 0.95);
 }
 
-/* ── הלוגו הראשי (נראה גדול יותר בזכות הפרופורציות החדשות) ── */
+/* ── הלוגו הראשי (צמצום ריווח תחתון) ── */
 .login-header-img {
-  width: calc(100% + 40px); /* מותח את הלוגו מעבר לריווח הפנימי */
+  /* התאמת השוליים השליליים ל-padding החדש של המסגרת */
+  width: calc(100% + 30px); /* הותאם מ-40px */
   max-width: none;
-  margin-left: -20px;
-  margin-right: -20px;
-  margin-top: -20px;
-  margin-bottom: 25px; /* מרווח גדול יותר מתחת ללוגו */
+  margin-left: -15px; /* הותאם מ-20px */
+  margin-right: -15px; /* הותאם מ-20px */
+  margin-top: -15px; /* הותאם מ-20px */
+  
+  margin-bottom: 10px; /* צמצום משמעותי מ-25px כדי להקטין גובה */
   display: block;
   
   border-top-left-radius: 18px; 
   border-top-right-radius: 18px;
 }
 
-/* גרפיקת "ניהול לקוחות" */
+/* גרפיקת "ניהול לקוחות" (צמצום ריווח) */
 .login-sub-text-img {
   width: 100%;
-  max-width: 180px; /* הקטנו מעט כדי שיתאים לרוחב הצר של הכרטיס */
+  max-width: 180px;
   height: auto;
-  margin: 0 auto 30px; /* מרווח לפני הכפתורים */
+  margin: 0 auto 15px; /* צמצום מ-30px לפני הכפתורים */
   display: block;
-  opacity: 0.85; /* שקיפות קלה להשתלבות ברקע הכהה */
+  opacity: 0.85;
 }
 
 #user-btns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px; /* רווח מעט קטן יותר שיתאים למסגרת הצרה */
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 15px; /* צמצום מ-20px */
 }
 
-/* ── כפתורי משתמשים - אפקט זכוכית/פלסטיק תלת ממדי מבריק ── */
+/* ── כפתורי משתמשים - אפקט זכוכית/פלסטיק תלת ממדי מבריק (צמצום גובה) ── */
 .login-user-btn {
   background-color: #3b4046;
   background-image: linear-gradient(to bottom, 
@@ -83,7 +85,10 @@
   
   border: 1px solid #111;
   border-radius: 12px;
-  padding: 14px 6px; /* התאמת הריווח הפנימי בכפתור */
+  
+  /* צמצום ה-padding האנכי בכפתור */
+  padding: 10px 6px; /* הוקטן מ-14px 6px */
+  
   cursor: pointer;
   position: relative;
   display: flex;
@@ -109,9 +114,9 @@
 .login-user-icon {
   font-family: 'Heebo', sans-serif;
   font-weight: 700;
-  font-size: 32px; /* הותאם לגודל הכפתור החדש */
+  font-size: 32px;
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 2px; /* צמצום מ-4px */
   text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
@@ -130,16 +135,16 @@
 #pass-label {
   font-size: 13px;
   font-weight: 600;
-  color: #a0a5ab; /* צבע טקסט בהיר יותר שייראה על הרקע הכהה */
+  color: #a0a5ab;
   text-shadow: 0 1px 1px rgba(0,0,0,0.8);
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* צמצום מ-10px */
 }
 
 .login-pass-inp {
   text-align: center;
   font-size: 18px;
   letter-spacing: 4px;
-  margin-bottom: 14px;
+  margin-bottom: 10px; /* צמצום מ-14px */
   background: rgba(0, 0, 0, 0.5); 
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
@@ -149,7 +154,7 @@
 
 .login-full-btn.btn {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* צמצום מ-10px */
   background-color: #3b4046;
   background-image: linear-gradient(to bottom, 
     rgba(255,255,255,0.25) 0%, 
@@ -159,7 +164,7 @@
   );
   border: 1px solid #111;
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px; /* צמצום מ-12px */
   color: #fff !important;
   font-size: 15px;
   font-weight: 700;
@@ -180,10 +185,10 @@
 }
 
 #pass-err {
-  color: #ff6b6b; /* אדום בהיר יותר שייראה טוב על הרקע הכהה */
+  color: #ff6b6b;
   font-size: 13px;
   font-weight: 700;
-  margin-top: 8px;
+  margin-top: 5px; /* צמצום מ-8px */
   display: none;
 }
 
