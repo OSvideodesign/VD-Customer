@@ -21,25 +21,17 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
-/* חיבור האייקון לאנדרואיד ולהתקנה על שולחן העבודה (PWA Manifest) עם ?v=4 */
+/* PWA Manifest */
 const _manifest = {
-  name: "Video Design", 
-  short_name: "VD", 
+  name: "Video Design CRM", 
+  short_name: "VD CRM", 
   start_url: ".", 
   display: "standalone",
   background_color: "#1d2024", 
   theme_color: "#1d2024",
   icons: [
-    {
-      "src": "app-icon-192.jpg?v=4",
-      "sizes": "192x192",
-      "type": "image/jpeg"
-    },
-    {
-      "src": "app-icon-512.jpg?v=4",
-      "sizes": "512x512",
-      "type": "image/jpeg"
-    }
+    { "src": "app-icon-192.jpg?v=4", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "app-icon-512.jpg?v=4", "sizes": "512x512", "type": "image/jpeg" }
   ]
 };
 const _blob = new Blob([JSON.stringify(_manifest)], {type:'application/json'});
@@ -49,7 +41,7 @@ _link.href   = URL.createObjectURL(_blob);
 document.head.appendChild(_link);
 </script>
 </head>
-<body>
+<body data-bg="stone" data-glow="true">
 
 <div id="login-screen">
   <div class="login-card">
@@ -99,6 +91,15 @@ document.head.appendChild(_link);
     <button class="m-drawer-btn" id="m-drawer-log" style="display:none" onclick="navD('log')">📋 לוג שינויים</button>
     <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer()">🔍 חיפוש גלובלי</button>
     <button class="m-drawer-btn m-drawer-logout" onclick="logout()">🚪 התנתק</button>
+    
+    <div style="text-align:center; margin-top:20px; padding:10px;">
+      <div style="font-size:11px; color:#8a9097; margin-bottom:6px;">גודל טקסט</div>
+      <div style="display:flex; justify-content:center; gap:8px;">
+        <button class="btn bs btn-sm" onclick="setFontScale(-1)">A-</button>
+        <button class="btn bs btn-sm" onclick="setFontScale(0)">A</button>
+        <button class="btn bs btn-sm" onclick="setFontScale(1)">A+</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -123,7 +124,7 @@ document.head.appendChild(_link);
     <div id="user-badge" style="display:none;"></div>
   </div>
   <nav class="nav">
-    <div style="padding:8px 0 12px">
+    <div class="sidebar-search-div">
       <button onclick="openGlobalSearch()" class="sidebar-search-btn">
         <span>🔍</span><span>חיפוש גלובלי...</span>
       </button>
@@ -142,10 +143,16 @@ document.head.appendChild(_link);
     <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
     <button class="nav-btn"    id="nb-log"        onclick="nav('log')" style="display:none">📋 לוג שינויים</button>
     <button class="nav-btn nav-btn-logout"         onclick="logout()">🚪 התנתק</button>
-    <div style="text-align:center; margin-top:30px; padding-bottom: 20px;">
-      <div id="user-badge-display"></div>
-    </div>
   </nav>
+
+  <div id="user-badge-display-wrapper">
+    <div id="user-badge-display"></div>
+    <div style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
+      <button class="btn bs btn-sm" onclick="setFontScale(-1)" title="הקטן טקסט">A-</button>
+      <button class="btn bs btn-sm" onclick="setFontScale(0)" title="טקסט רגיל">A</button>
+      <button class="btn bs btn-sm" onclick="setFontScale(1)" title="הגדל טקסט">A+</button>
+    </div>
+  </div>
 </aside>
 
 <main class="main">
@@ -205,28 +212,6 @@ document.head.appendChild(_link);
           <button onclick="nav('notes')" class="panel-link-btn" style="color:var(--yel)">כל ההערות ›</button>
         </div>
         <div class="panel-body" id="pan-notes-reminder"></div>
-      </div>
-    </div>
-    <div class="tw" style="margin-top:16px">
-      <div class="gcal-header">
-        <div class="gcal-title">📅 יומן שבועי — Google Calendar</div>
-        <div class="gcal-nav">
-          <button class="btn bs btn-sm" onclick="wkPrev()">&#8249; קודם</button>
-          <button class="btn bs btn-sm" onclick="wkToday()">היום</button>
-          <button class="btn bs btn-sm" onclick="wkNext()">הבא &#8250;</button>
-          <span id="wk-label"></span>
-        </div>
-      </div>
-      <div id="gcal-signin">
-        <div class="gcal-signin-text">התחבר עם Google כדי לראות את היומן</div>
-        <button onclick="gcalSignIn()" class="gcal-signin-btn">
-          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.2l6.6-6.6C35.4 2.4 30.1 0 24 0 14.8 0 6.9 5.4 3 13.3l7.7 6C12.5 13.2 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-16.9z"/><path fill="#FBBC05" d="M10.7 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7L2.6 13.3A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.6 10.6l8.1-5.9z"/><path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.4l-7.4-5.7c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.3-9.8l-7.7 6C6.9 42.6 14.8 48 24 48z"/></svg>
-          כניסה עם Google
-        </button>
-      </div>
-      <div id="gcal-grid"></div>
-      <div id="gcal-out">
-        <button onclick="gcalSignOut()" class="gcal-signout-btn">התנתק מ-Google</button>
       </div>
     </div>
   </div><div class="pg" id="pg-customers">
@@ -304,7 +289,6 @@ document.head.appendChild(_link);
       <div class="sw"><input type="text" id="q-log" placeholder="חפש..." oninput="renderLog()"><span class="si">🔍</span></div>
       <select class="fsel" id="f-log-user" onchange="renderLog()">
         <option value="">כל המשתמשים</option>
-        <option value="רז">רז</option><option value="אופיר">אופיר</option><option value="גלאל">גלאל</option><option value="מוטי">מוטי</option>
       </select>
       <select class="fsel" id="f-log-type" onchange="renderLog()">
         <option value="">כל הפעולות</option>
@@ -334,19 +318,40 @@ document.head.appendChild(_link);
       <div class="tw"><div class="panel-title">📋 סטטוס משימות</div>    <div id="rep-status"      class="panel-body"></div></div>
     </div>
   </div><div class="pg" id="pg-settings">
+    
+    <div class="tw" id="s-design-panel" style="padding:22px;margin-bottom:16px">
+      <div class="stit">🎨 עיצוב והתאמה אישית</div>
+      <div class="fgrid">
+        <div><label class="flbl">רקע המערכת</label>
+          <select class="finp" id="ds-bg" onchange="applyDesignSettings()">
+            <option value="stone">🪨 אבן טבעית (ברירת מחדל)</option>
+            <option value="metal">⚙️ מתכת מוברשת</option>
+            <option value="carbon">⬛ קרבון ספורטיבי</option>
+            <option value="dark">🌙 שחור חלק ונקי</option>
+          </select>
+        </div>
+        <div><label class="flbl">צבע נושא מרכזי</label>
+          <input class="finp" type="color" id="ds-color" value="#3b82f6" onchange="applyDesignSettings()" style="height:42px;padding:4px;cursor:pointer">
+        </div>
+        <div class="fg1" style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer" onclick="document.getElementById('ds-glow').click()">
+          <input type="checkbox" id="ds-glow" onchange="applyDesignSettings()" checked style="width:18px;height:18px;cursor:pointer">
+          <label class="flbl" style="margin-bottom:0;cursor:pointer">הפעל אפקט הברקות תלת-ממד (Skeuomorphism)</label>
+        </div>
+      </div>
+    </div>
+
     <div class="tw" style="padding:22px">
       <div class="stit">פרטי החברה</div>
       <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
       <div style="margin-bottom:12px"><label class="flbl">טלפון</label>    <input class="finp" id="s-phone"   placeholder="050-0000000"></div>
       <div style="margin-bottom:20px"><label class="flbl">מייל שולח</label><input class="finp" type="email" id="s-email" placeholder="info@videodesign.co.il"></div>
-      <div class="stit">יומן Google</div>
-      <div style="margin-bottom:6px"><label class="flbl">כתובת Gmail</label><input class="finp" type="email" id="s-gcal" placeholder="yourname@gmail.com"></div>
-      <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
-      <button class="btn bp" onclick="saveSettings()">💾 שמור הגדרות</button>
+      <button class="btn bp" onclick="saveSettings()">💾 שמור הגדרות חברה</button>
+      
       <div class="stit" style="margin-top:24px">🔔 התראות</div>
       <div style="font-size:12px;color:var(--tx3);margin-bottom:12px">קבל התראה בטלפון כשמתווספת משימה חדשה</div>
       <button class="btn bs" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
     </div>
+    
     <div class="tw" id="s-users-panel" style="padding:22px;display:none;margin-top:16px">
       <div class="stit">👥 ניהול משתמשים</div>
       <div id="s-users-list" style="margin-bottom:16px"></div>
@@ -518,6 +523,56 @@ document.head.appendChild(_link);
     </div>
   </div>
 </div>
+
+<script>
+  // שינוי גודל פונט
+  function setFontScale(direction) {
+    document.body.classList.remove('fz-minus', 'fz-plus');
+    if (direction < 0) document.body.classList.add('fz-minus');
+    if (direction > 0) document.body.classList.add('fz-plus');
+    localStorage.setItem('vd_crm_font', direction);
+  }
+
+  // שמירת והחלת הגדרות עיצוב
+  function applyDesignSettings() {
+    const bg = document.getElementById('ds-bg').value;
+    const color = document.getElementById('ds-color').value;
+    const glow = document.getElementById('ds-glow').checked;
+
+    // החלת הצבע המרכזי למשתנה ה-CSS
+    document.documentElement.style.setProperty('--acc', color);
+    
+    // החלת רקעים ואפקט תלת ממד ל-body
+    document.body.setAttribute('data-bg', bg);
+    document.body.setAttribute('data-glow', glow ? 'true' : 'false');
+
+    // שמירה בדפדפן
+    localStorage.setItem('vd_crm_design', JSON.stringify({ bg, color, glow }));
+  }
+
+  // טעינת הגדרות עם פתיחת המערכת
+  window.addEventListener('DOMContentLoaded', () => {
+    // טעינת פונט
+    const savedFont = localStorage.getItem('vd_crm_font');
+    if (savedFont !== null) setFontScale(parseInt(savedFont));
+
+    // טעינת עיצוב
+    const savedDesign = localStorage.getItem('vd_crm_design');
+    if (savedDesign) {
+      try {
+        const d = JSON.parse(savedDesign);
+        if (document.getElementById('ds-bg')) {
+          document.getElementById('ds-bg').value = d.bg;
+          document.getElementById('ds-color').value = d.color;
+          document.getElementById('ds-glow').checked = d.glow;
+        }
+        document.documentElement.style.setProperty('--acc', d.color);
+        document.body.setAttribute('data-bg', d.bg);
+        document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
+      } catch (e) {}
+    }
+  });
+</script>
 
 <script type="module" src="js/main.js"></script>
 
