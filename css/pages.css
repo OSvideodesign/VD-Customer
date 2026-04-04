@@ -8,11 +8,17 @@
   z-index: 10000; /* מעל הכל באייפון */
 }
 
+/* השורה שמציגה את התפריט כשהוא נפתח */
+#m-drawer.open {
+  display: block;
+}
+
 #m-drawer-bg { 
     position: absolute; 
     inset: 0; 
     background: rgba(0,0,0,.7); 
     backdrop-filter: blur(4px);
+    cursor: pointer;
 }
 
 #m-drawer-panel {
@@ -161,7 +167,7 @@
 
 .login-full-btn.btn:active {
   transform: translateY(3px);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 3px 6px rgba(0,0,0,0.5);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 3px 6px rgba(0,0,0,0.5);
 }
 
 #pass-err {
