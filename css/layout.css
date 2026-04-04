@@ -14,13 +14,15 @@
   display: flex;
   flex-direction: column;
   z-index: 100;
-  overflow: hidden; /* מונע סקרול מיותר על כל הבר */
+  overflow: hidden;
 }
 
-/* אזור הלוגו בתפריט */
-.logo {
-  padding: 20px 16px 16px;
+/* אזור הלוגו בתפריט - עם הפס הכסוף בתחתית */
+.sidebar .logo {
+  padding: 20px 16px 20px;
   text-align: center;
+  border-bottom: 2px solid #8a9097; /* הקו החסר מתחת ללוגו הוחזר! */
+  box-shadow: 0 1px 0 rgba(0,0,0,0.5);
 }
 
 .logo h1 {
@@ -42,25 +44,12 @@
 .nav {
   flex: 1;
   padding: 10px;
-  overflow-y: auto; /* סקרול רק בתוך אזור הכפתורים אם צריך */
-  padding-bottom: 70px; /* מקום לפאנל המשתמש התחתון */
-}
-
-/* נקודה 1: קווי הפרדה כסופים בתפריט */
-.sidebar-logo-div {
-    border-bottom: 1px solid rgba(138, 144, 151, 0.4);
-    box-shadow: 0 1px 0 rgba(0,0,0,0.5);
-    margin-bottom: 5px;
-}
-
-.sidebar-search-div {
-    padding: 10px 0 15px;
-    border-bottom: 1px solid rgba(138, 144, 151, 0.4);
-    box-shadow: 0 1px 0 rgba(0,0,0,0.5);
+  overflow-y: auto;
+  padding-bottom: 70px;
 }
 
 .nav-sec {
-  font-size: 11px;
+  font-size: 13px; /* הגדלנו את כותרות הניווט (ניהול, דוחות...) */
   font-weight: 700;
   color: #8a9097;
   text-transform: uppercase;
@@ -74,11 +63,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 14px; /* ריווח מוגדל */
+  padding: 11px 14px;
   border-radius: 8px;
   cursor: pointer;
-  /* נקודה 2: הגדלת הפונט */
-  font-size: 15px; 
+  font-size: 15px; /* פונט מוגדל לכפתורי הניווט */
   font-weight: 500;
   color: #a0a5ab;
   background: none;
@@ -104,12 +92,11 @@
   margin-top: 20px;
 }
 
-/* נקודה 4: השבת שם המשתמש בתחתית */
 #user-badge-display {
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 218px; /* 220 פחות הגבול */
+    width: 218px; 
     background: linear-gradient(0deg, #1d2024 0%, #2a2e33 100%);
     border-top: 1px solid #111;
     box-shadow: 0 -1px 0 rgba(255,255,255,0.05);
@@ -129,8 +116,7 @@
   min-height: 100vh;
   width: calc(100% - 220px);
   box-sizing: border-box;
-  /* נקודה 3: רקע כהה לאזור התוכן לשיפור נראות */
-  background: linear-gradient(135deg, #111315 0%, #0a0e10 100%);
+  /* הוסר הרקע השחור מכאן! עכשיו הרקע של האבן שהגדרת קודם יחזור להיראות בבירור */
 }
 
 /* ── Pages ────────────────────────────────────────────────────────────────── */
@@ -147,11 +133,11 @@
   gap: 10px;
 }
 
-/* נקודה 3: כותרת כסופה ומבריקה */
+/* כותרת הדף הראשית מוגדלת ומוארת */
 .pt { 
-    font-size: 26px; /* הגדלה קלה */
+    font-size: 28px; /* הגדלנו מ-26 ל-28 */
     font-weight: 800; 
-    color: #e5e7eb; /* טקסט בהיר מאוד */
+    color: #e5e7eb; 
     background: linear-gradient(180deg, #fff 0%, #8a9097 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -159,7 +145,7 @@
     text-shadow: 0 2px 5px rgba(0,0,0,0.9);
 }
 
-.ps { font-size: 13px; color: #8a9097; margin-top: 2px; }
+.ps { font-size: 14px; color: #8a9097; margin-top: 2px; }
 
 /* ── Stats grid ───────────────────────────────────────────────────────────── */
 .stats {
@@ -215,7 +201,7 @@
   border: none;
   color: #8a9097;
   font-family: 'Heebo', sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   cursor: pointer;
   padding: 4px;
   transition: color .15s;
@@ -266,12 +252,11 @@
 .m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
 
 .m-drawer-sec {
-  font-size: 11px;
+  font-size: 13px;
   color: #8a9097;
   padding: 14px 20px 4px;
   font-weight: 700;
   letter-spacing: .5px;
-  /* פס כסוף שמפריד גם בתפריט הצד במובייל */
   border-top: 2px solid #8a9097;
 }
 
@@ -286,7 +271,7 @@
   .fg-grid { grid-template-columns: 1fr; }
 
   .ph      { flex-direction: column; align-items: flex-start; }
-  .pt      { font-size: 18px; }
+  .pt      { font-size: 20px; }
 }
 
 @media (min-width: 769px) {
