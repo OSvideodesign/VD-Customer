@@ -311,15 +311,14 @@
   grid-template-columns: repeat(3, 1fr); 
   gap: 20px;
   align-items: start;
-  margin-top: 20px; /* מוריד את הפאנלים למטה לטובת הכותרת */
+  margin-top: 20px; 
 }
 
 .settings-panel {
   padding: 22px;
-  min-height: 520px; /* גובה אחיד לפאנלים בשורה */
+  min-height: 520px; 
 }
 
-/* התאמה למסכים קטנים/מובייל - חזרה למבנה טור */
 @media (max-width: 1100px) {
   .settings-grid {
     grid-template-columns: 1fr;
@@ -329,48 +328,55 @@
   }
 }
 
-/* ── תיקון אייקונים: שימוש בתווים במקום תמונות חסומות (סעיף 5) ──────────────── */
-.ph .pt {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+/* ── תיקון קריטי לאייקונים (פתרון בעיית הכפילות והריבועים הלבנים) ────────────────── */
 
-/* איפוס הגדרות קודמות שגרמו לריבועים לבנים */
-.ph .pt::before {
+/* 1. ביטול מוחלט של הריבועים הלבנים (Pseudo-elements הישנים) */
+.ph .pt::before, 
+.ph div div:first-child::before,
+.ph span[style*="font-size:20px"]::before {
+    display: none !important;
+    content: none !important;
     background: none !important;
     mask: none !important;
     -webkit-mask: none !important;
-    width: auto !important;
-    height: auto !important;
-    font-size: 28px;
-    color: var(--acc) !important;
 }
 
-/* הגדרת אייקון ספציפי לכל כותרת דף */
-#pg-dashboard .pt::before { content: "🏠"; }
-#pg-customers .pt::before { content: "👥"; }
-#pg-faults    .pt::before { content: "🔧"; }
-#pg-warranties .pt::before { content: "🛡️"; }
-#pg-debts     .pt::before { content: "💰"; }
-#pg-notes     .pt::before { content: "📝"; }
-#pg-archive   .pt::before { content: "✅"; }
-#pg-log       .pt::before { content: "📋"; }
-#pg-reports   .pt::before { content: "📈"; }
-#pg-settings  .pt::before { content: "⚙️"; }
+/* 2. הגדרת מיקום גמיש לכותרת ולאייקון */
+.ph .pt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-/* אייקונים בתוך פאנלים */
+/* 3. יצירת האייקון החדש והיחיד */
+.ph .pt::after {
+  font-size: 28px;
+  color: var(--acc);
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+  opacity: 1 !important;
+  display: inline-block;
+  font-family: inherit; /* שימוש בתווי טקסט רגילים למניעת באגים של תמונה */
+}
+
+/* 4. התאמת אייקון ספציפי לכל דף לפי ה-ID של ה-PG */
+#pg-dashboard .pt::after  { content: "🏠"; }
+#pg-customers .pt::after  { content: "👥"; }
+#pg-faults    .pt::after  { content: "🔧"; }
+#pg-warranties .pt::after { content: "🛡️"; }
+#pg-debts     .pt::after  { content: "💰"; }
+#pg-notes     .pt::after  { content: "📝"; }
+#pg-archive   .pt::after  { content: "✅"; }
+#pg-reports   .pt::after  { content: "📈"; }
+#pg-settings  .pt::after  { content: "⚙️"; }
+#pg-log       .pt::after  { content: "📋"; }
+
+/* צביעת אייקונים בתוך פאנלים (stit) - גם פה מבטלים ריבועים ישנים */
 .stit::before {
     color: var(--acc) !important;
     margin-left: 8px;
-    font-size: 1.1em;
-}
-
-/* ── Perms grid in user modal ─────────────────────────────────────────────── */
-#u-perms-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+    background: none !important;
+    mask: none !important;
+    -webkit-mask: none !important;
 }
 
 /* ── User badge in sidebar ────────────────────────────────────────────────── */
