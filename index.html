@@ -143,10 +143,13 @@ document.head.appendChild(_link);
     <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
     <button class="nav-btn"    id="nb-log"        onclick="nav('log')" style="display:none">📋 לוג שינויים</button>
     <button class="nav-btn nav-btn-logout"         onclick="logout()">🚪 התנתק</button>
+    
+    <div style="text-align:center; margin-top:30px; padding-bottom: 20px;">
+      <div id="user-badge-display"></div>
+    </div>
   </nav>
 
   <div id="user-badge-display-wrapper">
-    <div id="user-badge-display"></div>
     <div style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
       <button class="btn bs btn-sm" onclick="setFontScale(-1)" title="הקטן טקסט">A-</button>
       <button class="btn bs btn-sm" onclick="setFontScale(0)" title="טקסט רגיל">A</button>
@@ -353,7 +356,7 @@ document.head.appendChild(_link);
     </div>
     
     <div class="tw" id="s-users-panel" style="padding:22px;display:none;margin-top:16px">
-      <div class="stit">👥 ניהול משתמשים</div>
+      <div class="stit">👥 ניהול משתמשים והרשאות</div>
       <div id="s-users-list" style="margin-bottom:16px"></div>
       <button class="btn bs" onclick="openAddUser()">➕ הוסף משתמש</button>
     </div>
