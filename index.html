@@ -9,6 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="וידאו דיזיין">
 <meta name="theme-color" content="#0a0e1a">
 <title>לקוחות וידאו דיזיין</title>
+
+<link rel="icon" href="app-icon.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="app-icon.jpg">
+
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
@@ -17,12 +21,20 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
-/* PWA manifest + apple-touch-icon injected at runtime (must run before module scripts) */
+/* חיבור האייקון לאנדרואיד ולהתקנה על שולחן העבודה (PWA Manifest) */
 const _manifest = {
-  name:"Video Design CRM", short_name:"VD CRM", start_url:".", display:"standalone",
-  background_color:"#0a0e1a", theme_color:"#0a0e1a",
-  icons:[
-    {"src":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAABEB0lEQVR4nO19d3xUVdr/uXd6MiG9J4T0nkDovYMCQpQSBHXFVVzd11XRFxc/q7vqR0B0V8UGuC8qCEivS+8ECCAlhDRITyY9mUza9Ht/fzy/e97DJLlzZzIJ+vvN9498JjP3nvqc5zznaQchJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xwwgknnHDCCSeccMIJJ5xw4v9l0DRNURRCiKIomqbhg8NrETu8RCd+CxCJRAghlmVFIhFQDwbLso+oUU78fkDTtFQqlUgk+BuxWGxBSY6pyOElOvFbAMMwsGFFRUUtXrw4PDzcZDIhhGiaFoud244T1gByj1KpXLt2bUNDw7vvvgt7mUgkchKQE9ZBURRFUSEhIZmZmSzLnj171svLi6IokI0cCOcW9v8mQPphGMbV1ZVlWTc3N5lMBjK1Y89iTgJyMPriqGxrXRRFMQyDEILdymw2UxTVR4cvvu0Q9lGGYcRisdFoBK7Isiy0G5ooBCKRCGQ63DEonGVZi16JxWJ4hmEYqAgWDfzbU/mg8IBhshgp/umEBlAc4F/osn3DDSKq0WiEz7YW0nVA+GHROzzC8BcPIIg+ULLZbMYvwl9cIzk7wsHHgaBuoGKsV4CjoE39hLeguWKxGKikKzuFL4F6EEcWAnsFowYnVYoAzyuwPHDDEEJSqRS62Rsxk2EYmDDhr0BLYDRsZWD4Fei7xVjBsJBThtcMQogUqOF7OyQkvpGiadpkMtE0TWQL7SOZkEAyYllWIpHo9XpEEKXBYOhKGWT3MGCMoA09lQ/NM5vNti5iAJYYRCKRyWSCE68dgBFD3GKw9XUQcvESsgryMXxux0VZlEx+xsyJ/Ne+NvMREMuyAQEBAwcOZFnWYDAUFhbqdDpMTAIrg6abzebk5GQXFxexWFxdXV1eXt61BMxvBg8enJKSYjQaVapVVlaWyWQSyIR8fHzi4uLI6e+JnoAiOzs729raGhsbOzs7KYpSKBR6vR4aZt8W5uPjEx0dbTAYxGIxULOQt8hdOz8/v7Oz06ZKocFisVgikXR0dABTEbIGFAqF0WgErg+0C5uvTeiRgIAex4wZ8/7771MUVVVV9Ze//KWoqAiaK1xKgNFxd3f/8MMPo6OjzWbzd999t3HjRolEAq3HTwILNZvNs2bNev/992ma3rdv37Vr1zDbs1rL4MGDP/roI7lcbrEcuwJIpLOzs7a2Njs7++bNmzk5OVVVVWKx2Oq73QLY8/Dhw1evXm0ymSiKMhqNQrZCYMmwk96/f/+NN94AahY4vLD3mUwmvV6v1+sxq8b7Rk81IoTa2toQQhKJhOdhq7BCQM3NzSEhIV5eXjExMfHx8UVFRViktYkDRUVFjR479A==","sizes":"192x192","type":"image/png"}
+  name: "Video Design CRM", 
+  short_name: "VD CRM", 
+  start_url: ".", 
+  display: "standalone",
+  background_color: "#1d2024", 
+  theme_color: "#1d2024",
+  icons: [
+    {
+      "src": "app-icon.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg"
+    }
   ]
 };
 const _blob = new Blob([JSON.stringify(_manifest)], {type:'application/json'});
@@ -30,11 +42,6 @@ const _link  = document.createElement('link');
 _link.rel    = 'manifest';
 _link.href   = URL.createObjectURL(_blob);
 document.head.appendChild(_link);
-
-const _apl  = document.createElement('link');
-_apl.rel    = 'apple-touch-icon';
-_apl.href   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEB0lEQVR4nO3BMQEAAADCoPVP7WsIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMAAAGQAAEA';
-document.head.appendChild(_apl);
 </script>
 </head>
 <body>
@@ -224,7 +231,7 @@ document.head.appendChild(_apl);
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="q-custs" placeholder="חפש שם, טלפון, עיר..." oninput="renderCusts()"><span class="si">🔍</span></div>
-      </div>
+    </div>
     <div class="tw"><div class="tscroll"><table>
       <thead><tr><th>לקוח</th><th>טלפון</th><th>עיר</th><th>אחריות</th><th>חוב</th><th>פעולות</th></tr></thead>
       <tbody id="tb-custs"></tbody>
@@ -281,7 +288,7 @@ document.head.appendChild(_apl);
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="q-archive" placeholder="חפש..." oninput="renderArchive()"><span class="si">🔍</span></div>
-      </div>
+    </div>
     <div id="list-archive" class="fg-grid"></div>
   </div><div class="pg" id="pg-log">
     <div class="ph">
