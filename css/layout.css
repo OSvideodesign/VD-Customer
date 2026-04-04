@@ -20,8 +20,7 @@
 .sidebar .logo {
   padding: 25px 16px 20px;
   text-align: center;
-  border-bottom: 1px solid #0b0c0f; 
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+  border-bottom: 2px solid #8a9097; 
 }
 
 .logo h1 {
@@ -50,8 +49,7 @@
 .sidebar-search-div {
   padding: 10px 0px 18px;
   margin-bottom: 8px;
-  border-bottom: 1px solid #0b0c0f; 
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+  border-bottom: 2px solid #8a9097; 
 }
 
 /* פס 3 + 4: מעל דוחות ומעל מערכת */
@@ -63,14 +61,12 @@
   letter-spacing: 1px;
   padding: 16px 12px 8px;
   margin-top: 8px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  box-shadow: inset 0 1px 0 #0b0c0f;
+  border-top: 2px solid #8a9097;
 }
 
-/* ביטול הפס מכותרת 'ניהול' כי כבר יש פס מתחת לחיפוש */
-.nav-sec:first-of-type {
+/* ביטול הפס הכפול מעל 'ניהול' */
+.sidebar-search-div + .nav-sec {
   border-top: none;
-  box-shadow: none;
 }
 
 .nav-btn {
@@ -101,22 +97,15 @@
   font-weight: 600;
 }
 
-/* פס 5 + 6: מקיפים את כפתור ההתנתק */
+/* פס 5 + 6: פסי כסף שתומחים את כפתור ההתנתק */
 .nav-btn-logout { 
   color: #ff6b6b; 
   margin-top: 15px; 
   padding-top: 15px;
   padding-bottom: 15px;
   border-radius: 0;
-  border-top: 1px solid #0b0c0f;
-  border-bottom: 1px solid #0b0c0f;
-  position: relative;
-}
-.nav-btn-logout::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.05);
-}
-.nav-btn-logout::after {
-  content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.05);
+  border-top: 2px solid #8a9097;
+  border-bottom: 2px solid #8a9097;
 }
 
 /* ── Main content ─────────────────────────────────────────────────────────── */
@@ -145,8 +134,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* מחיקת פקודת ההיפוך והריווח השגויים שעשיתי! הכותרת תהיה בימין */
   margin-bottom: 20px;
-  padding-right: 35px; /* מזיז את הכותרת שמאלה ומרחיק אותה מהתפריט הצדדי! */
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -208,7 +197,7 @@
 .m-drawer-btn:hover, .m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
 .m-drawer-sec {
   font-size: calc(13px * var(--fz-scale, 1)); color: #8a9097; padding: 14px 20px 4px; font-weight: 700;
-  letter-spacing: .5px; border-top: 1px solid #0b0c0f; box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+  letter-spacing: .5px; border-top: 2px solid #8a9097;
 }
 .m-drawer-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -223,7 +212,7 @@
   .stats   { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash3   { grid-template-columns: 1fr; }
   .fg-grid { grid-template-columns: 1fr; }
-  .ph      { flex-direction: column; align-items: flex-start; padding-right: 0; }
+  .ph      { flex-direction: column; align-items: flex-start; }
   .pt      { font-size: calc(20px * var(--fz-scale, 1)); }
 }
 @media (min-width: 769px) {
