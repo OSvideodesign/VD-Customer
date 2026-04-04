@@ -17,7 +17,6 @@ import { renderLog, addLog, clearLog } from './log.js';
 import { gcalInit, gcalSignIn, gcalSignOut, fetchWk, wkPrev, wkNext, wkToday, gcalFault } from './gcal.js';
 import { loadAll } from './db.js';
 
-// ── Global state initialisation ────────────────────────────────────────────
 window.custs       = [];
 window.faults      = [];
 window.notes       = [];
@@ -27,7 +26,6 @@ window.cfg         = {};
 window._deletingIds = new Set();
 window._gsResults  = [];
 
-// ── Restore cfg from localStorage ─────────────────────────────────────────
 (function () {
   try {
     const b = localStorage.getItem('crm_cfg');
@@ -35,14 +33,11 @@ window._gsResults  = [];
   } catch (e) {}
 })();
 
-// ── Expose functions for inline HTML onclick handlers ─────────────────────
-// auth
+// Expose globals for HTML onclick handlers
 window.doLogin          = doLogin;
 window.backToUsers      = backToUsers;
 window.logout           = logout;
 window._selectUser      = selectUser;
-
-// nav / modals
 window.nav              = nav;
 window._nav             = nav;
 window.openM            = openM;
@@ -52,14 +47,10 @@ window.closeDrawer      = closeDrawer;
 window.navD             = navD;
 window.openGlobalSearch = openGlobalSearch;
 window.runGlobalSearch  = runGlobalSearch;
-
-// dashboard
 window.renderDash       = renderDash;
 window._jumpTo          = jumpTo;
 window.jumpTo           = jumpTo;
 window._editNoteById    = editNoteById;
-
-// customers
 window.openNewCust      = openNewCust;
 window.saveCust         = saveCust;
 window.delCust          = delCust;
@@ -74,8 +65,6 @@ window._openWA          = openWA;
 window.openWA           = openWA;
 window._openNav         = openNav;
 window.openNav          = openNav;
-
-// faults
 window.openNewFault     = openNewFault;
 window._openNewFault    = openNewFault;
 window.saveFault        = saveFault;
@@ -88,8 +77,6 @@ window.toggleSelectMode = toggleSelectMode;
 window._toggleSelect    = toggleSelect;
 window.deleteSelected   = deleteSelected;
 window.requestNotificationPermission = requestNotificationPermission;
-
-// notes
 window.openNewNote          = openNewNote;
 window.saveNote             = saveNote;
 window.delNote              = delNote;
@@ -98,38 +85,24 @@ window.toggleNoteSelectMode = toggleNoteSelectMode;
 window._toggleNoteSelect    = toggleNoteSelect;
 window.deleteSelectedNotes  = deleteSelectedNotes;
 window.renderNotes          = renderNotes;
-
-// archive
 window.renderArchive    = renderArchive;
 window._restoreFault    = restoreFault;
-
-// debts
 window._markPaid        = markPaid;
 window._markFaultPaid   = markFaultPaid;
-
-// reports
 window.renderReports    = renderReports;
 window.exportBackup     = exportBackup;
 window.exportCustomersExcel = exportCustomersExcel;
-
-// warranties / debts (renderers nav.js calls via window.*)
 window.renderWarr       = renderWarr;
 window.renderDebts      = renderDebts;
-
-// settings
 window.loadSettings     = loadSettings;
 window.saveSettings     = saveSettings;
 window.openAddUser      = openAddUser;
 window._openEditUser    = openEditUser;
 window.saveUser         = saveUser;
 window.deleteUser       = deleteUser;
-
-// log
 window.addLog           = addLog;
 window.clearLog         = clearLog;
 window.renderLog        = renderLog;
-
-// gcal
 window.gcalInit         = gcalInit;
 window.gcalSignIn       = gcalSignIn;
 window.gcalSignOut      = gcalSignOut;
@@ -139,110 +112,61 @@ window.wkNext           = wkNext;
 window.wkToday          = wkToday;
 window._gcalFault       = gcalFault;
 
-// ── Boot ───────────────────────────────────────────────────────────────────
 initLogin();
 loadAll();
 
-// ── NEW: TASKS BOARD & PUSH LOGIC ───────────────────────────────────────────
-// פונקציות אלו נוספו כדי לאפשר את לוח המשימות החדש והתראות ה-Push
-
+// TASKS BOARD & PUSH LOGIC
 let isBoardMode = localStorage.getItem('vd_tasks_mode') === 'board';
-
 window.toggleBoardMode = function() {
     isBoardMode = !isBoardMode;
     localStorage.setItem('vd_tasks_mode', isBoardMode ? 'board' : 'list');
     updateTasksUI();
 };
-
 function updateTasksUI() {
     const listV = document.getElementById('tasks-list-view');
     const boardV = document.getElementById('tasks-board-view');
     const toggleTxt = document.getElementById('board-toggle-txt');
-
     if (!listV || !boardV) return;
-
     if (isBoardMode) {
-        listV.style.display = 'none';
-        boardV.style.display = 'grid';
-        toggleTxt.textContent = '📋 תצוגת רשימה';
-        renderBoard();
+        listV.style.display = 'none'; boardV.style.display = 'grid';
+        toggleTxt.textContent = '📋 תצוגת רשימה'; renderBoard();
     } else {
-        listV.style.display = 'block';
-        boardV.style.display = 'none';
-        toggleTxt.textContent = '🔲 תצוגת כרטיסיות';
-        renderFaults();
+        listV.style.display = 'block'; boardV.style.display = 'none';
+        toggleTxt.textContent = '🔲 תצוגת כרטיסיות'; renderFaults();
     }
 }
-
 function renderBoard() {
-    const cols = {
-        open: document.getElementById('board-open'),
-        scheduled: document.getElementById('board-scheduled'),
-        done: document.getElementById('board-done')
-    };
+    const cols = { open: document.getElementById('board-open'), scheduled: document.getElementById('board-scheduled'), done: document.getElementById('board-done') };
     if (!cols.open) return;
-
     Object.values(cols).forEach(el => el.innerHTML = '');
-    
     window.faults.filter(f => !f.archived).forEach(f => {
         const card = document.createElement('div');
-        card.className = 'board-card';
-        card.dataset.id = f.id;
-        
-        const custName = window.custs.find(c => c.id === f.customerId)?.name || f.guestName || 'לקוח לא ידוע';
-        
-        card.innerHTML = `
-            <div style="font-weight:700; margin-bottom:4px">${custName}</div>
-            <div style="font-size:12px; color:var(--tx2); line-height:1.3">${f.description.substring(0,60)}${f.description.length > 60 ? '...' : ''}</div>
-            <div style="font-size:10px; color:var(--tx3); margin-top:8px; border-top:1px solid rgba(255,255,255,0.05); padding-top:4px">
-                📅 ${f.date || 'לא נקבע'} | 🕒 ${f.time || '--:--'}
-            </div>
-        `;
-        
+        card.className = 'board-card'; card.dataset.id = f.id;
+        const custName = window.custs.find(c => c.id === f.customerId)?.name || f.guestName || 'לקוח';
+        card.innerHTML = `<strong>${custName}</strong><p style="font-size:12px; margin:4px 0">${f.description.substring(0,40)}...</p>`;
         card.onclick = () => window.editFaultById(f.id);
         if (cols[f.status]) cols[f.status].appendChild(card);
     });
-
     initSortable();
 }
-
 function initSortable() {
     document.querySelectorAll('.board-col-list').forEach(el => {
-        new Sortable(el, {
-            group: 'tasks',
-            animation: 150,
-            ghostClass: 'ghost-card',
-            onEnd: (evt) => {
-                const id = evt.item.dataset.id;
-                const status = evt.to.parentElement.dataset.status;
-                const task = window.faults.find(f => f.id === id);
-                if (task && task.status !== status) {
-                    task.status = status;
-                    // קריאה לפונקציית השמירה הקיימת במודול המשימות
-                    if(window.saveFault) window.saveFault(task);
-                    sendPush(`משימה של ${task.guestName || 'לקוח'} עודכנה ל-${status}`);
-                }
+        new Sortable(el, { group: 'tasks', animation: 150, onEnd: (evt) => {
+            const id = evt.item.dataset.id; const status = evt.to.parentElement.dataset.status;
+            const task = window.faults.find(f => f.id === id);
+            if (task && task.status !== status) {
+                task.status = status; if(window.saveFault) window.saveFault(task);
+                sendPush(`משימה של ${task.guestName || 'לקוח'} עודכנה ל-${status}`);
             }
-        });
+        }});
     });
 }
-
 function sendPush(msg) {
-    if (!("Notification" in window)) return;
     if (Notification.permission === "granted") {
-        new Notification("עדכון מערכת", {
-            body: msg,
-            icon: "app-icon-192.jpg"
-        });
+        new Notification("CRM עדכון", { body: msg, icon: "app-icon-192.jpg" });
     }
 }
-
-// זיהוי אייפון והצגת הדרכה להתראות PUSH
 if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
-    setTimeout(() => {
-        toast('📱 לקבלת התראות באייפון: לחץ על "שתף" ואז "הוסף למסך הבית"', 'info');
-    }, 4000);
+    setTimeout(() => toast('📱 לקבלת התראות: לחץ על "שתף" ואז "הוסף למסך הבית"', 'info'), 4000);
 }
-
-// עדכון ראשוני של ממשק המשימות
 setTimeout(updateTasksUI, 500);
