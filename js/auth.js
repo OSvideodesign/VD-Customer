@@ -56,10 +56,12 @@ export function initLogin() {
   }
 
   const btns = document.getElementById('user-btns');
+  // שינוי Pixel-Perfect: עדכון ה-HTML של הכפתור כדי להתאים ל-CSS החדש
   btns.innerHTML = USERS.map(u =>
-    `<button onclick="window._selectUser('${u.name}')"
-       style="background:${u.color}22;border:2px solid ${u.color};border-radius:10px;padding:14px 8px;cursor:pointer;font-family:Heebo,sans-serif;color:${u.color};font-weight:700;font-size:15px">
-       <div style="font-size:24px;margin-bottom:4px">${u.name[0]}</div>${u.name}</button>`
+    `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="color:${u.color}">
+       <div class="login-user-icon">${u.name[0]}</div>
+       <div class="login-user-name">${u.name}</div>
+     </button>`
   ).join('');
   document.getElementById('login-screen').style.display = 'flex';
 }

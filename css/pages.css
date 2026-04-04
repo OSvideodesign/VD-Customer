@@ -13,31 +13,30 @@
 }
 
 .login-card {
-  background: rgba(10, 14, 26, 0.6); /* רקע כהה יותר ושקוף יותר למסך הכניסה */
-  backdrop-filter: blur(15px); /* אפקט טשטוש חזק יותר לרקע */
-  border: 1px solid rgba(255,255,255,0.08); /* גבול עדין מאוד */
-  border-radius: 24px; /* פינות מעוגלות יותר */
+  background: rgba(10, 14, 26, 0.5); /* רקע כהה ושקוף יותר */
+  backdrop-filter: blur(20px); /* טשטוש רקע חזק (Pixel-Perfect) */
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08); /* גבול כמעט בלתי נראה */
+  border-radius: 24px;
   padding: 40px;
   width: 100%;
   max-width: 420px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.7); /* צללית חזקה ועמוקה */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); /* צללית עמוקה */
 }
 
-/* הגדלת הלוגו הראשי עוד קצת (נקודה 1) */
 .login-header-img {
   width: 100%;
-  max-width: 370px; /* הגדלנו מ-300 ל-370 */
-  margin: 0 auto 5px; /* צמצמנו עוד את המרווח התחתון */
+  max-width: 370px;
+  margin: 0 auto 5px;
   display: block;
 }
 
-/* הגדלת "ניהול לקוחות" לאותו רוחב של הלוגו (נקודה 2) */
 .login-sub-text-img {
-  width: 100%; /* תופס את כל הרוחב הזמין */
-  max-width: 370px; /* אחיד עם הלוגו שמעליו */
-  height: auto; /* שומר על פרופורציות (ביטלנו גובה קבוע) */
-  margin: 0 auto 35px; /* מרווח גדול יותר לפני המשתמשים */
+  width: 100%;
+  max-width: 370px;
+  height: auto;
+  margin: 0 auto 35px;
   display: block;
   opacity: 0.9;
 }
@@ -45,48 +44,65 @@
 #user-btns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px; /* רווח גדול יותר בין הכפתורים */
+  gap: 15px; /* רווח בין הכפתורים */
   margin-bottom: 20px;
 }
 
-/* עיצוב גרפי של כפתורי המשתמשים */
-#user-btns button {
+/* ── User Tabs / Buttons - Pixel-Perfect Design ────────────────────────── */
+.login-user-btn {
+  background: rgba(255, 255, 255, 0.03); /* זכוכית שקופה כמעט לחלוטין */
+  backdrop-filter: blur(5px); /* טשטוש עדין בתוך הכפתור */
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.08); /* גבול עדין מאוד */
+  border-radius: 12px; /* פינות מעוגלות לפי התמונה */
+  padding: 18px 8px; /* התאמת ה-padding למיקום */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
-  transform: translateY(0);
 }
 
-#user-btns button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-}
-
-#user-btns button:active {
-  transform: translateY(1px);
-}
-
-/* יצירת אפקט ה"ברק" או ה"הילה" העדינה מאחורי האות */
-#user-btns button::before {
+/* הילה דקה מאוד (כמעט בלתי נראית) מתחת לגבול */
+.login-user-btn::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 60px;
-  height: 60px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  z-index: 1;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: currentColor; /* משתמש בצבע המשתמש (נקבע ב-HTML) */
+  opacity: 0.15; /* הילה חלשה מאוד */
+  filter: blur(2px);
 }
 
-/* עיצוב האות הגדולה (האיקון) */
-#user-btns button div {
-  position: relative;
-  z-index: 2;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* פונט נקי יותר לאות */
-  font-weight: 300; /* דק יותר */
-  text-shadow: 0 2px 10px rgba(0,0,0,0.3); /* צללית עדינה לאות */
+.login-user-btn:hover {
+  background: rgba(255, 255, 255, 0.06); /* הבהרה קלה ב-hover */
+  transform: translateY(-2px); /* הרמה קלה */
+  border-color: rgba(255, 255, 255, 0.15); /* הבלטת הגבול */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* צללית עדינה */
+}
+
+/* עיצוב האות הגדולה (Pixel-Perfect) */
+.login-user-icon {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300; /* דק, כמו בתמונה */
+  font-size: 32px; /* גודל האות */
+  line-height: 1;
+  margin-bottom: 6px; /* רווח מהשם */
+  color: currentColor; /* משתמש בצבע המשתמש (נקבע ב-HTML) */
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; /* אפקט זוהר חלש */
+}
+
+/* עיצוב שם המשתמש בעברית */
+.login-user-name {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 500; /* משקל רגיל */
+  font-size: 14px; /* גודל השם */
+  color: rgba(255, 255, 255, 0.8); /* לבן שקוף מעט */
 }
 
 #pass-area {
