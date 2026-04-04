@@ -39,7 +39,6 @@ export function canDo(module, level) {
 
 // ── initLogin — show user buttons or restore session ───────────────────────
 export function initLogin() {
-  // מסתיר את המערכת כדי להציג רק את מסך ההתחברות והרקע
   toggleAppView(false);
 
   const saved = sessionStorage.getItem('crm_user');
@@ -56,13 +55,15 @@ export function initLogin() {
   }
 
   const btns = document.getElementById('user-btns');
-  // שינוי Pixel-Perfect: עדכון ה-HTML של הכפתור כדי להתאים ל-CSS החדש
-  btns.innerHTML = USERS.map(u =>
-    `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="color:${u.color}">
+  btns.innerHTML = USERS.map(u => {
+    // הוספת 40 להקסאדצימלי של הצבע יוצרת שקיפות של בערך 25% עבור ההילה
+    const glowColor = u.color + '40';
+    return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
        <div class="login-user-icon">${u.name[0]}</div>
        <div class="login-user-name">${u.name}</div>
-     </button>`
-  ).join('');
+     </button>`;
+  }).join('');
+  
   document.getElementById('login-screen').style.display = 'flex';
 }
 
@@ -101,7 +102,6 @@ export function backToUsers() {
 export function logout() {
   sessionStorage.removeItem('crm_user');
   document.getElementById('login-screen').style.display = 'flex';
-  // מסתיר מחדש את המערכת כשמתנתקים
   toggleAppView(false); 
   backToUsers();
 }
@@ -114,8 +114,6 @@ export function applyUser(u) {
   window._currentRole  = u.role || 'tech';
 
   document.getElementById('login-screen').style.display = 'none';
-  
-  // ברגע שהמשתמש התחבר בהצלחה, מציגים את לוח הבקרה והתפריטים
   toggleAppView(true);
 
   const b = document.getElementById('user-badge');
