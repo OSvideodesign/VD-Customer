@@ -16,12 +16,11 @@
   overflow: hidden;
 }
 
-/* פס 1: מתחת ללוגו */
+/* פס כסף נקי מתחת ללוגו */
 .sidebar .logo {
   padding: 25px 16px 20px;
   text-align: center;
-  border-bottom: 1px solid #0b0c0f; 
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+  border-bottom: 2px solid #8a9097; 
 }
 
 .logo h1 {
@@ -46,15 +45,14 @@
   overflow-y: auto;
 }
 
-/* פס 2: מתחת לחיפוש הגלובלי */
+/* פס כסף נקי מתחת לחיפוש */
 .sidebar-search-div {
   padding: 10px 0px 18px;
   margin-bottom: 8px;
-  border-bottom: 1px solid #0b0c0f; 
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+  border-bottom: 2px solid #8a9097; 
 }
 
-/* פס 3 + 4: מעל דוחות ומעל מערכת */
+/* פס כסף נקי מעל כותרות ניווט */
 .nav-sec {
   font-size: calc(13px * var(--fz-scale, 1)); 
   font-weight: 700;
@@ -63,14 +61,12 @@
   letter-spacing: 1px;
   padding: 16px 12px 8px;
   margin-top: 8px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  box-shadow: inset 0 1px 0 #0b0c0f;
+  border-top: 2px solid #8a9097;
 }
 
-/* ביטול הפס מכותרת 'ניהול' כי כבר יש פס מתחת לחיפוש */
+/* ביטול הפס מכותרת 'ניהול' כי כבר יש פס כסף מתחת לחיפוש */
 .nav-sec:first-of-type {
   border-top: none;
-  box-shadow: none;
 }
 
 .nav-btn {
@@ -101,22 +97,15 @@
   font-weight: 600;
 }
 
-/* פס 5 + 6: מקיפים את כפתור ההתנתק */
+/* פסי כסף נקיים שתומחים את כפתור ההתנתק מ-2 הכיוונים */
 .nav-btn-logout { 
   color: #ff6b6b; 
   margin-top: 15px; 
   padding-top: 15px;
   padding-bottom: 15px;
   border-radius: 0;
-  border-top: 1px solid #0b0c0f;
-  border-bottom: 1px solid #0b0c0f;
-  position: relative;
-}
-.nav-btn-logout::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.05);
-}
-.nav-btn-logout::after {
-  content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.05);
+  border-top: 2px solid #8a9097;
+  border-bottom: 2px solid #8a9097;
 }
 
 /* ── Main content ─────────────────────────────────────────────────────────── */
@@ -208,7 +197,7 @@
 .m-drawer-btn:hover, .m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
 .m-drawer-sec {
   font-size: calc(13px * var(--fz-scale, 1)); color: #8a9097; padding: 14px 20px 4px; font-weight: 700;
-  letter-spacing: .5px; border-top: 1px solid #0b0c0f; box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+  letter-spacing: .5px; border-top: 2px solid #8a9097;
 }
 .m-drawer-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -235,7 +224,7 @@
 /* ── DESIGN SETTINGS THEMES (מערכת עיצוב ורקעים) ─────────────────────────── */
 
 body[data-bg="stone"] {
-    /* נשען על רקע האבן המקורי שמוגדר ב-base.css */
+    background-color: transparent; 
 }
 
 body[data-bg="metal"] {
