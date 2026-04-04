@@ -144,6 +144,8 @@ initLogin();
 loadAll();
 
 // ── NEW: TASKS BOARD & PUSH LOGIC ───────────────────────────────────────────
+// פונקציות אלו נוספו כדי לאפשר את לוח המשימות החדש והתראות ה-Push
+
 let isBoardMode = localStorage.getItem('vd_tasks_mode') === 'board';
 
 window.toggleBoardMode = function() {
@@ -186,8 +188,17 @@ function renderBoard() {
         const card = document.createElement('div');
         card.className = 'board-card';
         card.dataset.id = f.id;
-        const custName = window.custs.find(c => c.id === f.customerId)?.name || f.guestName || 'לקוח';
-        card.innerHTML = `<strong>${custName}</strong><p style="font-size:12px; margin:4px 0">${f.description.substring(0,40)}...</p>`;
+        
+        const custName = window.custs.find(c => c.id === f.customerId)?.name || f.guestName || 'לקוח לא ידוע';
+        
+        card.innerHTML = `
+            <div style="font-weight:700; margin-bottom:4px">${custName}</div>
+            <div style="font-size:12px; color:var(--tx2); line-height:1.3">${f.description.substring(0,60)}${f.description.length > 60 ? '...' : ''}</div>
+            <div style="font-size:10px; color:var(--tx3); margin-top:8px; border-top:1px solid rgba(255,255,255,0.05); padding-top:4px">
+                📅 ${f.date || 'לא נקבע'} | 🕒 ${f.time || '--:--'}
+            </div>
+        `;
+        
         card.onclick = () => window.editFaultById(f.id);
         if (cols[f.status]) cols[f.status].appendChild(card);
     });
@@ -200,12 +211,14 @@ function initSortable() {
         new Sortable(el, {
             group: 'tasks',
             animation: 150,
+            ghostClass: 'ghost-card',
             onEnd: (evt) => {
                 const id = evt.item.dataset.id;
                 const status = evt.to.parentElement.dataset.status;
                 const task = window.faults.find(f => f.id === id);
-                if (task) {
+                if (task && task.status !== status) {
                     task.status = status;
+                    // קריאה לפונקציית השמירה הקיימת במודול המשימות
                     if(window.saveFault) window.saveFault(task);
                     sendPush(`משימה של ${task.guestName || 'לקוח'} עודכנה ל-${status}`);
                 }
@@ -215,10 +228,21 @@ function initSortable() {
 }
 
 function sendPush(msg) {
+    if (!("Notification" in window)) return;
     if (Notification.permission === "granted") {
-        new Notification("עדכון CRM", { body: msg, icon: "app-icon-192.jpg" });
+        new Notification("עדכון מערכת", {
+            body: msg,
+            icon: "app-icon-192.jpg"
+        });
     }
 }
 
-// הפעלה ראשונית של מצב התצוגה
+// זיהוי אייפון והצגת הדרכה להתראות PUSH
+if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+    setTimeout(() => {
+        toast('📱 לקבלת התראות באייפון: לחץ על "שתף" ואז "הוסף למסך הבית"', 'info');
+    }, 4000);
+}
+
+// עדכון ראשוני של ממשק המשימות
 setTimeout(updateTasksUI, 500);
