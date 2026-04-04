@@ -328,55 +328,47 @@
   }
 }
 
-/* ── תיקון קריטי לאייקונים (פתרון בעיית הכפילות והריבועים הלבנים) ────────────────── */
+/* ── פתרון סופי ומוחלט לאייקונים בכותרות (ללא ריבועים לבנים) ────────────────── */
 
-/* 1. ביטול מוחלט של הריבועים הלבנים (Pseudo-elements הישנים) */
+/* 1. ביטול יסודי של כל שאריות ה-Mask והרקעים הישנים מהכותרות */
 .ph .pt::before, 
-.ph div div:first-child::before,
-.ph span[style*="font-size:20px"]::before {
+.ph .pt::after {
     display: none !important;
     content: none !important;
     background: none !important;
-    mask: none !important;
     -webkit-mask: none !important;
+    mask: none !important;
 }
 
-/* 2. הגדרת מיקום גמיש לכותרת ולאייקון */
+/* 2. יצירת האייקון החדש לפני הטקסט (::before) שתואם בדיוק לסיידבר */
 .ph .pt {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-/* 3. יצירת האייקון החדש והיחיד */
-.ph .pt::after {
-  font-size: 28px;
-  color: var(--acc);
-  filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
-  opacity: 1 !important;
-  display: inline-block;
-  font-family: inherit; /* שימוש בתווי טקסט רגילים למניעת באגים של תמונה */
+.ph .pt::before {
+    display: inline-block !important;
+    font-size: 32px; /* גודל האייקון בכותרת הגדולה */
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
-/* 4. התאמת אייקון ספציפי לכל דף לפי ה-ID של ה-PG */
-#pg-dashboard .pt::after  { content: "🏠"; }
-#pg-customers .pt::after  { content: "👥"; }
-#pg-faults    .pt::after  { content: "🔧"; }
-#pg-warranties .pt::after { content: "🛡️"; }
-#pg-debts     .pt::after  { content: "💰"; }
-#pg-notes     .pt::after  { content: "📝"; }
-#pg-archive   .pt::after  { content: "✅"; }
-#pg-reports   .pt::after  { content: "📈"; }
-#pg-settings  .pt::after  { content: "⚙️"; }
-#pg-log       .pt::after  { content: "📋"; }
+/* 3. שיוך האייקון הנכון לכל דף לפי ה-ID של ה-PG */
+#pg-dashboard  .pt::before { content: "📊" !important; }
+#pg-customers  .pt::before { content: "👥" !important; }
+#pg-faults     .pt::before { content: "🔧" !important; }
+#pg-archive    .pt::before { content: "✅" !important; }
+#pg-warranties .pt::before { content: "🛡️" !important; }
+#pg-debts      .pt::before { content: "💰" !important; }
+#pg-notes      .pt::before { content: "📝" !important; }
+#pg-reports    .pt::before { content: "📈" !important; }
+#pg-settings   .pt::before { content: "⚙️" !important; }
+#pg-log        .pt::before { content: "📋" !important; }
 
-/* צביעת אייקונים בתוך פאנלים (stit) - גם פה מבטלים ריבועים ישנים */
+/* תיקון קל לכותרות בתוך פאנלים (stit) - מבטלים ריבועים לבנים גם פה */
 .stit::before {
-    color: var(--acc) !important;
-    margin-left: 8px;
-    background: none !important;
-    mask: none !important;
-    -webkit-mask: none !important;
+    display: none !important;
 }
 
 /* ── User badge in sidebar ────────────────────────────────────────────────── */
