@@ -33,7 +33,7 @@ document.head.appendChild(_link);
 
 const _apl  = document.createElement('link');
 _apl.rel    = 'apple-touch-icon';
-_apl.href    = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEB0lEQVR4nO3BMQEAAADCoPVP7WsIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMAAAGQAAEA';
+_apl.href   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEB0lEQVR4nO3BMQEAAADCoPVP7WsIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMAAAGQAAEA';
 document.head.appendChild(_apl);
 </script>
 </head>
@@ -42,9 +42,7 @@ document.head.appendChild(_apl);
 <div id="login-screen">
   <div class="login-card">
     <img class="login-header-img" src="login-header.jpg" alt="Video Design Silver">
-    
     <img class="login-sub-text-img" src="customer-management-text.png" alt="ניהול לקוחות">
-    
     <div id="user-btns"></div>
     <div id="pass-area">
       <p id="pass-label"></p>
@@ -110,6 +108,7 @@ document.head.appendChild(_apl);
 <aside class="sidebar">
   <div class="logo">
     <img src="logo.jpg" class="sidebar-logo-img" alt="Video Design">
+    <div id="user-badge" style="display:none;"></div>
   </div>
   <nav class="nav">
     <div style="padding:8px 0 12px">
@@ -131,9 +130,8 @@ document.head.appendChild(_apl);
     <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
     <button class="nav-btn"    id="nb-log"        onclick="nav('log')" style="display:none">📋 לוג שינויים</button>
     <button class="nav-btn nav-btn-logout"         onclick="logout()">🚪 התנתק</button>
-    
     <div style="text-align:center; margin-top:30px; padding-bottom: 20px;">
-      <div id="user-badge"></div>
+      <div id="user-badge-display"></div>
     </div>
   </nav>
 </aside>
@@ -226,14 +224,7 @@ document.head.appendChild(_apl);
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="q-custs" placeholder="חפש שם, טלפון, עיר..." oninput="renderCusts()"><span class="si">🔍</span></div>
-      <select class="fsel" id="f-warr" onchange="renderCusts()">
-        <option value="">כל האחריות</option><option value="expired">פגה</option>
-        <option value="soon">פגה בקרוב</option><option value="valid">בתוקף</option>
-      </select>
-      <select class="fsel" id="f-debt" onchange="renderCusts()">
-        <option value="">כל החובות</option><option value="has">יש חוב</option><option value="no">ללא חוב</option>
-      </select>
-    </div>
+      </div>
     <div class="tw"><div class="tscroll"><table>
       <thead><tr><th>לקוח</th><th>טלפון</th><th>עיר</th><th>אחריות</th><th>חוב</th><th>פעולות</th></tr></thead>
       <tbody id="tb-custs"></tbody>
@@ -257,9 +248,6 @@ document.head.appendChild(_apl);
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="q-faults" placeholder="חפש..." oninput="renderFaults()"><span class="si">🔍</span></div>
-      <select class="fsel" id="f-fstatus" onchange="renderFaults()">
-        <option value="">כל הסטטוסים</option><option value="open">פתוחה</option><option value="scheduled">נקבע תאריך</option>
-      </select>
       <button class="btn bs btn-sm" id="select-mode-btn" onclick="toggleSelectMode(true)">☑️ בחר מרובה</button>
     </div>
     <div id="bulk-bar">
@@ -277,14 +265,6 @@ document.head.appendChild(_apl);
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="note-search" placeholder="חפש..." oninput="renderNotes()"><span class="si">🔍</span></div>
-      <select class="fsel" id="note-filter-cat" onchange="renderNotes()">
-        <option value="">כל הקטגוריות</option>
-        <option value="general">📌 כללי</option><option value="meeting">🤝 פגישה</option><option value="reminder">⏰ תזכורת</option>
-      </select>
-      <select class="fsel" id="note-filter-user" onchange="renderNotes()">
-        <option value="">כל המשתמשים</option>
-        <option value="רז">רז</option><option value="אופיר">אופיר</option><option value="גלאל">גלאל</option><option value="מוטי">מוטי</option>
-      </select>
       <button class="btn bs btn-sm" id="note-select-mode-btn" onclick="toggleNoteSelectMode(true)">☑️ בחר מרובה</button>
     </div>
     <div id="note-bulk-bar" style="display:none">
@@ -301,11 +281,7 @@ document.head.appendChild(_apl);
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="q-archive" placeholder="חפש..." oninput="renderArchive()"><span class="si">🔍</span></div>
-      <select class="fsel" id="f-archive-user" onchange="renderArchive()">
-        <option value="">כל הטכנאים</option>
-        <option value="רז">רז</option><option value="אופיר">אופיר</option><option value="גלאל">גלאל</option><option value="מוטי">מוטי</option>
-      </select>
-    </div>
+      </div>
     <div id="list-archive" class="fg-grid"></div>
   </div><div class="pg" id="pg-log">
     <div class="ph">
