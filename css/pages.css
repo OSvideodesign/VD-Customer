@@ -329,38 +329,41 @@
   }
 }
 
-/* ── תיקון סופי לאייקונים של הכותרות (סעיף 5) ─────────────────────────────── */
-/* יצירת מקום לאייקון ועיצובו */
+/* ── תיקון אייקונים: שימוש בתווים במקום תמונות חסומות (סעיף 5) ──────────────── */
 .ph .pt {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.ph .pt::after {
-  font-size: 28px;
-  color: var(--acc); /* שימוש בצבע הנושא הנבחר */
-  filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
-  opacity: 1 !important;
-  display: inline-block;
+/* איפוס הגדרות קודמות שגרמו לריבועים לבנים */
+.ph .pt::before {
+    background: none !important;
+    mask: none !important;
+    -webkit-mask: none !important;
+    width: auto !important;
+    height: auto !important;
+    font-size: 28px;
+    color: var(--acc) !important;
 }
 
-/* הגדרת האייקון הספציפי לכל דף */
-#pg-dashboard .pt::after  { content: "🏠"; }
-#pg-customers .pt::after  { content: "👥"; }
-#pg-faults    .pt::after  { content: "🔧"; }
-#pg-warranties .pt::after { content: "🛡️"; }
-#pg-debts     .pt::after  { content: "💰"; }
-#pg-notes     .pt::after  { content: "📝"; }
-#pg-archive   .pt::after  { content: "✅"; }
-#pg-reports   .pt::after  { content: "📈"; }
-#pg-settings  .pt::after  { content: "⚙️"; }
-#pg-log       .pt::after  { content: "📋"; }
+/* הגדרת אייקון ספציפי לכל כותרת דף */
+#pg-dashboard .pt::before { content: "🏠"; }
+#pg-customers .pt::before { content: "👥"; }
+#pg-faults    .pt::before { content: "🔧"; }
+#pg-warranties .pt::before { content: "🛡️"; }
+#pg-debts     .pt::before { content: "💰"; }
+#pg-notes     .pt::before { content: "📝"; }
+#pg-archive   .pt::before { content: "✅"; }
+#pg-log       .pt::before { content: "📋"; }
+#pg-reports   .pt::before { content: "📈"; }
+#pg-settings  .pt::before { content: "⚙️"; }
 
-/* צביעת אייקונים בתוך פאנלים (stit) */
+/* אייקונים בתוך פאנלים */
 .stit::before {
     color: var(--acc) !important;
     margin-left: 8px;
+    font-size: 1.1em;
 }
 
 /* ── Perms grid in user modal ─────────────────────────────────────────────── */
