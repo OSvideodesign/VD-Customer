@@ -116,12 +116,10 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  const b = document.getElementById('user-badge');
-  if (b) {
-    b.textContent = u.name;
-    b.style.background = u.color + '22';
-    b.style.color = u.color;
-    b.style.border = '1px solid ' + u.color + '44';
+  // הזרקת שם המשתמש לפאנל החדש שבתחתית התפריט
+  const badgeDisplay = document.getElementById('user-badge-display');
+  if (badgeDisplay) {
+    badgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:16px;">👤</span> מחובר כ: ${u.name}`;
   }
 
   const perms = getPerms(u);
