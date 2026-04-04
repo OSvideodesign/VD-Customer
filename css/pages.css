@@ -168,7 +168,6 @@
 /* ── Sidebar components ───────────────────────────────────────────────────── */
 .sidebar .logo {
   padding: 25px 16px 20px;
-  /* כאן תוקנה הבעיה! במקום ההצללה השחורה הישנה, שמנו את הפס הכסוף התקין שידרוס הכל */
   border-bottom: 2px solid #8a9097 !important;
   box-shadow: none !important;
   text-align: center;
@@ -183,7 +182,6 @@
 
 .sidebar-search-btn {
   width: 100%;
-  /* שדה חיפוש עגול, שקוע ומבריק (Pill shape) */
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255,255,255,0.15);
   border-top-color: #000;
@@ -307,8 +305,28 @@
   gap: 10px;
 }
 
-/* ── Settings panel max-width ─────────────────────────────────────────────── */
-#pg-settings .tw { max-width: 460px; }
+/* ── Settings Row Layout (GRID) ────────────────────────────────────────────── */
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* יוצר 3 עמודות שוות */
+  gap: 20px;
+  align-items: start;
+}
+
+.settings-panel {
+  padding: 22px;
+  min-height: 520px; /* גובה אחיד לפאנלים בשורה */
+}
+
+/* התאמה למסכים קטנים/מובייל - חזרה למבנה טור */
+@media (max-width: 1100px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-panel {
+    min-height: auto;
+  }
+}
 
 /* ── Perms grid in user modal ─────────────────────────────────────────────── */
 #u-perms-grid {
