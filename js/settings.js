@@ -13,6 +13,13 @@ export function loadSettings() {
   document.getElementById('s-email').value   = window.cfg.email   || '';
   document.getElementById('s-gcal').value    = window.cfg.gcal    || '';
 
+  // טעינת הגדרות לוגו מיתוג
+  const design = JSON.parse(localStorage.getItem('vd_crm_design') || '{}');
+  if (document.getElementById('ds-logo-side')) {
+    document.getElementById('ds-logo-side').value = design.logoSide || '';
+    document.getElementById('ds-logo-login').value = design.logoLogin || '';
+  }
+
   const canManageUsers = ['owner', 'admin'].includes(window._currentRole);
   const panel = document.getElementById('s-users-panel');
   if (panel) panel.style.display = canManageUsers ? '' : 'none';
@@ -24,6 +31,7 @@ export function saveSettings() {
   window.cfg.phone   = document.getElementById('s-phone').value.trim();
   window.cfg.email   = document.getElementById('s-email').value.trim();
   window.cfg.gcal    = document.getElementById('s-gcal').value.trim();
+  
   if (window._dbSaveCfg) window._dbSaveCfg(window.cfg);
   localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
   toast('הגדרות נשמרו ✅');
@@ -111,7 +119,6 @@ export function deleteUser() {
   toast('משתמש נמחק ✅');
 }
 
-// ── perms grid helpers ─────────────────────────────────────────────────────
 export function renderPermsGrid(perms) {
   const grid = document.getElementById('u-perms-grid');
   if (!grid) return;
