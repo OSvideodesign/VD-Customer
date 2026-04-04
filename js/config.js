@@ -11,7 +11,7 @@ export const FIREBASE_CONFIG = {
 
 // מפתחות להתראות Push - הכנס כאן את המפתחות מה-Console
 export const VAPID_KEY = "YOUR_VAPID_KEY_HERE"; 
-export const FCM_SERVER_KEY = "YOUR_SERVER_KEY_HERE"; 
+export const FCM_SERVER_KEY = "iHrJljWYvy-xJh818-z9Yl58h35k0R351BdXZjFrlW4"; 
 
 export const USERS = [
   { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner', tokens: [] },
