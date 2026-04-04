@@ -64,8 +64,8 @@
   border-top: 2px solid #8a9097;
 }
 
-/* ביטול הפס מכותרת 'ניהול' כי כבר יש פס כסף מתחת לחיפוש */
-.nav-sec:first-of-type {
+/* ביטול הפס הכפול: מסיר את הפס מ'ניהול' כי כבר יש פס כסף מתחת לחיפוש */
+.sidebar-search-div + .nav-sec {
   border-top: none;
 }
 
