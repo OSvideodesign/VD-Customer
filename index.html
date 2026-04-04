@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="css/layout.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages.css">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
@@ -239,7 +240,9 @@ document.head.appendChild(_link);
         <button onclick="gcalSignOut()" class="gcal-signout-btn">התנתק מ-Google</button>
       </div>
     </div>
-  </div><div class="pg" id="pg-customers">
+  </div>
+
+  <div class="pg" id="pg-customers">
     <div class="ph">
       <div><div class="pt">לקוחות</div><div class="ps" id="cnt-custs"></div></div>
       <button class="btn bp" onclick="openNewCust()">+ לקוח חדש</button>
@@ -251,36 +254,65 @@ document.head.appendChild(_link);
       <thead><tr><th>לקוח</th><th>טלפון</th><th>עיר</th><th>אחריות</th><th>חוב</th><th>פעולות</th></tr></thead>
       <tbody id="tb-custs"></tbody>
     </table></div></div>
-  </div><div class="pg" id="pg-warranties">
+  </div>
+
+  <div class="pg" id="pg-warranties">
     <div class="ph"><div><div class="pt">אחריות</div><div class="ps" id="cnt-warr"></div></div></div>
     <div class="tw"><div class="tscroll"><table>
       <thead><tr><th>לקוח</th><th>התקנה</th><th>שנות אחריות</th><th>תפוגה</th><th>סטטוס</th><th>התקדמות</th></tr></thead>
       <tbody id="tb-warr"></tbody>
     </table></div></div>
-  </div><div class="pg" id="pg-debts">
+  </div>
+
+  <div class="pg" id="pg-debts">
     <div class="ph"><div><div class="pt">חובות</div><div class="ps" id="cnt-debts"></div></div></div>
     <div class="tw"><div class="tscroll"><table>
       <thead><tr><th>לקוח</th><th>טלפון</th><th>סכום חוב</th><th>הערות</th><th>פעולות</th></tr></thead>
       <tbody id="tb-debts"></tbody>
     </table></div></div>
-  </div><div class="pg" id="pg-faults">
+  </div>
+
+  <div class="pg" id="pg-faults">
     <div class="ph">
       <div><div class="pt">משימות</div><div class="ps" id="cnt-faults"></div></div>
-      <button class="btn bp" onclick="openNewFault(null)">+ משימה חדשה</button>
+      <div style="display:flex; gap:8px">
+        <button class="btn bs" onclick="toggleBoardMode()"><span id="board-toggle-txt">🔲 תצוגת כרטיסיות</span></button>
+        <button class="btn bp" onclick="openNewFault(null)">+ משימה חדשה</button>
+      </div>
     </div>
-    <div class="toolbar">
+    <div class="toolbar" id="tasks-toolbar">
       <div class="sw"><input type="text" id="q-faults" placeholder="חפש..." oninput="renderFaults()"><span class="si">🔍</span></div>
       <button class="btn bs btn-sm" id="select-mode-btn" onclick="toggleSelectMode(true)">☑️ בחר מרובה</button>
     </div>
-    <div id="bulk-bar">
-      <span id="bulk-count" style="font-size:13px;color:var(--tx2)">0 נבחרו</span>
-      <div style="display:flex;gap:8px">
-        <button class="btn bs btn-sm" onclick="toggleSelectMode(false)">ביטול</button>
-        <button class="btn bd btn-sm" onclick="deleteSelected()">🗑️ מחק נבחרים</button>
+    
+    <div id="tasks-list-view">
+      <div id="bulk-bar">
+        <span id="bulk-count" style="font-size:13px;color:var(--tx2)">0 נבחרו</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn bs btn-sm" onclick="toggleSelectMode(false)">ביטול</button>
+          <button class="btn bd btn-sm" onclick="deleteSelected()">🗑️ מחק נבחרים</button>
+        </div>
+      </div>
+      <div id="list-faults"></div>
+    </div>
+
+    <div id="tasks-board-view" class="board-container" style="display:none">
+      <div class="board-col" data-status="open">
+        <div class="board-col-hd">📌 פתוחות <span class="bc-count" id="cnt-open">0</span></div>
+        <div class="board-col-list" id="board-open"></div>
+      </div>
+      <div class="board-col" data-status="scheduled">
+        <div class="board-col-hd">📅 נקבע תאריך <span class="bc-count" id="cnt-scheduled">0</span></div>
+        <div class="board-col-list" id="board-scheduled"></div>
+      </div>
+      <div class="board-col" data-status="done">
+        <div class="board-col-hd">✅ טופלה <span class="bc-count" id="cnt-done">0</span></div>
+        <div class="board-col-list" id="board-done"></div>
       </div>
     </div>
-    <div id="list-faults"></div>
-  </div><div class="pg" id="pg-notes">
+  </div>
+
+  <div class="pg" id="pg-notes">
     <div class="ph">
       <div><div class="pt">📝 הערות כלליות</div><div class="ps" id="notes-sub"></div></div>
       <button class="btn bp" onclick="openNewNote()">+ הערה חדשה</button>
@@ -297,7 +329,9 @@ document.head.appendChild(_link);
       </div>
     </div>
     <div id="list-notes" class="fg-grid"></div>
-  </div><div class="pg" id="pg-archive">
+  </div>
+
+  <div class="pg" id="pg-archive">
     <div class="ph">
       <div><div class="pt">✅ ארכיון משימות</div><div class="ps" id="cnt-archive"></div></div>
     </div>
@@ -305,7 +339,9 @@ document.head.appendChild(_link);
       <div class="sw"><input type="text" id="q-archive" placeholder="חפש..." oninput="renderArchive()"><span class="si">🔍</span></div>
     </div>
     <div id="list-archive" class="fg-grid"></div>
-  </div><div class="pg" id="pg-log">
+  </div>
+
+  <div class="pg" id="pg-log">
     <div class="ph">
       <div><div class="pt">📋 לוג שינויים</div><div class="ps" id="cnt-log"></div></div>
       <button class="btn bd btn-sm" onclick="if(confirm('למחוק את כל הלוג?'))clearLog()">🗑️ נקה לוג</button>
@@ -324,7 +360,9 @@ document.head.appendChild(_link);
       <thead><tr><th>תאריך ושעה</th><th>משתמש</th><th>פעולה</th><th>פרטים</th></tr></thead>
       <tbody id="tb-log"></tbody>
     </table></div></div>
-  </div><div class="pg" id="pg-reports">
+  </div>
+
+  <div class="pg" id="pg-reports">
     <div class="ph">
       <div><div class="pt">📈 דוחות</div><div class="ps" id="cnt-reports"></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -349,7 +387,6 @@ document.head.appendChild(_link);
       <div><div class="pt">הגדרות</div><div class="ps">ניהול מערכת והתאמה אישית</div></div>
     </div>
     <div class="settings-grid">
-      
       <div class="tw settings-panel">
         <div class="stit">🏢 פרטי החברה ויומן</div>
         <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
@@ -361,8 +398,8 @@ document.head.appendChild(_link);
         <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
         <button class="btn bp" style="width:100%" onclick="saveSettings()">💾 שמור הגדרות</button>
         
-        <div class="stit" style="margin-top:30px">🔔 התראות</div>
-        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
+        <div class="stit" style="margin-top:30px">🔔 התראות PUSH</div>
+        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות בנייד</button>
       </div>
 
       <div class="tw settings-panel" id="s-users-panel" style="display:none;">
@@ -391,9 +428,9 @@ document.head.appendChild(_link);
           </div>
         </div>
       </div>
-
     </div>
-  </div></main>
+  </div>
+</main>
 
 <div class="modal" id="M-cust">
   <div class="mbox">
@@ -495,10 +532,7 @@ document.head.appendChild(_link);
 
 <div class="modal" id="M-note">
   <div class="mbox">
-    <div class="mhd">
-      <h2 id="M-note-title">הערה חדשה</h2>
-      <button onclick="closeM('M-note')" class="modal-close-btn">✕</button>
-    </div>
+    <div class="mhd"><h2 id="M-note-title">הערה חדשה</h2><button onclick="closeM('M-note')" class="modal-close-btn">✕</button></div>
     <div class="mbody">
       <div class="fgrid">
         <div class="fg1"><label class="flbl">קטגוריה</label>
@@ -526,10 +560,7 @@ document.head.appendChild(_link);
 
 <div class="modal" id="M-user">
   <div class="mbox" style="max-width:400px">
-    <div class="mhd">
-      <h2 id="M-user-title">עריכת משתמש</h2>
-      <button class="btn bs btn-sm" onclick="closeM('M-user')">✕</button>
-    </div>
+    <div class="mhd"><h2 id="M-user-title">עריכת משתמש</h2><button class="btn bs btn-sm" onclick="closeM('M-user')">✕</button></div>
     <div class="mbody">
       <div class="fgrid">
         <div class="fg1"><label class="flbl">שם</label><input class="finp" id="u-name" placeholder="שם המשתמש"></div>
@@ -551,7 +582,6 @@ document.head.appendChild(_link);
         </div>
       </div>
       <div class="stit" style="margin-top:16px">🔐 הרשאות גישה</div>
-      <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">1 = צפייה בלבד &nbsp;|&nbsp; 2 = צפייה + הוספה + עריכה &nbsp;|&nbsp; 3 = גישה מלאה (כולל מחיקה)</div>
       <div id="u-perms-grid"></div>
     </div>
     <div class="mft">
@@ -608,6 +638,5 @@ document.head.appendChild(_link);
 </script>
 
 <script type="module" src="js/main.js"></script>
-
 </body>
 </html>
