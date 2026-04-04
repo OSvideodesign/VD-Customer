@@ -330,31 +330,24 @@
 
 /* ── פתרון סופי ומוחלט לאייקונים בכותרות (ללא ריבועים לבנים) ────────────────── */
 
-/* 1. ביטול יסודי של כל שאריות ה-Mask והרקעים הישנים מהכותרות */
+/* 1. ניקוי הגדרות קודמות - מבטיח שאין שאריות מסיכה או רקע */
 .ph .pt::before, 
 .ph .pt::after {
-    display: none !important;
-    content: none !important;
+    content: none;
     background: none !important;
     -webkit-mask: none !important;
     mask: none !important;
 }
 
-/* 2. יצירת האייקון החדש לפני הטקסט (::before) שתואם בדיוק לסיידבר */
-.ph .pt {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
+/* 2. הגדרת סגנון האייקון החדש (::before) */
 .ph .pt::before {
-    display: inline-block !important;
-    font-size: 32px; /* גודל האייקון בכותרת הגדולה */
+    display: inline-block !important; /* מוודא שהאייקון מוצג */
+    font-size: 32px; 
     line-height: 1;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
-/* 3. שיוך האייקון הנכון לכל דף לפי ה-ID של ה-PG */
+/* 3. מיפוי האייקונים לכל דף לפי ה-ID שלו */
 #pg-dashboard  .pt::before { content: "📊" !important; }
 #pg-customers  .pt::before { content: "👥" !important; }
 #pg-faults     .pt::before { content: "🔧" !important; }
@@ -366,7 +359,7 @@
 #pg-settings   .pt::before { content: "⚙️" !important; }
 #pg-log        .pt::before { content: "📋" !important; }
 
-/* תיקון קל לכותרות בתוך פאנלים (stit) - מבטלים ריבועים לבנים גם פה */
+/* הסרת האייקונים מהכותרות הפנימיות (stit) כדי למנוע בלאגן */
 .stit::before {
     display: none !important;
 }
