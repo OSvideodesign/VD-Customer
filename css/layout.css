@@ -7,8 +7,10 @@
   right: 0;
   width: 220px;
   height: 100vh;
-  background: var(--sur);
-  border-left: 1px solid var(--brd);
+  /* עיצוב מתכתי כהה ועמוק לתפריט הצד */
+  background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
+  border-left: 2px solid #8a9097; /* פס כסוף שמפריד את התפריט */
+  box-shadow: inset 1px 0 3px rgba(255,255,255,0.1), -5px 0 20px rgba(0,0,0,0.8);
   display: flex;
   flex-direction: column;
   z-index: 100;
@@ -17,7 +19,6 @@
 
 .logo {
   padding: 20px 16px 14px;
-  border-bottom: 1px solid var(--brd);
   text-align: center;
 }
 
@@ -39,39 +40,55 @@
 /* ── Nav ─────────────────────────────────────────────────────────────────── */
 .nav {
   flex: 1;
-  padding: 10px;
+  padding: 12px 10px;
 }
 
 .nav-sec {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--tx3);
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: 12px 8px 4px;
+  padding: 16px 12px 8px;
+  /* קו הפרדה חרוט (Engraved) בין המחלקות בתפריט */
+  border-bottom: 1px solid #111;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+  margin-bottom: 10px;
 }
 
 .nav-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 11px;
+  gap: 10px;
+  padding: 10px 14px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--tx2);
-  background: none;
-  border: none;
+  color: #a0a5ab; /* טקסט כסוף/אפור */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  background: transparent;
+  border: 1px solid transparent;
   width: 100%;
   text-align: right;
   font-family: 'Heebo', sans-serif;
-  margin-bottom: 2px;
-  transition: all .15s;
+  margin-bottom: 4px;
+  transition: all .2s;
 }
 
-.nav-btn:hover { background: var(--sur2); color: var(--tx); }
-.nav-btn.on    { background: rgba(59,130,246,.15); color: var(--acc); }
+.nav-btn:hover {
+  background: rgba(255,255,255,0.03);
+  color: #fff;
+}
+
+.nav-btn.on {
+  /* כפתור לחוץ/פעיל - רקע שקוע וגבול מואר מימין */
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
+  border: 1px solid #000;
+  border-right: 3px solid var(--acc); /* פס ההארה הכחול */
+}
 
 /* ── Main content ─────────────────────────────────────────────────────────── */
 .main {

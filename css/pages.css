@@ -12,56 +12,35 @@
   padding: 20px;
 }
 
-/* ── המסגרת המתכתית (צמצום גובה) ── */
 .login-card {
-  /* רקע מתכת מוברשת כהה ועמוק יותר עם ברק אלכסוני */
-  background: linear-gradient(160deg, 
-    #33383e 0%, 
-    #1d2024 30%, 
-    #4a5057 50%, /* פס הברק */
-    #1d2024 70%, 
-    #2a2e33 100%
-  );
-  
+  background: linear-gradient(160deg, #33383e 0%, #1d2024 30%, #4a5057 50%, #1d2024 70%, #2a2e33 100%);
   border: 2px solid #a0a5ab;
   border-radius: 20px;
-  
-  /* צמצום ה-padding הכללי כדי להקטין גובה */
-  padding: 15px; /* הוקטן מ-20px */
+  padding: 15px;
   width: 100%;
   max-width: 280px;
-  
   text-align: center;
   overflow: hidden;
-  
-  box-shadow: 
-    inset 0 1px 3px rgba(255, 255, 255, 0.3),
-    inset 0 -2px 5px rgba(0, 0, 0, 0.6),
-    0 25px 50px rgba(0, 0, 0, 0.95);
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3), inset 0 -2px 5px rgba(0, 0, 0, 0.6), 0 25px 50px rgba(0, 0, 0, 0.95);
 }
 
-/* ── הלוגו הראשי (צמצום ריווח תחתון) ── */
 .login-header-img {
-  /* התאמת השוליים השליליים ל-padding החדש של המסגרת */
-  width: calc(100% + 30px); /* הותאם מ-40px */
+  width: calc(100% + 30px);
   max-width: none;
-  margin-left: -15px; /* הותאם מ-20px */
-  margin-right: -15px; /* הותאם מ-20px */
-  margin-top: -15px; /* הותאם מ-20px */
-  
-  margin-bottom: 10px; /* צמצום משמעותי מ-25px כדי להקטין גובה */
+  margin-left: -15px;
+  margin-right: -15px;
+  margin-top: -15px;
+  margin-bottom: 10px;
   display: block;
-  
   border-top-left-radius: 18px; 
   border-top-right-radius: 18px;
 }
 
-/* גרפיקת "ניהול לקוחות" (צמצום ריווח) */
 .login-sub-text-img {
   width: 100%;
   max-width: 180px;
   height: auto;
-  margin: 0 auto 15px; /* צמצום מ-30px לפני הכפתורים */
+  margin: 0 auto 15px;
   display: block;
   opacity: 0.85;
 }
@@ -70,25 +49,15 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 15px; /* צמצום מ-20px */
+  margin-bottom: 15px;
 }
 
-/* ── כפתורי משתמשים - אפקט זכוכית/פלסטיק תלת ממדי מבריק (צמצום גובה) ── */
 .login-user-btn {
   background-color: #3b4046;
-  background-image: linear-gradient(to bottom, 
-    rgba(255,255,255,0.25) 0%, 
-    rgba(255,255,255,0.05) 49%, 
-    rgba(0,0,0,0.2) 50%, 
-    rgba(0,0,0,0.5) 100%
-  );
-  
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 49%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
   border: 1px solid #111;
   border-radius: 12px;
-  
-  /* צמצום ה-padding האנכי בכפתור */
-  padding: 10px 6px; /* הוקטן מ-14px 6px */
-  
+  padding: 10px 6px;
   cursor: pointer;
   position: relative;
   display: flex;
@@ -96,19 +65,12 @@
   align-items: center;
   justify-content: center;
   transition: transform 0.2s, box-shadow 0.2s;
-  
-  box-shadow: 
-    inset 0 1px 1px rgba(255,255,255,0.5), 
-    inset 0 0 25px var(--user-glow),       
-    0 8px 15px rgba(0,0,0,0.6);            
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), inset 0 0 25px var(--user-glow), 0 8px 15px rgba(0,0,0,0.6);            
 }
 
 .login-user-btn:active {
   transform: translateY(3px);
-  box-shadow: 
-    inset 0 1px 1px rgba(255,255,255,0.2), 
-    inset 0 0 25px var(--user-glow),
-    0 3px 6px rgba(0,0,0,0.6);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 0 25px var(--user-glow), 0 3px 6px rgba(0,0,0,0.6);
 }
 
 .login-user-icon {
@@ -116,7 +78,7 @@
   font-weight: 700;
   font-size: 32px;
   line-height: 1;
-  margin-bottom: 2px; /* צמצום מ-4px */
+  margin-bottom: 2px;
   text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
@@ -127,24 +89,21 @@
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
-/* ── אזור הזנת סיסמה וכפתור ה"כנס" המבריק ── */
-#pass-area {
-  display: none;
-}
+#pass-area { display: none; }
 
 #pass-label {
   font-size: 13px;
   font-weight: 600;
   color: #a0a5ab;
   text-shadow: 0 1px 1px rgba(0,0,0,0.8);
-  margin-bottom: 8px; /* צמצום מ-10px */
+  margin-bottom: 8px;
 }
 
 .login-pass-inp {
   text-align: center;
   font-size: 18px;
   letter-spacing: 4px;
-  margin-bottom: 10px; /* צמצום מ-14px */
+  margin-bottom: 10px;
   background: rgba(0, 0, 0, 0.5); 
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
@@ -154,24 +113,17 @@
 
 .login-full-btn.btn {
   width: 100%;
-  margin-bottom: 8px; /* צמצום מ-10px */
+  margin-bottom: 8px;
   background-color: #3b4046;
-  background-image: linear-gradient(to bottom, 
-    rgba(255,255,255,0.25) 0%, 
-    rgba(255,255,255,0.05) 49%, 
-    rgba(0,0,0,0.2) 50%, 
-    rgba(0,0,0,0.5) 100%
-  );
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 49%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
   border: 1px solid #111;
   border-radius: 12px;
-  padding: 10px; /* צמצום מ-12px */
+  padding: 10px;
   color: #fff !important;
   font-size: 15px;
   font-weight: 700;
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-  box-shadow: 
-    inset 0 1px 1px rgba(255,255,255,0.5), 
-    0 8px 15px rgba(0,0,0,0.5);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 8px 15px rgba(0,0,0,0.5);
   cursor: pointer;
   transition: transform 0.2s;
   justify-content: center;
@@ -179,16 +131,14 @@
 
 .login-full-btn.btn:active {
   transform: translateY(3px);
-  box-shadow: 
-    inset 0 1px 1px rgba(255,255,255,0.2), 
-    0 3px 6px rgba(0,0,0,0.5);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 3px 6px rgba(0,0,0,0.5);
 }
 
 #pass-err {
   color: #ff6b6b;
   font-size: 13px;
   font-weight: 700;
-  margin-top: 5px; /* צמצום מ-8px */
+  margin-top: 5px;
   display: none;
 }
 
@@ -217,35 +167,47 @@
 
 /* ── Sidebar components ───────────────────────────────────────────────────── */
 .sidebar .logo {
-  padding: 10px;
-  border-bottom: 1px solid var(--brd);
+  padding: 25px 16px 20px;
+  /* קו חרוט (Engraved) מתחת ללוגו בתפריט הצד */
+  border-bottom: 1px solid #111;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08);
+  text-align: center;
 }
 
 .sidebar-logo-img {
   width: 100%;
-  max-width: 180px;
+  max-width: 160px;
   margin: 0 auto;
   display: block;
 }
 
 .sidebar-search-btn {
   width: 100%;
-  background: var(--sur2);
-  border: 1px solid var(--brd2);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: var(--tx3);
+  /* שדה חיפוש עגול, שקוע ומבריק (Pill shape) */
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-top-color: #000;
+  border-radius: 20px; 
+  padding: 10px 16px;
+  color: #a0a5ab;
   font-size: 13px;
   font-family: Heebo, sans-serif;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
+  transition: all 0.2s;
+}
+
+.sidebar-search-btn:hover {
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
 }
 
 .nav-btn-logout {
-  color: var(--red);
-  margin-top: 8px;
+  color: #ff6b6b;
+  margin-top: 15px;
 }
 
 /* ── Dashboard panel link buttons ─────────────────────────────────────────── */
@@ -362,6 +324,12 @@
   border-radius: 20px;
   font-size: 13px;
   font-weight: 700;
+  /* עיצוב שם המשתמש בסגנון כפתורי הזכוכית המבריקים */
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.3) 100%) !important;
+  border: 1px solid #000 !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.5) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  color: #fff !important;
 }
 
 /* ── wk-label (calendar week range label) ────────────────────────────────── */
