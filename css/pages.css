@@ -311,6 +311,7 @@
   grid-template-columns: repeat(3, 1fr); /* יוצר 3 עמודות שוות */
   gap: 20px;
   align-items: start;
+  margin-top: 20px; /* מוריד את הפאנלים למטה לטובת הכותרת */
 }
 
 .settings-panel {
