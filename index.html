@@ -7,11 +7,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="וידאו דיזיין">
-<meta name="theme-color" content="#0a0e1a">
+<meta name="theme-color" content="#1d2024">
 <title>לקוחות וידאו דיזיין</title>
 
-<link rel="icon" href="app-icon.jpg?v=2" type="image/jpeg">
-<link rel="apple-touch-icon" href="app-icon.jpg?v=2">
+<link rel="icon" href="app-icon-192.jpg?v=4" type="image/jpeg">
+<link rel="apple-touch-icon" href="app-icon-192.jpg?v=4">
 
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
@@ -21,7 +21,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
-/* חיבור האייקון לאנדרואיד ולהתקנה על שולחן העבודה (PWA Manifest) עם ?v=2 */
+/* חיבור האייקון לאנדרואיד ולהתקנה על שולחן העבודה (PWA Manifest) עם ?v=4 */
 const _manifest = {
   name: "Video Design CRM", 
   short_name: "VD CRM", 
@@ -31,8 +31,13 @@ const _manifest = {
   theme_color: "#1d2024",
   icons: [
     {
-      "src": "app-icon.jpg?v=2",
-      "sizes": "192x192 512x512",
+      "src": "app-icon-192.jpg?v=4",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "app-icon-512.jpg?v=4",
+      "sizes": "512x512",
       "type": "image/jpeg"
     }
   ]
