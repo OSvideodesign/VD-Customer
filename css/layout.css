@@ -206,14 +206,15 @@
 }
 .m-drawer-close { background: none; border: none; color: #a0a5ab; font-size: 22px; cursor: pointer; }
 
+/* תיקון סעיף 4: תצוגת מובייל קבועה */
 @media (max-width: 768px) {
-  .sidebar { display: none; }
-  .main    { margin-right: 0; margin-left: 0; width: 100%; padding: 12px 12px 76px; }
-  #mnav    { display: block; }
+  .sidebar { display: none !important; }
+  .main    { margin-right: 0 !important; margin-left: 0 !important; width: 100% !important; padding: 12px 12px 76px !important; }
+  #mnav    { display: block !important; }
   .stats   { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash3   { grid-template-columns: 1fr; }
   .fg-grid { grid-template-columns: 1fr; }
-  .ph      { flex-direction: column; align-items: flex-start; padding-right: 0; }
+  .ph      { flex-direction: column; align-items: flex-start; padding-right: 0 !important; }
   .pt      { font-size: calc(24px * var(--fz-scale, 1)); }
 }
 @media (min-width: 769px) {
