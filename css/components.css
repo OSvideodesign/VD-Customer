@@ -34,7 +34,6 @@
 .panel-body::-webkit-scrollbar       { width: 4px; }
 .panel-body::-webkit-scrollbar-thumb { background: #4a5057; border-radius: 2px; }
 
-/* פונטים דינמיים לשורות בתוך לוח הבקרה */
 .ai {
   display: flex;
   align-items: center;
@@ -104,6 +103,12 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 
 .si { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: calc(15px * var(--fz-scale, 1)); pointer-events: none; }
 .fsel { cursor: pointer; }
+
+/* פתרון בעיית הסימון הירוק: רקע כהה לאפשרויות הבחירה כדי שהטקסט הלבן יבלוט תמיד */
+.fsel option, .finp option {
+  background: #1d2024;
+  color: #fff;
+}
 
 /* Avatars */
 .av {

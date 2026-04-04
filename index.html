@@ -553,13 +553,13 @@ document.head.appendChild(_link);
 </div>
 
 <script>
-  // מנגנון הגדלה והקטנה (5 רמות למעלה, 5 למטה)
+  // מנגנון הגדלה והקטנה (עד 10 רמות למעלה, עד 10 רמות למטה)
   let currentFontLevel = 0;
 
   function changeFontScale(delta) {
     currentFontLevel += delta;
-    if (currentFontLevel > 5) currentFontLevel = 5;
-    if (currentFontLevel < -5) currentFontLevel = -5;
+    if (currentFontLevel > 10) currentFontLevel = 10;
+    if (currentFontLevel < -10) currentFontLevel = -10;
     localStorage.setItem('vd_crm_font_lvl', currentFontLevel);
     applyFontScale();
   }
@@ -569,7 +569,6 @@ document.head.appendChild(_link);
     const scale = 1 + (currentFontLevel * 0.05); 
     document.documentElement.style.setProperty('--fz-scale', scale);
     
-    // עדכון תצוגת המספר למשתמש
     const lbls = document.querySelectorAll('.font-scale-lbl');
     lbls.forEach(lbl => {
       lbl.textContent = currentFontLevel > 0 ? '+' + currentFontLevel : currentFontLevel;
@@ -591,14 +590,12 @@ document.head.appendChild(_link);
   // טעינת הגדרות עם פתיחת המערכת
   window.addEventListener('DOMContentLoaded', () => {
     
-    // טעינת רמת פונט שמורה
     const savedFont = localStorage.getItem('vd_crm_font_lvl');
     if (savedFont !== null) {
       currentFontLevel = parseInt(savedFont);
     }
     applyFontScale();
 
-    // טעינת עיצוב אישי
     const savedDesign = localStorage.getItem('vd_crm_design');
     if (savedDesign) {
       try {

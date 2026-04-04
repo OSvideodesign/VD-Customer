@@ -29,10 +29,10 @@ export function renderDash() {
   document.getElementById('pan-warr').innerHTML = pw.length
     ? pw.map(c => { const s = wStat(c); return `<div class="ai ${s.d < 0 ? 'danger' : 'warn'}" onclick="window._jumpTo('${c.id}')">
         <span>${s.d < 0 ? '🔴' : '🟡'}</span>
-        <div style="flex:1"><div style="font-weight:600;font-size:13px">${c.name}</div>
-        <div style="font-size:11px;color:var(--tx3)">${s.d < 0 ? 'פגה לפני ' + Math.abs(s.d) + ' ימים' : 'עוד ' + s.d + ' ימים'}</div></div>
+        <div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${c.name}</div>
+        <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">${s.d < 0 ? 'פגה לפני ' + Math.abs(s.d) + ' ימים' : 'עוד ' + s.d + ' ימים'}</div></div>
         <span style="color:var(--tx3)">›</span></div>`; }).join('')
-    : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:13px">✅ הכל תקין</div>';
+    : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ הכל תקין</div>';
 
   // Debts panel
   const pd = window.custs.filter(c => c.debt > 0);
@@ -46,10 +46,10 @@ export function renderDash() {
   ];
   document.getElementById('pan-debts').innerHTML = pdAll.length
     ? pdAll.map(x => `<div class="ai danger" onclick="${x.onclick}">
-        <span>💰</span><div style="flex:1"><div style="font-weight:600;font-size:13px">${x.name}</div>
-        <div style="font-size:11px;color:var(--tx3)">₪${x.amount.toLocaleString('he-IL')}${x.desc ? ' — ' + x.desc : ''}</div></div>
+        <span>💰</span><div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${x.name}</div>
+        <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">₪${x.amount.toLocaleString('he-IL')}${x.desc ? ' — ' + x.desc : ''}</div></div>
         <span style="color:var(--tx3)">›</span></div>`).join('')
-    : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:13px">✅ אין חובות</div>';
+    : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ אין חובות</div>';
 
   // Faults panel
   const pf = window.faults.filter(f => f.status !== 'done');
@@ -58,11 +58,11 @@ export function renderDash() {
         const c = window.custs.find(x => x.id === f.custId);
         const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
         return `<div class="ai warn" onclick="window._nav('faults')">
-          <span>🔧</span><div style="flex:1"><div style="font-weight:600;font-size:13px">${name}</div>
-          <div style="font-size:11px;color:var(--tx3)">${(f.desc || '').slice(0, 40)}</div></div>
+          <span>🔧</span><div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${name}</div>
+          <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">${(f.desc || '').slice(0, 40)}</div></div>
           <span style="color:var(--tx3)">›</span></div>`;
       }).join('')
-    : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:13px">✅ אין משימות</div>';
+    : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ אין משימות</div>';
 
   // Notes panels by category
   const myNotes = (window.notes || []).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
@@ -72,7 +72,7 @@ export function renderDash() {
     const items = myNotes.filter(n => (n.cat || 'general') === cat);
     const clr = NCAT_CLR[cat];
     if (!items.length) {
-      panEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:13px">אין הערות</div>';
+      panEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">אין הערות</div>';
       return;
     }
     panEl.innerHTML = items.map(n => {
@@ -81,8 +81,8 @@ export function renderDash() {
       const ownerClr = ownerU ? ownerU.color : 'var(--tx3)';
       return `<div class="ai" onclick="window._editNoteById('${n.id}')" style="border-right:3px solid ${clr}">
         <div style="flex:1;min-width:0">
-          <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(n.text || '').split('\n')[0].slice(0, 40)}</div>
-          <div style="font-size:11px;color:var(--tx3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap">
+          <div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(n.text || '').split('\n')[0].slice(0, 40)}</div>
+          <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap">
             ${n.owner ? `<span style="color:${ownerClr};font-weight:600">✏️ ${n.owner}</span>` : ''}
             ${c ? `<span style="color:var(--acc)">👤 ${c.name}</span>` : ''}
             <span>${n.date ? fmtD(n.date) : fmtD(n.created || today())}</span>
