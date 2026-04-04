@@ -127,12 +127,15 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  padding-right: 100px; 
+  padding-right: 20px; 
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 15px;
 }
 
 .pt { 
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-size: calc(34px * var(--fz-scale, 1)); 
     font-weight: 800; 
     color: #e5e7eb; 
