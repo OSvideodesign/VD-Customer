@@ -7,20 +7,29 @@
   right: 0;
   width: 220px;
   height: 100vh;
+  /* הרקע המתכתי המוברש של התפריט */
   background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
   border-left: 2px solid #8a9097;
   box-shadow: inset 1px 0 3px rgba(255,255,255,0.1), -5px 0 20px rgba(0,0,0,0.8);
   display: flex;
   flex-direction: column;
   z-index: 100;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
-.sidebar .logo {
-  padding: 20px 16px 20px;
+.logo {
+  padding: 20px 16px 14px;
   text-align: center;
-  border-bottom: 2px solid #8a9097; 
-  box-shadow: 0 1px 0 rgba(0,0,0,0.5);
+  position: relative;
+  /* קו חרוט בתחתית אזור הלוגו */
+  border-bottom: 1px solid #000;
+}
+
+.logo::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .logo h1 {
@@ -32,34 +41,46 @@
   background-clip: text;
 }
 
-.logo p { font-size: 11px; color: var(--tx3); margin-top: 2px; }
+.logo p {
+  font-size: 11px;
+  color: var(--tx3);
+  margin-top: 2px;
+}
 
 /* ── Nav ─────────────────────────────────────────────────────────────────── */
 .nav {
   flex: 1;
   padding: 10px;
-  overflow-y: auto;
 }
 
 .nav-sec {
-  font-size: 13px; 
+  position: relative;
+  font-size: 11px;
   font-weight: 700;
   color: #8a9097;
   text-transform: uppercase;
   letter-spacing: 1px;
   padding: 16px 12px 8px;
   margin-top: 8px;
-  border-top: 2px solid #8a9097;
+  /* קו חרוט בין כותרות הניווט (ניהול, דוחות, מערכת) */
+  border-top: 1px solid #000;
+}
+
+.nav-sec::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 14px;
+  padding: 9px 11px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 15px; 
+  font-size: 13px;
   font-weight: 500;
   color: #a0a5ab;
   background: none;
@@ -67,7 +88,7 @@
   width: 100%;
   text-align: right;
   font-family: 'Heebo', sans-serif;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   transition: all .15s;
 }
 
@@ -77,10 +98,7 @@
   color: #fff; 
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
   border-right: 3px solid var(--acc);
-  font-weight: 600;
 }
-
-.nav-btn-logout { color: #ff6b6b; margin-top: 20px; }
 
 /* ── Main content ─────────────────────────────────────────────────────────── */
 .main {
@@ -92,18 +110,11 @@
   box-sizing: border-box;
 }
 
-#user-badge-display-wrapper {
-    background: linear-gradient(0deg, #1d2024 0%, #2a2e33 100%);
-    border-top: 1px solid #111;
-    box-shadow: 0 -1px 0 rgba(255,255,255,0.05);
-    padding: 12px 16px;
-    text-align: center;
-}
-
 /* ── Pages ────────────────────────────────────────────────────────────────── */
 .pg     { display: none; }
 .pg.on  { display: block; }
 
+/* ── Page header ──────────────────────────────────────────────────────────── */
 .ph {
   display: flex;
   align-items: center;
@@ -113,8 +124,9 @@
   gap: 10px;
 }
 
+/* כותרת הדף הראשית - מוגדלת ומוארת */
 .pt { 
-    font-size: 28px; 
+    font-size: 28px; /* נקודה 1: הגדלה מ-22px ל-28px */
     font-weight: 800; 
     color: #e5e7eb; 
     background: linear-gradient(180deg, #fff 0%, #8a9097 100%);
@@ -123,160 +135,145 @@
     background-clip: text;
     text-shadow: 0 2px 5px rgba(0,0,0,0.9);
 }
+
 .ps { font-size: 14px; color: #8a9097; margin-top: 2px; }
 
-.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-.dash3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
-.fg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+/* ── Stats grid ───────────────────────────────────────────────────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ── Dashboard 3-col grid ─────────────────────────────────────────────────── */
+.dash3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+/* ── Fault / Note card grid ───────────────────────────────────────────────── */
+.fg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
 
 /* ── Mobile bottom nav ────────────────────────────────────────────────────── */
 #mnav {
   display: none;
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: linear-gradient(160deg, #2a2e33 0%, #1d2024 100%);
   border-top: 2px solid #8a9097;
   z-index: 200;
   height: 60px;
   padding-bottom: env(safe-area-inset-bottom);
 }
-#mnav .mns { display: flex; height: 100%; align-items: stretch; }
-.mnb {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px; background: none; border: none; color: #8a9097; font-family: 'Heebo', sans-serif;
-  font-size: 12px; cursor: pointer; padding: 4px; transition: color .15s;
+
+#mnav .mns {
+  display: flex;
+  height: 100%;
+  align-items: stretch;
 }
+
+.mnb {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: #8a9097;
+  font-family: 'Heebo', sans-serif;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color .15s;
+}
+
 .mnb.on { color: var(--acc); text-shadow: 0 0 10px var(--acc); }
 
 /* ── Mobile slide-in drawer ───────────────────────────────────────────────── */
 #m-drawer { display: none; position: fixed; inset: 0; z-index: 500; }
-#m-drawer-bg { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
-#m-drawer-panel {
-  position: absolute; top: 0; right: 0; width: 240px; height: 100%;
-  background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
-  border-left: 2px solid #8a9097; overflow-y: auto; display: flex; flex-direction: column;
-}
-#m-drawer.open { display: block; }
-.m-drawer-btn {
-  display: block; width: 100%; text-align: right; padding: 12px 20px;
-  background: none; border: none; color: #a0a5ab; font-family: 'Heebo', sans-serif;
-  font-size: 15px; cursor: pointer; transition: background .15s;
-}
-.m-drawer-btn:hover, .m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
-.m-drawer-sec {
-  font-size: 13px; color: #8a9097; padding: 14px 20px 4px; font-weight: 700;
-  letter-spacing: .5px; border-top: 2px solid #8a9097;
-}
-.m-drawer-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px 16px; border-bottom: 2px solid #8a9097; font-weight: 700; font-size: 15px;
-}
-.m-drawer-close { background: none; border: none; color: #a0a5ab; font-size: 22px; cursor: pointer; }
 
+#m-drawer-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+}
+
+#m-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 240px;
+  height: 100%;
+  background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
+  border-left: 2px solid #8a9097;
+  overflow-y: auto;
+  padding: 20px 0 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+#m-drawer.open { display: block; }
+
+.m-drawer-btn {
+  display: block;
+  width: 100%;
+  text-align: right;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: #a0a5ab;
+  font-family: 'Heebo', sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.m-drawer-btn:hover,
+.m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
+
+.m-drawer-sec {
+  font-size: 11px;
+  color: #8a9097;
+  padding: 14px 20px 4px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  border-top: 1px solid #000;
+  position: relative;
+}
+
+.m-drawer-sec::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sidebar { display: none; }
   .main    { margin-right: 0; margin-left: 0; width: 100%; padding: 12px 12px 76px; }
   #mnav    { display: block; }
+
   .stats   { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash3   { grid-template-columns: 1fr; }
   .fg-grid { grid-template-columns: 1fr; }
+
   .ph      { flex-direction: column; align-items: flex-start; }
-  .pt      { font-size: 20px; }
+  .pt      { font-size: 18px; }
 }
+
 @media (min-width: 769px) {
   #mnav    { display: none !important; }
   #m-drawer{ display: none !important; }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════ */
-/* ── FONT SCALING (הגדלה והקטנה של טקסט) ─────────────────────────────────── */
-.fz-plus .pt { font-size: 32px; }
-.fz-plus .nav-btn, .fz-plus .m-drawer-btn { font-size: 17px; }
-.fz-plus td, .fz-plus th { font-size: 16px; }
-.fz-plus .btn { font-size: 16px; }
-.fz-plus .flbl { font-size: 15px; }
-.fz-plus .finp, .fz-plus .sw input { font-size: 17px; }
-.fz-plus .sc-val { font-size: 36px; }
-.fz-plus .panel-title { font-size: 17px; }
-.fz-plus .ai { font-size: 16px; }
-
-.fz-minus .pt { font-size: 22px; }
-.fz-minus .nav-btn, .fz-minus .m-drawer-btn { font-size: 13px; }
-.fz-minus td, .fz-minus th { font-size: 12px; }
-.fz-minus .btn { font-size: 12px; }
-.fz-minus .flbl { font-size: 11px; }
-.fz-minus .finp, .fz-minus .sw input { font-size: 13px; }
-.fz-minus .sc-val { font-size: 26px; }
-.fz-minus .panel-title { font-size: 13px; }
-.fz-minus .ai { font-size: 12px; }
-
-/* ══════════════════════════════════════════════════════════════════════════ */
-/* ── DESIGN SETTINGS THEMES (מערכת עיצוב ורקעים) ─────────────────────────── */
-
-/* 1. אפשרויות רקע המערכת (Backgrounds) */
-body[data-bg="stone"] {
-    /* נשען על רקע האבן המקורי שמוגדר ב-base.css */
-}
-
-body[data-bg="metal"] {
-    background: linear-gradient(135deg, #7b838c 0%, #b2b8c0 50%, #51585f 100%) !important;
-}
-
-body[data-bg="carbon"] {
-    background: 
-      linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
-      linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
-      linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
-      linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
-      linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
-      linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, #1d1d1d 50%, #1d1d1d 75%, #1a1a1a 75%, #1a1a1a 100%) !important;
-    background-color: #131313 !important;
-    background-size: 20px 20px !important;
-}
-
-body[data-bg="dark"] {
-    background: #111315 !important;
-}
-
-/* 2. כיבוי הברקות תלת-ממד (Skeuomorphism = Flat Mode) */
-body[data-glow="false"] .sc,
-body[data-glow="false"] .tw,
-body[data-glow="false"] .fc,
-body[data-glow="false"] .mbox,
-body[data-glow="false"] #bulk-bar {
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important; /* רק צללית רגילה, ללא הברקה פנימית */
-    border: 1px solid #333 !important; /* מסגרת דקה ושטוחה */
-    background: #1d2024 !important; /* צבע אטום במקום גרדיאנט מתכתי */
-}
-
-body[data-glow="false"] .finp,
-body[data-glow="false"] .sw input,
-body[data-glow="false"] .fsel {
-    background: #2a2e33 !important;
-    box-shadow: none !important;
-    border: 1px solid #444 !important;
-}
-
-body[data-glow="false"] .btn.bp {
-    background: var(--acc) !important; /* שימוש בצבע נקי בלי גרדיאנט */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-    border: none !important;
-}
-
-body[data-glow="false"] .btn.bs {
-    background: #4a5057 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-    border: none !important;
-}
-
-body[data-glow="false"] .sidebar {
-    background: #1d2024 !important;
-    border-left: 1px solid #333 !important;
-    box-shadow: none !important;
-}
-
-body[data-glow="false"] .nav-sec,
-body[data-glow="false"] .sidebar .logo {
-    border-color: #333 !important;
-    box-shadow: none !important;
 }
