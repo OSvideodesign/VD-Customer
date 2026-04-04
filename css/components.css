@@ -14,22 +14,19 @@
   text-align: center;
 }
 
-/* הדגשות צבע למסגרות של כרטיסיות הסטטיסטיקה */
 .sc.info    { border-color: rgba(59,130,246,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(59,130,246,.2), 0 8px 20px rgba(0,0,0,0.6); }
 .sc.warn    { border-color: rgba(245,158,11,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(245,158,11,.2), 0 8px 20px rgba(0,0,0,0.6); }
 .sc.danger  { border-color: rgba(239,68,68,.6);  box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(239,68,68,.2),  0 8px 20px rgba(0,0,0,0.6); }
 .sc.success { border-color: rgba(16,185,129,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(16,185,129,.2), 0 8px 20px rgba(0,0,0,0.6); }
 .sc.orange  { border-color: rgba(251,146,60,.6); box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 0 10px rgba(251,146,60,.2), 0 8px 20px rgba(0,0,0,0.6); }
 
-/* נקודה 1: הגדלת פונטים בכרטיסיות הסטטיסטיקה (מ-22px ל-28px) */
 .sc-lbl { font-size: 13px; color: #9ca3af; margin-bottom: 6px; }
-.sc-val { font-size: 28px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+.sc-val { font-size: 32px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
 .sc-sub { font-size: 12px; color: #8a9097; margin-top: 4px; }
 
 /* ── Panel (dashboard cards) ─────────────────────────────────────────────── */
 .tw { overflow: hidden; }
 
-/* נקודה 1: הגדלת כותרות הקוביות (מ-13px ל-15px) */
 .panel-title {
   padding: 12px 16px;
   border-bottom: 1px solid #111;
@@ -52,11 +49,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 11px;
+  padding: 10px 14px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   cursor: pointer;
   transition: background .15s;
-  font-size: 13px; /* הגדלה */
+  font-size: 14px; 
 }
 
 .ai:hover       { background: rgba(255,255,255,0.03); }
@@ -69,11 +66,10 @@
 
 table  { width: 100%; border-collapse: collapse; min-width: 520px; }
 
-/* נקודה 1: הגדלת פונט בטבלאות (תואם לתמונה המוגדלת) */
 th {
-  padding: 9px 11px;
+  padding: 10px 12px;
   text-align: right;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #9ca3af;
   text-transform: uppercase;
@@ -83,8 +79,8 @@ th {
 }
 
 td {
-  padding: 9px 11px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 14px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   color: #e5e7eb;
   vertical-align: middle;
@@ -104,14 +100,13 @@ tr:last-child td { border-bottom: none; }
 
 .sw { position: relative; flex: 1; min-width: 180px; }
 
-/* נקודה 1: הגדלת שדות הטקסט והזנה (Inputs) */
 .sw input, .fsel, .finp {
   background: linear-gradient(180deg, #4a5057 0%, #2a2e33 40%, #1d2024 60%, #3a4047 100%);
   border: 1px solid #111;
   border-radius: 8px;
-  padding: 9px 11px;
+  padding: 10px 12px;
   color: #fff;
-  font-size: 14px; 
+  font-size: 15px; 
   font-family: 'Heebo', sans-serif;
   outline: none;
   width: 100%;
@@ -141,13 +136,13 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 
 /* ── Avatar ───────────────────────────────────────────────────────────────── */
 .av {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #fff;
   flex-shrink: 0;
@@ -159,9 +154,9 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 /* ── Badges ───────────────────────────────────────────────────────────────── */
 .badge {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
 }
@@ -176,9 +171,9 @@ textarea.finp    { resize: vertical; min-height: 80px; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
-  font-size: 13px; /* הגדלה */
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -200,7 +195,7 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 
 .bd { background: linear-gradient(to bottom, #ef4444, #b91c1c); border: 1px solid #7f1d1d; }
 
-.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
 
 /* ── Progress bar ─────────────────────────────────────────────────────────── */
 .pb      { height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; margin-top: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
@@ -220,9 +215,9 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 }
 
 .fch  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
-.fdesc { font-size: 13px; color: #d1d5db; margin-bottom: 10px; line-height: 1.5; } /* הגדלה */
+.fdesc { font-size: 14px; color: #d1d5db; margin-bottom: 10px; line-height: 1.5; }
 .fmeta { display: flex; gap: 10px; flex-wrap: wrap; }
-.fmeta span { font-size: 11px; color: #9ca3af; }
+.fmeta span { font-size: 12px; color: #9ca3af; }
 
 /* ── Bulk-select mode ─────────────────────────────────────────────────────── */
 .fc-cb {
@@ -292,7 +287,7 @@ textarea.finp    { resize: vertical; min-height: 80px; }
   z-index: 1;
 }
 
-.mhd h2  { font-size: 16px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); } /* הגדלה */
+.mhd h2  { font-size: 18px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 .mbody   { padding: 20px; }
 .mft     { padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 8px; justify-content: flex-end; }
 
@@ -302,14 +297,14 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 
 .flbl {
   display: block;
-  font-size: 12px; /* הגדלה */
+  font-size: 13px;
   font-weight: 600;
   color: #9ca3af;
   margin-bottom: 4px;
 }
 
 .stit {
-  font-size: 13px; /* הגדלה */
+  font-size: 15px;
   font-weight: 700;
   color: #9ca3af;
   margin-bottom: 12px;
@@ -348,3 +343,33 @@ textarea.finp    { resize: vertical; min-height: 80px; }
   .fgrid   { grid-template-columns: 1fr; }
   .finp, .sw input, .fsel { font-size: 16px; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── FONT SCALING (הגדלה והקטנה של טקסט) ─────────────────────────────────── */
+.fz-plus .sc-lbl { font-size: 15px; }
+.fz-plus .sc-val { font-size: 36px; }
+.fz-plus .sc-sub { font-size: 14px; }
+.fz-plus .panel-title { font-size: 17px; }
+.fz-plus .ai { font-size: 16px; }
+.fz-plus th { font-size: 15px; }
+.fz-plus td { font-size: 16px; }
+.fz-plus .flbl { font-size: 15px; }
+.fz-plus .finp, .fz-plus .sw input, .fz-plus .fsel { font-size: 17px; }
+.fz-plus .stit { font-size: 17px; }
+.fz-plus .mhd h2 { font-size: 20px; }
+.fz-plus .btn { font-size: 16px; }
+.fz-plus .fdesc { font-size: 16px; }
+
+.fz-minus .sc-lbl { font-size: 11px; }
+.fz-minus .sc-val { font-size: 24px; }
+.fz-minus .sc-sub { font-size: 11px; }
+.fz-minus .panel-title { font-size: 13px; }
+.fz-minus .ai { font-size: 12px; }
+.fz-minus th { font-size: 11px; }
+.fz-minus td { font-size: 12px; }
+.fz-minus .flbl { font-size: 11px; }
+.fz-minus .finp, .fz-minus .sw input, .fz-minus .fsel { font-size: 13px; }
+.fz-minus .stit { font-size: 13px; }
+.fz-minus .mhd h2 { font-size: 14px; }
+.fz-minus .btn { font-size: 12px; }
+.fz-minus .fdesc { font-size: 12px; }
