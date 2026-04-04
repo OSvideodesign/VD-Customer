@@ -6,7 +6,7 @@ import { wStat, wExp, dLeft, avClr, ini, fmtD, today, openWA, openNav } from './
 export function renderDash() {
   if (!document.getElementById('st-total')) return;
   
-  const VAT_RATE = 1.18; // מע"מ 18%
+  const VAT_RATE = 1.18; // מע"מ מעודכן 18%
 
   let wc = 0, dc = 0, ds = 0;
   const endY = new Date(new Date().getFullYear(), 11, 31);
@@ -73,7 +73,6 @@ export function renderDash() {
     ? pf.map(f => {
         const c = window.custs.find(x => x.id === f.custId);
         const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-        // אם יש לקוח במערכת, קופץ אליו. אם לא (לקוח מזדמן), עובר למשימות.
         const clickAction = c ? `window._jumpTo('${c.id}')` : `window._nav('faults')`;
         return `<div class="ai warn" onclick="${clickAction}">
           <span>🔧</span><div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${name}</div>
