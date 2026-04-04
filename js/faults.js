@@ -42,6 +42,11 @@ export function renderFaults() {
     const uClr = name => { const u = USERS.find(x => x.name === name); return u ? u.color : 'var(--tx2)'; };
     const cbHtml  = _selectMode ? `<input type="checkbox" class="fc-cb" onclick="event.stopPropagation();window._toggleSelect('${f.id}',this)" ${_selectedIds.has(f.id) ? 'checked' : ''}>` : '';
     const fcClick = _selectMode ? `window._toggleSelect('${f.id}',this.querySelector('.fc-cb'))` : `window._editFaultById('${f.id}')`;
+    
+    // חישוב סכום להצגה כולל מע"מ אם רלוונטי
+    let displayAmount = parseFloat(f.amount) || 0;
+    if (f.amountPlusVat) displayAmount *= 1.18;
+
     return `<div class="fc ${_selectMode && _selectedIds.has(f.id) ? 'selected' : ''}" onclick="${fcClick}">${cbHtml}
       <div class="fch"><div class="ci">
         <div class="av" style="background:${avClr(custName)};width:28px;height:28px;font-size:10px">${ini(custName)}</div>
@@ -53,7 +58,7 @@ export function renderFaults() {
         </div>
       </div>
       <div style="font-size:11px;color:var(--tx3);margin-bottom:4px">${TMAP[f.type || 'fault'] || '🔧 משימה'}
-        ${f.amount > 0 ? ' &nbsp;|&nbsp; 💰 ₪' + f.amount.toLocaleString('he-IL') + (f.paid === 'yes' ? ' ✅' : f.paid === 'partial' ? ' (חלקי)' : '') : ''}
+        ${displayAmount > 0 ? ' &nbsp;|&nbsp; 💰 ₪' + Math.round(displayAmount).toLocaleString('he-IL') + (f.paid === 'yes' ? ' ✅' : f.paid === 'partial' ? ' (חלקי)' : '') : ''}
       </div>
       <div class="fdesc">${f.desc || ''}</div>
       <div class="fmeta">
@@ -63,6 +68,31 @@ export function renderFaults() {
       </div>
     </div>`;
   }).join('') + '</div>';
+}
+
+// ── updateFaultVatNote — חישוב אוטומטי של מע"מ והזנה להערות ─────────────────
+export function updateFaultVatNote() {
+  const amtInp = document.getElementById('mf-amount');
+  const vatChk = document.getElementById('mf-amount-vat');
+  const noteInp = document.getElementById('mf-notes');
+  
+  const base = parseFloat(amtInp.value) || 0;
+  if (base <= 0) return;
+
+  if (vatChk.checked) {
+    const total = Math.round(base * 1.18);
+    const vatStr = `${base} + מע"מ = ${total} ₪`;
+    
+    // אם ההערות ריקות או מכילות חישוב מע"מ קודם, נעדכן
+    if (!noteInp.value.trim() || noteInp.value.includes('+ מע"מ =')) {
+      noteInp.value = vatStr;
+    }
+  } else {
+    // אם המשתמש הוריד את ה-V וההערה היא רק החישוב, ננקה אותה
+    if (noteInp.value.includes('+ מע"מ =')) {
+      noteInp.value = '';
+    }
+  }
 }
 
 // ── open/edit modals ───────────────────────────────────────────────────────
@@ -81,6 +111,7 @@ export function openNewFault(preCustId) {
   document.getElementById('mf-date').value    = '';
   document.getElementById('mf-time').value    = '';
   document.getElementById('mf-amount').value  = '';
+  document.getElementById('mf-amount-vat').checked = false;
   document.getElementById('mf-paid').value    = 'no';
   document.getElementById('mf-notes').value   = '';
   openM('M-fault');
@@ -103,6 +134,7 @@ export function editFaultById(id) {
   document.getElementById('mf-date').value    = f.date     || '';
   document.getElementById('mf-time').value    = f.time     || '';
   document.getElementById('mf-amount').value  = f.amount   || '';
+  document.getElementById('mf-amount-vat').checked = !!f.amountPlusVat;
   document.getElementById('mf-paid').value    = f.paid     || 'no';
   document.getElementById('mf-notes').value   = f.notes    || '';
   openM('M-fault');
@@ -144,6 +176,7 @@ export function saveFault() {
     date:        document.getElementById('mf-date').value,
     time:        document.getElementById('mf-time').value,
     amount:      parseFloat(document.getElementById('mf-amount').value) || 0,
+    amountPlusVat: document.getElementById('mf-amount-vat').checked,
     paid:        document.getElementById('mf-paid').value,
     notes:       document.getElementById('mf-notes').value.trim(),
     updatedBy:   window._currentUser || '',
