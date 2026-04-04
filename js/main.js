@@ -142,3 +142,83 @@ window._gcalFault       = gcalFault;
 // ── Boot ───────────────────────────────────────────────────────────────────
 initLogin();
 loadAll();
+
+// ── NEW: TASKS BOARD & PUSH LOGIC ───────────────────────────────────────────
+let isBoardMode = localStorage.getItem('vd_tasks_mode') === 'board';
+
+window.toggleBoardMode = function() {
+    isBoardMode = !isBoardMode;
+    localStorage.setItem('vd_tasks_mode', isBoardMode ? 'board' : 'list');
+    updateTasksUI();
+};
+
+function updateTasksUI() {
+    const listV = document.getElementById('tasks-list-view');
+    const boardV = document.getElementById('tasks-board-view');
+    const toggleTxt = document.getElementById('board-toggle-txt');
+
+    if (!listV || !boardV) return;
+
+    if (isBoardMode) {
+        listV.style.display = 'none';
+        boardV.style.display = 'grid';
+        toggleTxt.textContent = '📋 תצוגת רשימה';
+        renderBoard();
+    } else {
+        listV.style.display = 'block';
+        boardV.style.display = 'none';
+        toggleTxt.textContent = '🔲 תצוגת כרטיסיות';
+        renderFaults();
+    }
+}
+
+function renderBoard() {
+    const cols = {
+        open: document.getElementById('board-open'),
+        scheduled: document.getElementById('board-scheduled'),
+        done: document.getElementById('board-done')
+    };
+    if (!cols.open) return;
+
+    Object.values(cols).forEach(el => el.innerHTML = '');
+    
+    window.faults.filter(f => !f.archived).forEach(f => {
+        const card = document.createElement('div');
+        card.className = 'board-card';
+        card.dataset.id = f.id;
+        const custName = window.custs.find(c => c.id === f.customerId)?.name || f.guestName || 'לקוח';
+        card.innerHTML = `<strong>${custName}</strong><p style="font-size:12px; margin:4px 0">${f.description.substring(0,40)}...</p>`;
+        card.onclick = () => window.editFaultById(f.id);
+        if (cols[f.status]) cols[f.status].appendChild(card);
+    });
+
+    initSortable();
+}
+
+function initSortable() {
+    document.querySelectorAll('.board-col-list').forEach(el => {
+        new Sortable(el, {
+            group: 'tasks',
+            animation: 150,
+            onEnd: (evt) => {
+                const id = evt.item.dataset.id;
+                const status = evt.to.parentElement.dataset.status;
+                const task = window.faults.find(f => f.id === id);
+                if (task) {
+                    task.status = status;
+                    if(window.saveFault) window.saveFault(task);
+                    sendPush(`משימה של ${task.guestName || 'לקוח'} עודכנה ל-${status}`);
+                }
+            }
+        });
+    });
+}
+
+function sendPush(msg) {
+    if (Notification.permission === "granted") {
+        new Notification("עדכון CRM", { body: msg, icon: "app-icon-192.jpg" });
+    }
+}
+
+// הפעלה ראשונית של מצב התצוגה
+setTimeout(updateTasksUI, 500);
