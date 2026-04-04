@@ -1,6 +1,6 @@
 // ══ faults.js — faults / tasks page ══
 
-import { USERS } from './config.js';
+import { USERS, FCM_SERVER_KEY } from './config.js';
 import { uid, today, fmtD, avClr, ini, toast } from './utils.js';
 import { openM, closeM } from './nav.js';
 import { addLog } from './log.js';
@@ -11,7 +11,6 @@ let _eFault      = null;
 let _selectMode  = false;
 let _selectedIds = new Set();
 
-// ── render ─────────────────────────────────────────────────────────────────
 export function renderFaults() {
   const q  = (document.getElementById('q-faults')?.value || '').toLowerCase();
   const sf = document.getElementById('f-fstatus')?.value || '';
@@ -43,7 +42,6 @@ export function renderFaults() {
     const cbHtml  = _selectMode ? `<input type="checkbox" class="fc-cb" onclick="event.stopPropagation();window._toggleSelect('${f.id}',this)" ${_selectedIds.has(f.id) ? 'checked' : ''}>` : '';
     const fcClick = _selectMode ? `window._toggleSelect('${f.id}',this.querySelector('.fc-cb'))` : `window._editFaultById('${f.id}')`;
     
-    // חישוב סכום להצגה כולל מע"מ אם רלוונטי
     let displayAmount = parseFloat(f.amount) || 0;
     if (f.amountPlusVat) displayAmount *= 1.18;
 
@@ -70,32 +68,21 @@ export function renderFaults() {
   }).join('') + '</div>';
 }
 
-// ── updateFaultVatNote — חישוב אוטומטי של מע"מ והזנה להערות ─────────────────
 export function updateFaultVatNote() {
   const amtInp = document.getElementById('mf-amount');
   const vatChk = document.getElementById('mf-amount-vat');
   const noteInp = document.getElementById('mf-notes');
-  
   const base = parseFloat(amtInp.value) || 0;
   if (base <= 0) return;
-
   if (vatChk.checked) {
     const total = Math.round(base * 1.18);
     const vatStr = `${base} + מע"מ = ${total} ₪`;
-    
-    // אם ההערות ריקות או מכילות חישוב מע"מ קודם, נעדכן
-    if (!noteInp.value.trim() || noteInp.value.includes('+ מע"מ =')) {
-      noteInp.value = vatStr;
-    }
-  } else {
-    // אם המשתמש הוריד את ה-V וההערה היא רק החישוב, ננקה אותה
-    if (noteInp.value.includes('+ מע"מ =')) {
-      noteInp.value = '';
-    }
+    if (!noteInp.value.trim() || noteInp.value.includes('+ מע"מ =')) noteInp.value = vatStr;
+  } else if (noteInp.value.includes('+ מע"מ =')) {
+    noteInp.value = '';
   }
 }
 
-// ── open/edit modals ───────────────────────────────────────────────────────
 export function openNewFault(preCustId) {
   _eFault = null;
   document.getElementById('M-fault-title').textContent = 'משימה חדשה';
@@ -155,7 +142,7 @@ export function toggleGuestFields() {
   document.getElementById('mf-guest-fields').style.display = v === '__guest__' ? 'block' : 'none';
 }
 
-export function saveFault() {
+export async function saveFault() {
   const custVal  = document.getElementById('mf-cust').value;
   const isGuest  = custVal === '__guest__';
   const desc     = document.getElementById('mf-desc').value.trim();
@@ -185,24 +172,54 @@ export function saveFault() {
 
   if (_eFault) window.faults = window.faults.map(x => x.id === _eFault ? f : x);
   else         window.faults.push(f);
-  if (window._dbSaveFaults) window._dbSaveFaults(window.faults);
+  if (window._dbSaveFaults) await window._dbSaveFaults(window.faults);
 
   const fCust = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-  addLog('fault', _eFault ? 'עריכת משימה' : 'הוספת משימה',
-    (fCust ? fCust.name : f.guestName || 'לקוח מזדמן') + ' — ' + (f.desc || '').slice(0, 40));
+  const custLabel = fCust ? fCust.name : f.guestName || 'לקוח מזדמן';
+  addLog('fault', _eFault ? 'עריכת משימה' : 'הוספת משימה', custLabel + ' — ' + (f.desc || '').slice(0, 40));
 
   closeM('M-fault');
-  if (f.status === 'done') {
-    renderFaults(); renderArchive(); renderDash();
-    toast('משימה הועברה לארכיון ✅');
-  } else {
-    renderFaults(); renderDash();
-    toast(_eFault ? 'משימה עודכנה ✅' : 'משימה נוספה ✅');
-    if (!_eFault) _sendFaultNotification(f);
-    if (f.date && f.status === 'scheduled') {
-      setTimeout(() => { if (confirm('לפתוח Google Calendar?')) window._gcalFault(f.id); }, 400);
-    }
+  renderFaults(); renderDash();
+  toast(_eFault ? 'משימה עודכנה ✅' : 'משימה נוספה ✅');
+
+  // שליחת Push גלובלי לכל שאר הצוות
+  _broadcastPushNotification(f, custLabel);
+
+  if (f.date && f.status === 'scheduled') {
+    setTimeout(() => { if (confirm('לפתוח Google Calendar?')) window._gcalFault(f.id); }, 400);
   }
+}
+
+async function _broadcastPushNotification(f, custLabel) {
+    const myName = window._currentUser;
+    const title = `🔧 ${myName} ${(_eFault ? 'עדכן' : 'הוסיף')} משימה`;
+    const body = `${custLabel}: ${f.desc.substring(0, 50)}`;
+
+    // איסוף כל הטוקנים של המשתמשים שהם לא אני
+    const allTokens = [];
+    USERS.forEach(u => {
+        if (u.name !== myName && u.tokens) {
+            allTokens.push(...u.tokens);
+        }
+    });
+
+    if (allTokens.length === 0) return;
+
+    // שליחה דרך FCM Legacy API (דורש FCM_SERVER_KEY ב-config.js)
+    try {
+        await fetch('https://fcm.googleapis.com/fcm/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'key=' + FCM_SERVER_KEY
+            },
+            body: JSON.stringify({
+                registration_ids: allTokens,
+                notification: { title, body, icon: '/Client-PRO/icon.png', click_action: '/Client-PRO/', sound: 'default' },
+                data: { url: '/Client-PRO/' }
+            })
+        });
+    } catch (err) { console.error("Push Broadcast Error:", err); }
 }
 
 export async function delFault() {
@@ -223,7 +240,6 @@ export async function delFault() {
   toast('משימה נמחקה ✅');
 }
 
-// ── bulk select ────────────────────────────────────────────────────────────
 export function toggleSelectMode(on) {
   _selectMode = on;
   _selectedIds.clear();
@@ -264,21 +280,6 @@ export async function deleteSelected() {
   toggleSelectMode(false);
   renderFaults(); renderDash();
   toast(ids.length + ' משימות נמחקו ✅');
-}
-
-// ── notifications ──────────────────────────────────────────────────────────
-function _sendFaultNotification(f) {
-  if (!('Notification' in window)) return;
-  const c    = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-  const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-  const body = `${name} — ${(f.desc || '').slice(0, 60)}`;
-  if (Notification.permission === 'granted') {
-    new Notification('🔧 משימה חדשה נוספה', { body, dir: 'rtl', lang: 'he' });
-  } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(p => {
-      if (p === 'granted') new Notification('🔧 משימה חדשה נוספה', { body, dir: 'rtl', lang: 'he' });
-    });
-  }
 }
 
 export function requestNotificationPermission() {
