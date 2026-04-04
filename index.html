@@ -163,7 +163,7 @@ document.head.appendChild(_link);
 
   <div class="pg on" id="pg-dashboard">
     <div class="ph">
-      <div><div class="pt">📊 לוח בקרה</div><div class="ps">סקירה כללית</div></div>
+      <div><div class="pt"><span class="pt-i">📊</span> <span class="pt-t">לוח בקרה</span></div><div class="ps">סקירה כללית</div></div>
     </div>
     <div class="stats">
       <div class="sc info">   <div class="sc-lbl">סה״כ לקוחות</div>      <div class="sc-val" id="st-total">—</div>    <div class="sc-sub">במערכת</div></div>
@@ -244,7 +244,7 @@ document.head.appendChild(_link);
 
   <div class="pg" id="pg-customers">
     <div class="ph">
-      <div><div class="pt">👥 לקוחות</div><div class="ps" id="cnt-custs"></div></div>
+      <div><div class="pt"><span class="pt-i">👥</span> <span class="pt-t">לקוחות</span></div><div class="ps" id="cnt-custs"></div></div>
       <button class="btn bp" onclick="openNewCust()">+ לקוח חדש</button>
     </div>
     <div class="toolbar">
@@ -257,7 +257,7 @@ document.head.appendChild(_link);
   </div>
 
   <div class="pg" id="pg-warranties">
-    <div class="ph"><div><div class="pt">🛡️ אחריות</div><div class="ps" id="cnt-warr"></div></div></div>
+    <div class="ph"><div><div class="pt"><span class="pt-i">🛡️</span> <span class="pt-t">אחריות</span></div><div class="ps" id="cnt-warr"></div></div></div>
     <div class="tw"><div class="tscroll"><table>
       <thead><tr><th>לקוח</th><th>התקנה</th><th>שנות אחריות</th><th>תפוגה</th><th>סטטוס</th><th>התקדמות</th></tr></thead>
       <tbody id="tb-warr"></tbody>
@@ -265,7 +265,7 @@ document.head.appendChild(_link);
   </div>
 
   <div class="pg" id="pg-debts">
-    <div class="ph"><div><div class="pt">💰 חובות</div><div class="ps" id="cnt-debts"></div></div></div>
+    <div class="ph"><div><div class="pt"><span class="pt-i">💰</span> <span class="pt-t">חובות</span></div><div class="ps" id="cnt-debts"></div></div></div>
     <div class="tw"><div class="tscroll"><table>
       <thead><tr><th>לקוח</th><th>טלפון</th><th>סכום חוב</th><th>הערות</th><th>פעולות</th></tr></thead>
       <tbody id="tb-debts"></tbody>
@@ -274,7 +274,7 @@ document.head.appendChild(_link);
 
   <div class="pg" id="pg-faults">
     <div class="ph">
-      <div><div class="pt">🔧 משימות</div><div class="ps" id="cnt-faults"></div></div>
+      <div><div class="pt"><span class="pt-i">🔧</span> <span class="pt-t">משימות</span></div><div class="ps" id="cnt-faults"></div></div>
       <div style="display:flex; gap:8px">
         <button class="btn bs" onclick="toggleBoardMode()"><span id="board-toggle-txt">🔲 תצוגת כרטיסיות</span></button>
         <button class="btn bp" onclick="openNewFault(null)">+ משימה חדשה</button>
@@ -314,7 +314,7 @@ document.head.appendChild(_link);
 
   <div class="pg" id="pg-notes">
     <div class="ph">
-      <div><div class="pt">📝 הערות כלליות</div><div class="ps" id="notes-sub"></div></div>
+      <div><div class="pt"><span class="pt-i">📝</span> <span class="pt-t">הערות כלליות</span></div><div class="ps" id="notes-sub"></div></div>
       <button class="btn bp" onclick="openNewNote()">+ הערה חדשה</button>
     </div>
     <div class="toolbar">
@@ -333,7 +333,7 @@ document.head.appendChild(_link);
 
   <div class="pg" id="pg-archive">
     <div class="ph">
-      <div><div class="pt">✅ ארכיון משימות</div><div class="ps" id="cnt-archive"></div></div>
+      <div><div class="pt"><span class="pt-i">✅</span> <span class="pt-t">ארכיון משימות</span></div><div class="ps" id="cnt-archive"></div></div>
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="q-archive" placeholder="חפש..." oninput="renderArchive()"><span class="si">🔍</span></div>
@@ -343,7 +343,7 @@ document.head.appendChild(_link);
 
   <div class="pg" id="pg-log">
     <div class="ph">
-      <div><div class="pt">📋 לוג שינויים</div><div class="ps" id="cnt-log"></div></div>
+      <div><div class="pt"><span class="pt-i">📋</span> <span class="pt-t">לוג שינויים</span></div><div class="ps" id="cnt-log"></div></div>
       <button class="btn bd btn-sm" onclick="if(confirm('למחוק את כל הלוג?'))clearLog()">🗑️ נקה לוג</button>
     </div>
     <div class="toolbar">
@@ -364,7 +364,7 @@ document.head.appendChild(_link);
 
   <div class="pg" id="pg-reports">
     <div class="ph">
-      <div><div class="pt">📈 דוחות</div><div class="ps" id="cnt-reports"></div></div>
+      <div><div class="pt"><span class="pt-i">📈</span> <span class="pt-t">דוחות</span></div><div class="ps" id="cnt-reports"></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn bs btn-sm" onclick="exportCustomersExcel()">📥 ייצוא לקוחות Excel</button>
         <button class="btn bs btn-sm" onclick="exportBackup()">💾 גיבוי נתונים</button>
@@ -389,7 +389,7 @@ document.head.appendChild(_link);
   
   <div class="pg" id="pg-settings">
     <div class="ph">
-      <div><div class="pt">⚙️ הגדרות</div><div class="ps">ניהול מערכת והתאמה אישית</div></div>
+      <div><div class="pt"><span class="pt-i">⚙️</span> <span class="pt-t">הגדרות</span></div><div class="ps">ניהול מערכת והתאמה אישית</div></div>
     </div>
     <div class="settings-grid">
       <div class="tw settings-panel">
