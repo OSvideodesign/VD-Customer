@@ -1,57 +1,4 @@
-/* ══ pages.css — גירסה סופית ומתוקנת ══ */
-
-/* 1. ביטול מוחלט של כל הריבועים הלבנים והמסכות הישנות שגרמו לבאגים (סעיף 5) */
-.pt::before, 
-.stit::before, 
-.ph div div:first-child::before, 
-[class*="icon"]::before, 
-.ph span::before, 
-.header-icon::before {
-    display: none !important;
-    content: none !important;
-    background: none !important;
-    mask: none !important;
-    -webkit-mask: none !important;
-}
-
-/* 2. הגדרת האייקון החדש והיחיד ליד הכותרות */
-.ph .pt {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* יצירת האייקון החדש - יופיע מצד שמאל לטקסט */
-.ph .pt::after {
-    font-size: 28px;
-    color: var(--acc);
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-    opacity: 1 !important;
-    display: inline-block;
-    margin-right: 12px;
-}
-
-/* 3. הגדרת האייקון הספציפי לכל דף לפי ה-ID שלו */
-#pg-dashboard .pt::after  { content: "🏠"; }
-#pg-customers .pt::after  { content: "👥"; }
-#pg-faults    .pt::after  { content: "🔧"; }
-#pg-warranties .pt::after { content: "🛡️"; }
-#pg-debts     .pt::after  { content: "💰"; }
-#pg-notes     .pt::after  { content: "📝"; }
-#pg-archive   .pt::after  { content: "✅"; }
-#pg-reports   .pt::after  { content: "📈"; }
-#pg-settings  .pt::after  { content: "⚙️"; }
-#pg-log       .pt::after  { content: "📋"; }
-
-/* 4. אייקונים בתוך פאנלים (stit) - צביעה וביטול ריבועים */
-.stit {
-    display: flex;
-    align-items: center;
-}
-
-.stit::before {
-    display: none !important; /* ביטול ריבוע לבן אם קיים */
-}
+/* ══ pages.css — page-specific overrides ══ */
 
 /* ── Login screen ─────────────────────────────────────────────────────────── */
 #login-screen {
@@ -121,7 +68,81 @@
   box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), inset 0 0 25px var(--user-glow), 0 8px 15px rgba(0,0,0,0.6);            
 }
 
-/* ── Drawer & Nav ────────────────────────────────────────────────────────── */
+.login-user-btn:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 0 25px var(--user-glow), 0 3px 6px rgba(0,0,0,0.6);
+}
+
+.login-user-icon {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 2px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.login-user-name {
+  font-family: 'Heebo', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+#pass-area { display: none; }
+
+#pass-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a0a5ab;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.8);
+  margin-bottom: 8px;
+}
+
+.login-pass-inp {
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.5); 
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.6);
+}
+
+.login-full-btn.btn {
+  width: 100%;
+  margin-bottom: 8px;
+  background-color: #3b4046;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 49%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
+  border: 1px solid #111;
+  border-radius: 12px;
+  padding: 10px;
+  color: #fff !important;
+  font-size: 15px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 8px 15px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: transform 0.2s;
+  justify-content: center;
+}
+
+.login-full-btn.btn:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 3px 6px rgba(0,0,0,0.5);
+}
+
+#pass-err {
+  color: #ff6b6b;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 5px;
+  display: none;
+}
+
+/* ── Drawer header / close ────────────────────────────────────────────────── */
 .m-drawer-header {
   display: flex;
   align-items: center;
@@ -132,29 +153,159 @@
   font-size: 15px;
 }
 
-.m-drawer-close { background: none; border: none; color: var(--tx3); font-size: 22px; cursor: pointer; }
+.m-drawer-close {
+  background: none;
+  border: none;
+  color: var(--tx3);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+
 .m-drawer-search { color: var(--acc); }
 .m-drawer-logout  { color: var(--red); margin-top: 8px; }
 
-/* ── Sidebar ── */
-.sidebar .logo { padding: 25px 16px 20px; border-bottom: 2px solid #8a9097 !important; text-align: center; }
-.sidebar-logo-img { width: 100%; max-width: 160px; margin: 0 auto; display: block; }
+/* ── Sidebar components ───────────────────────────────────────────────────── */
+.sidebar .logo {
+  padding: 25px 16px 20px;
+  border-bottom: 2px solid #8a9097 !important;
+  box-shadow: none !important;
+  text-align: center;
+}
+
+.sidebar-logo-img {
+  width: 100%;
+  max-width: 160px;
+  margin: 0 auto;
+  display: block;
+}
 
 .sidebar-search-btn {
   width: 100%;
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255,255,255,0.15);
+  border-top-color: #000;
   border-radius: 20px; 
   padding: 10px 16px;
   color: #a0a5ab;
   font-size: 13px;
+  font-family: Heebo, sans-serif;
   cursor: pointer;
   display: flex;
-  align-items: center; gap: 10px;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+  align-items: center;
+  gap: 10px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
+  transition: all 0.2s;
 }
 
-/* ── Settings Row Layout (GRID) ── */
+.sidebar-search-btn:hover {
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.nav-btn-logout {
+  color: #ff6b6b;
+  margin-top: 15px;
+}
+
+/* ── Dashboard panel link buttons ─────────────────────────────────────────── */
+.panel-link-btn {
+  font-size: 11px;
+  color: var(--acc);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: Heebo, sans-serif;
+}
+
+/* ── Google Calendar section ──────────────────────────────────────────────── */
+#gcal-grid   { padding: 12px; display: none; }
+#gcal-out    { padding: 8px 16px; border-top: 1px solid var(--brd); display: none; justify-content: flex-end; }
+#gcal-signin { padding: 30px; text-align: center; }
+
+.gcal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gcal-title { font-weight: 700; font-size: 14px; }
+
+.gcal-nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.gcal-signin-text {
+  font-size: 13px;
+  color: var(--tx2);
+  margin-bottom: 14px;
+}
+
+.gcal-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: Heebo, sans-serif;
+}
+
+.gcal-signout-btn {
+  font-size: 11px;
+  color: var(--tx3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: Heebo, sans-serif;
+}
+
+/* ── Modal generic close button ───────────────────────────────────────────── */
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--tx2);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* ── Reports stats override (4 cols) ─────────────────────────────────────── */
+#rep-stats {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 768px) {
+  #rep-stats { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Fault guest fields ───────────────────────────────────────────────────── */
+#mf-guest-fields { display: none; }
+
+/* ── Note bulk bar (flex) ─────────────────────────────────────────────────── */
+#note-bulk-bar {
+  background: var(--sur2);
+  border: 1px solid var(--acc);
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* ── Settings Row Layout (GRID) ────────────────────────────────────────────── */
 .settings-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 
@@ -169,11 +320,83 @@
 }
 
 @media (max-width: 1100px) {
-  .settings-grid { grid-template-columns: 1fr; }
-  .settings-panel { min-height: auto; }
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-panel {
+    min-height: auto;
+  }
 }
 
-/* ── Tasks Board View (Trello Style) ── */
+/* ── תיקון קריטי לאייקונים (פתרון בעיית הכפילות והריבועים הלבנים) ────────────────── */
+
+/* 1. ביטול מוחלט של הריבועים הלבנים (Pseudo-elements הישנים) */
+.ph .pt::before, 
+.ph div div:first-child::before,
+.ph span[style*="font-size:20px"]::before {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+    mask: none !important;
+    -webkit-mask: none !important;
+}
+
+/* 2. הגדרת מיקום גמיש לכותרת ולאייקון */
+.ph .pt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 3. יצירת האייקון החדש והיחיד */
+.ph .pt::after {
+  font-size: 28px;
+  color: var(--acc);
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+  opacity: 1 !important;
+  display: inline-block;
+  font-family: inherit; /* שימוש בתווי טקסט רגילים למניעת באגים של תמונה */
+}
+
+/* 4. התאמת אייקון ספציפי לכל דף לפי ה-ID של ה-PG */
+#pg-dashboard .pt::after  { content: "🏠"; }
+#pg-customers .pt::after  { content: "👥"; }
+#pg-faults    .pt::after  { content: "🔧"; }
+#pg-warranties .pt::after { content: "🛡️"; }
+#pg-debts     .pt::after  { content: "💰"; }
+#pg-notes     .pt::after  { content: "📝"; }
+#pg-archive   .pt::after  { content: "✅"; }
+#pg-reports   .pt::after  { content: "📈"; }
+#pg-settings  .pt::after  { content: "⚙️"; }
+#pg-log       .pt::after  { content: "📋"; }
+
+/* צביעת אייקונים בתוך פאנלים (stit) - גם פה מבטלים ריבועים ישנים */
+.stit::before {
+    color: var(--acc) !important;
+    margin-left: 8px;
+    background: none !important;
+    mask: none !important;
+    -webkit-mask: none !important;
+}
+
+/* ── User badge in sidebar ────────────────────────────────────────────────── */
+#user-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.3) 100%) !important;
+  border: 1px solid #000 !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.5) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  color: #fff !important;
+}
+
+/* ── wk-label (calendar week range label) ────────────────────────────────── */
+#wk-label { font-size: 12px; color: var(--tx3); }
+
+/* ── Tasks Board View (Trello Style) ─────────────────────────────────────── */
 .board-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -213,7 +436,11 @@
     color: #8a9097;
 }
 
-.board-col-list { flex: 1; padding: 10px; min-height: 100px; }
+.board-col-list {
+    flex: 1;
+    padding: 10px;
+    min-height: 100px;
+}
 
 .board-card {
     background: #2a2e33;
@@ -228,9 +455,10 @@
 
 .board-card:active { cursor: grabbing; }
 
-/* ── User Activity Status ── */
+/* ── User Activity Status ────────────────────────────────────────────────── */
 .user-status-dot {
-    width: 10px; height: 10px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     display: inline-block;
     margin-left: 8px;
