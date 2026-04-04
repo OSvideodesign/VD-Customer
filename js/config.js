@@ -9,11 +9,15 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
+// מפתחות להתראות Push - הכנס כאן את המפתחות מה-Console
+export const VAPID_KEY = "YOUR_VAPID_KEY_HERE"; 
+export const FCM_SERVER_KEY = "YOUR_SERVER_KEY_HERE"; 
+
 export const USERS = [
-  { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner' },
-  { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'admin' },
-  { name: 'גלאל',  pass: 'Jalal4123', color: '#10b981', role: 'installer' },
-  { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer' },
+  { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner', tokens: [] },
+  { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'admin', tokens: [] },
+  { name: 'גלאל',  pass: 'Jalal4123', color: '#10b981', role: 'installer', tokens: [] },
+  { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer', tokens: [] },
 ];
 
 export const NCAT = {
