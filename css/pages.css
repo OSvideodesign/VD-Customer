@@ -1,10 +1,40 @@
 /* ══ pages.css — page-specific overrides ══ */
 
+/* ── Drawer (Menu) Fix for iPhone — תיקון גישה לתפריט עוד ────────────────── */
+#m-drawer { 
+  display: none; 
+  position: fixed; 
+  inset: 0; 
+  z-index: 10000; /* מעל הכל באייפון */
+}
+
+#m-drawer-bg { 
+    position: absolute; 
+    inset: 0; 
+    background: rgba(0,0,0,.7); 
+    backdrop-filter: blur(4px);
+}
+
+#m-drawer-panel {
+  position: absolute; 
+  top: 0; 
+  right: 0; 
+  width: 260px; 
+  height: 100%;
+  background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
+  border-left: 2px solid #8a9097; 
+  overflow-y: auto; 
+  display: flex; 
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* ── Login screen ─────────────────────────────────────────────────────────── */
 #login-screen {
   position: fixed;
   inset: 0;
-  background: transparent;
+  background: #1d2024;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -162,6 +192,32 @@
   line-height: 1;
 }
 
+.m-drawer-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  color: #e5e7eb;
+  font-family: 'Heebo', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: right;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-drawer-sec {
+  padding: 20px 20px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a9097;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .m-drawer-search { color: var(--acc); }
 .m-drawer-logout  { color: var(--red); margin-top: 8px; }
 
@@ -201,11 +257,6 @@
 .sidebar-search-btn:hover {
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
-}
-
-.nav-btn-logout {
-  color: #ff6b6b;
-  margin-top: 15px;
 }
 
 /* ── Dashboard panel link buttons ─────────────────────────────────────────── */
@@ -329,9 +380,6 @@
 }
 
 /* ── פתרון סופי למניעת כפילויות של אייקונים מכותרות (ביטול פקודות ישנות) ─────── */
-
-/* מבטל לחלוטין את כל האייקונים הישנים שנוספו דרך ה-CSS 
-   כדי לאפשר לאייקונים ב-HTML להופיע בצורה תקינה. */
 .ph .pt::before, 
 .ph .pt::after {
     display: none !important;
