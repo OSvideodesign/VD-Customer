@@ -328,16 +328,15 @@
   }
 }
 
-/* ── תיקון סעיף 5: אייקונים צבועים בצבע נושא ─────────────────────────────── */
-.pt::before, .stit::before, .stit i, .pt i {
+/* ── תיקון אייקונים: צביעה בצבע הנושא (סעיף 5) ────────────────────────────── */
+.pt::before, 
+.stit::before, 
+.ph span[style*="font-size:20px"], 
+.ph .pt + span,
+.ph div div:first-child::before {
     color: var(--acc) !important;
-}
-
-/* ── Perms grid in user modal ─────────────────────────────────────────────── */
-#u-perms-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+    opacity: 1 !important;
+    filter: none !important;
 }
 
 /* ── User badge in sidebar ────────────────────────────────────────────────── */
@@ -357,7 +356,7 @@
 /* ── wk-label (calendar week range label) ────────────────────────────────── */
 #wk-label { font-size: 12px; color: var(--tx3); }
 
-/* ── NEW: Tasks Board View (Trello Style) ────────────────────────────────── */
+/* ── Tasks Board View (Trello Style) ─────────────────────────────────────── */
 .board-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -416,11 +415,7 @@
 
 .board-card:active { cursor: grabbing; }
 
-.board-card-pri {
-    width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-left: 6px;
-}
-
-/* ── NEW: User Activity Status ───────────────────────────────────────────── */
+/* ── User Activity Status ────────────────────────────────────────────────── */
 .user-status-dot {
     width: 10px;
     height: 10px;
