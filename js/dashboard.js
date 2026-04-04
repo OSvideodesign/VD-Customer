@@ -5,23 +5,33 @@ import { wStat, wExp, dLeft, avClr, ini, fmtD, today, openWA, openNav } from './
 
 export function renderDash() {
   if (!document.getElementById('st-total')) return;
-  window.custs.forEach(c => { c.debt = Math.max(0, Number(c.debt) || 0); });
+  
+  const VAT_RATE = 1.18; // מע"מ 18%
 
   let wc = 0, dc = 0, ds = 0;
   const endY = new Date(new Date().getFullYear(), 11, 31);
+  
   window.custs.forEach(c => {
     const e = wExp(c);
     if (e) { const d = dLeft(e); if (d < 0 || (d >= 0 && new Date(e) <= endY)) wc++; }
-    if (c.debt > 0) { dc++; ds += c.debt; }
+    
+    // חישוב חוב לקוח כולל מע"מ אם מסומן
+    let debtVal = Number(c.debt) || 0;
+    if (c.debtPlusVat) debtVal *= VAT_RATE;
+    
+    if (debtVal > 0) { dc++; ds += debtVal; }
   });
+
   window.faults.filter(f => f.amount > 0 && f.paid !== 'yes').forEach(f => {
-    dc++; ds += parseFloat(f.amount) || 0;
+    let amountVal = parseFloat(f.amount) || 0;
+    if (f.amountPlusVat) amountVal *= VAT_RATE;
+    dc++; ds += amountVal;
   });
 
   document.getElementById('st-total').textContent    = window.custs.length;
   document.getElementById('st-warr').textContent     = wc;
   document.getElementById('st-debts').textContent    = dc;
-  document.getElementById('st-debt-sum').textContent = '₪' + ds.toLocaleString('he-IL');
+  document.getElementById('st-debt-sum').textContent = '₪' + Math.round(ds).toLocaleString('he-IL');
   document.getElementById('st-faults').textContent   = window.faults.filter(f => f.status !== 'done').length;
 
   // Warranty panel
@@ -35,36 +45,44 @@ export function renderDash() {
     : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ הכל תקין</div>';
 
   // Debts panel
-  const pd = window.custs.filter(c => c.debt > 0);
-  const pdu = window.faults.filter(f => f.amount > 0 && f.paid !== 'yes');
+  const pd = window.custs.filter(c => (Number(c.debt) || 0) > 0);
+  const pdu = window.faults.filter(f => (parseFloat(f.amount) || 0) > 0 && f.paid !== 'yes');
   const pdAll = [
-    ...pd.map(c  => ({ name: c.name, amount: c.debt, onclick: `window._jumpTo('${c.id}')` })),
+    ...pd.map(c  => {
+        let val = Number(c.debt);
+        if(c.debtPlusVat) val *= VAT_RATE;
+        return { name: c.name, amount: val, onclick: `window._jumpTo('${c.id}')` };
+    }),
     ...pdu.map(f => {
       const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-      return { name: c ? c.name : (f.guestName || 'לקוח מזדמן'), amount: parseFloat(f.amount), desc: (f.desc || '').slice(0, 25), onclick: `window._nav('debts')` };
+      let val = parseFloat(f.amount);
+      if(f.amountPlusVat) val *= VAT_RATE;
+      return { name: c ? c.name : (f.guestName || 'לקוח מזדמן'), amount: val, desc: (f.desc || '').slice(0, 25), onclick: `window._nav('debts')` };
     }),
   ];
   document.getElementById('pan-debts').innerHTML = pdAll.length
     ? pdAll.map(x => `<div class="ai danger" onclick="${x.onclick}">
         <span>💰</span><div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${x.name}</div>
-        <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">₪${x.amount.toLocaleString('he-IL')}${x.desc ? ' — ' + x.desc : ''}</div></div>
+        <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">₪${Math.round(x.amount).toLocaleString('he-IL')}${x.desc ? ' — ' + x.desc : ''}</div></div>
         <span style="color:var(--tx3)">›</span></div>`).join('')
     : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ אין חובות</div>';
 
-  // Faults panel
+  // Faults panel - תיקון סעיף 2: מקפיץ ללקוח במקום למשימות
   const pf = window.faults.filter(f => f.status !== 'done');
   document.getElementById('pan-faults').innerHTML = pf.length
     ? pf.map(f => {
         const c = window.custs.find(x => x.id === f.custId);
         const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-        return `<div class="ai warn" onclick="window._nav('faults')">
+        // אם יש לקוח במערכת, קופץ אליו. אם לא (לקוח מזדמן), עובר למשימות.
+        const clickAction = c ? `window._jumpTo('${c.id}')` : `window._nav('faults')`;
+        return `<div class="ai warn" onclick="${clickAction}">
           <span>🔧</span><div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${name}</div>
           <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">${(f.desc || '').slice(0, 40)}</div></div>
           <span style="color:var(--tx3)">›</span></div>`;
       }).join('')
     : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ אין משימות</div>';
 
-  // Notes panels by category
+  // Notes panels
   const myNotes = (window.notes || []).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   ['general', 'meeting', 'reminder'].forEach(cat => {
     const panEl = document.getElementById('pan-notes-' + cat);
