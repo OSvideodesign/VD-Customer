@@ -12,106 +12,117 @@
   padding: 20px;
 }
 
+/* המסגרת המתכתית (נקודות 1, 3, 4) */
 .login-card {
-  background: rgba(10, 14, 26, 0.5); /* רקע כהה ושקוף יותר */
-  backdrop-filter: blur(20px); /* טשטוש רקע חזק (Pixel-Perfect) */
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08); /* גבול כמעט בלתי נראה */
-  border-radius: 24px;
-  padding: 40px;
+  /* אפקט רקע מתכת מוברשת */
+  background: linear-gradient(135deg, #7b838c 0%, #b2b8c0 30%, #7b838c 70%, #51585f 100%);
+  
+  /* גבול כסוף מסביב למסגרת */
+  border: 3px solid #d1d5db; 
+  border-radius: 20px;
+  
+  /* הקטנת הרוחב והריווח של המסגרת */
+  padding: 30px; 
   width: 100%;
-  max-width: 420px;
+  max-width: 350px; 
+  
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); /* צללית עמוקה */
+  
+  /* צלליות עומק והברקה של המסגרת עצמה */
+  box-shadow: 
+    inset 0 2px 5px rgba(255, 255, 255, 0.7), /* הברקה פנימית עליונה */
+    inset 0 -2px 5px rgba(0, 0, 0, 0.3),      /* הצללה פנימית תחתונה */
+    0 25px 50px rgba(0, 0, 0, 0.8);           /* צללית חיצונית חזקה */
 }
 
+/* הגדלת הלוגו של Video Design (נקודה 3) */
 .login-header-img {
   width: 100%;
-  max-width: 370px;
+  max-width: 100%; /* תופס את כל רוחב המסגרת */
   margin: 0 auto 5px;
   display: block;
 }
 
+/* גרפיקת "ניהול לקוחות" במקום הטקסט (נקודה 2) */
 .login-sub-text-img {
   width: 100%;
-  max-width: 370px;
+  max-width: 100%;
   height: auto;
-  margin: 0 auto 35px;
+  margin: 0 auto 25px;
   display: block;
-  opacity: 0.9;
 }
 
 #user-btns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px; /* רווח בין הכפתורים */
+  gap: 15px; 
   margin-bottom: 20px;
 }
 
-/* ── User Tabs / Buttons - Pixel-Perfect Design ────────────────────────── */
+/* ── כפתורי משתמשים - אפקט זכוכית/פלסטיק תלת ממדי מבריק ── */
 .login-user-btn {
-  background: rgba(255, 255, 255, 0.03); /* זכוכית שקופה כמעט לחלוטין */
-  backdrop-filter: blur(5px); /* טשטוש עדין בתוך הכפתור */
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.08); /* גבול עדין מאוד */
-  border-radius: 12px; /* פינות מעוגלות לפי התמונה */
-  padding: 18px 8px; /* התאמת ה-padding למיקום */
+  background-color: #3b4046; /* צבע בסיס כהה */
+  
+  /* אפקט חיתוך האור ליצירת מראה פלסטי/זכוכיתי מבריק */
+  background-image: linear-gradient(to bottom, 
+    rgba(255,255,255,0.25) 0%, 
+    rgba(255,255,255,0.05) 49%, 
+    rgba(0,0,0,0.2) 50%, 
+    rgba(0,0,0,0.5) 100%
+  );
+  
+  border: 1px solid #111;
+  border-radius: 12px;
+  padding: 16px 8px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  /* משלב את ההברקה העליונה, גוון הצבע של המשתמש (מגיע מה-JS) וצללית עומק */
+  box-shadow: 
+    inset 0 1px 1px rgba(255,255,255,0.5), 
+    inset 0 0 25px var(--user-glow),       
+    0 8px 15px rgba(0,0,0,0.6);            
 }
 
-/* הילה דקה מאוד (כמעט בלתי נראית) מתחת לגבול */
-.login-user-btn::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: currentColor; /* משתמש בצבע המשתמש (נקבע ב-HTML) */
-  opacity: 0.15; /* הילה חלשה מאוד */
-  filter: blur(2px);
+.login-user-btn:active {
+  transform: translateY(3px); /* שקיעה של הכפתור בלחיצה */
+  box-shadow: 
+    inset 0 1px 1px rgba(255,255,255,0.2), 
+    inset 0 0 25px var(--user-glow),
+    0 3px 6px rgba(0,0,0,0.6);
 }
 
-.login-user-btn:hover {
-  background: rgba(255, 255, 255, 0.06); /* הבהרה קלה ב-hover */
-  transform: translateY(-2px); /* הרמה קלה */
-  border-color: rgba(255, 255, 255, 0.15); /* הבלטת הגבול */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* צללית עדינה */
-}
-
-/* עיצוב האות הגדולה (Pixel-Perfect) */
 .login-user-icon {
   font-family: 'Heebo', sans-serif;
-  font-weight: 300; /* דק, כמו בתמונה */
-  font-size: 32px; /* גודל האות */
+  font-weight: 700;
+  font-size: 38px;
   line-height: 1;
-  margin-bottom: 6px; /* רווח מהשם */
-  color: currentColor; /* משתמש בצבע המשתמש (נקבע ב-HTML) */
-  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; /* אפקט זוהר חלש */
+  margin-bottom: 4px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* צללית לאות */
 }
 
-/* עיצוב שם המשתמש בעברית */
 .login-user-name {
   font-family: 'Heebo', sans-serif;
-  font-weight: 500; /* משקל רגיל */
-  font-size: 14px; /* גודל השם */
-  color: rgba(255, 255, 255, 0.8); /* לבן שקוף מעט */
+  font-weight: 600;
+  font-size: 15px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8); /* צללית לשם */
 }
 
+/* ── אזור הזנת סיסמה וכפתור ה"כנס" המבריק ── */
 #pass-area {
   display: none;
 }
 
 #pass-label {
-  font-size: 13px;
-  color: var(--tx2);
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1e23;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.3);
   margin-bottom: 10px;
 }
 
@@ -119,20 +130,51 @@
   text-align: center;
   font-size: 18px;
   letter-spacing: 4px;
-  margin-bottom: 10px;
-  background: rgba(0,0,0,0.3);
-  border-color: rgba(255,255,255,0.1);
+  margin-bottom: 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   color: #fff;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
 }
 
-.login-full-btn {
+/* כפתורי האישור והחזור במסך ההתחברות (מעוצבים כמו כפתורי המשתמשים) */
+.login-full-btn.btn {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  background-color: #3b4046;
+  background-image: linear-gradient(to bottom, 
+    rgba(255,255,255,0.25) 0%, 
+    rgba(255,255,255,0.05) 49%, 
+    rgba(0,0,0,0.2) 50%, 
+    rgba(0,0,0,0.5) 100%
+  );
+  border: 1px solid #111;
+  border-radius: 12px;
+  padding: 12px;
+  color: #fff !important;
+  font-size: 16px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  box-shadow: 
+    inset 0 1px 1px rgba(255,255,255,0.5), 
+    0 8px 15px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: transform 0.2s;
+  justify-content: center;
+}
+
+.login-full-btn.btn:active {
+  transform: translateY(3px);
+  box-shadow: 
+    inset 0 1px 1px rgba(255,255,255,0.2), 
+    0 3px 6px rgba(0,0,0,0.5);
 }
 
 #pass-err {
-  color: var(--red);
-  font-size: 12px;
+  color: #8b0000;
+  font-size: 13px;
+  font-weight: 700;
   margin-top: 8px;
   display: none;
 }
