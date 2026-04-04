@@ -16,7 +16,6 @@
   overflow: hidden;
 }
 
-/* פס 1: מתחת ללוגו */
 .sidebar .logo {
   padding: 25px 16px 20px;
   text-align: center;
@@ -38,21 +37,18 @@
   margin-top: 2px; 
 }
 
-/* ── Nav ─────────────────────────────────────────────────────────────────── */
 .nav {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
 }
 
-/* פס 2: מתחת לחיפוש הגלובלי */
 .sidebar-search-div {
   padding: 10px 0px 18px;
   margin-bottom: 8px;
   border-bottom: 2px solid #8a9097; 
 }
 
-/* פס 3 + 4: מעל דוחות ומעל מערכת */
 .nav-sec {
   font-size: calc(13px * var(--fz-scale, 1)); 
   font-weight: 700;
@@ -64,7 +60,6 @@
   border-top: 2px solid #8a9097;
 }
 
-/* ביטול הפס הכפול מעל 'ניהול' */
 .sidebar-search-div + .nav-sec {
   border-top: none;
 }
@@ -97,7 +92,6 @@
   font-weight: 600;
 }
 
-/* פס 5 + 6: פסי כסף שתומחים את כפתור ההתנתק */
 .nav-btn-logout { 
   color: #ff6b6b; 
   margin-top: 15px; 
@@ -108,7 +102,6 @@
   border-bottom: 2px solid #8a9097;
 }
 
-/* ── Main content ─────────────────────────────────────────────────────────── */
 .main {
   margin-right: 220px;
   margin-left: 0;
@@ -126,7 +119,6 @@
     text-align: center;
 }
 
-/* ── Pages ────────────────────────────────────────────────────────────────── */
 .pg     { display: none; }
 .pg.on  { display: block; }
 
@@ -135,7 +127,6 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  /* כאן הוגדל הריווח ל-100 פיקסלים לדחיפה משמעותית שמאלה */
   padding-right: 100px; 
   flex-wrap: wrap;
   gap: 10px;
@@ -162,7 +153,6 @@
 .dash3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
 .fg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
 
-/* ── Mobile bottom nav ────────────────────────────────────────────────────── */
 #mnav {
   display: none;
   position: fixed;
@@ -177,11 +167,10 @@
 .mnb {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 2px; background: none; border: none; color: #8a9097; font-family: 'Heebo', sans-serif;
-  font-size: calc(10px * var(--fz-scale, 1)); cursor: pointer; padding: 4px; transition: color .15s;
+  font-size: 10px; cursor: pointer; padding: 4px; transition: color .15s;
 }
 .mnb.on { color: var(--acc); text-shadow: 0 0 10px var(--acc); }
 
-/* ── Mobile slide-in drawer ───────────────────────────────────────────────── */
 #m-drawer { display: none; position: fixed; inset: 0; z-index: 500; }
 #m-drawer-bg { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
 #m-drawer-panel {
@@ -189,24 +178,7 @@
   background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
   border-left: 2px solid #8a9097; overflow-y: auto; display: flex; flex-direction: column;
 }
-#m-drawer.open { display: block; }
-.m-drawer-btn {
-  display: block; width: 100%; text-align: right; padding: 12px 20px;
-  background: none; border: none; color: #a0a5ab; font-family: 'Heebo', sans-serif;
-  font-size: calc(15px * var(--fz-scale, 1)); cursor: pointer; transition: background .15s;
-}
-.m-drawer-btn:hover, .m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
-.m-drawer-sec {
-  font-size: calc(13px * var(--fz-scale, 1)); color: #8a9097; padding: 14px 20px 4px; font-weight: 700;
-  letter-spacing: .5px; border-top: 2px solid #8a9097;
-}
-.m-drawer-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px 16px; border-bottom: 2px solid #8a9097; font-weight: 700; font-size: calc(15px * var(--fz-scale, 1));
-}
-.m-drawer-close { background: none; border: none; color: #a0a5ab; font-size: 22px; cursor: pointer; }
 
-/* תיקון סעיף 4: תצוגת מובייל קבועה */
 @media (max-width: 768px) {
   .sidebar { display: none !important; }
   .main    { margin-right: 0 !important; margin-left: 0 !important; width: 100% !important; padding: 12px 12px 76px !important; }
@@ -217,22 +189,9 @@
   .ph      { flex-direction: column; align-items: flex-start; padding-right: 0 !important; }
   .pt      { font-size: calc(24px * var(--fz-scale, 1)); }
 }
-@media (min-width: 769px) {
-  #mnav    { display: none !important; }
-  #m-drawer{ display: none !important; }
-}
 
-/* ══════════════════════════════════════════════════════════════════════════ */
-/* ── DESIGN SETTINGS THEMES (מערכת עיצוב ורקעים) ─────────────────────────── */
-
-body[data-bg="stone"] {
-    background-color: transparent; 
-}
-
-body[data-bg="metal"] {
-    background: linear-gradient(135deg, #7b838c 0%, #b2b8c0 50%, #51585f 100%) !important;
-}
-
+body[data-bg="stone"] { background-color: transparent; }
+body[data-bg="metal"] { background: linear-gradient(135deg, #7b838c 0%, #b2b8c0 50%, #51585f 100%) !important; }
 body[data-bg="carbon"] {
     background: 
       linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
@@ -244,43 +203,14 @@ body[data-bg="carbon"] {
     background-color: #131313 !important;
     background-size: 20px 20px !important;
 }
+body[data-bg="dark"] { background: #111315 !important; }
 
-body[data-bg="dark"] {
-    background: #111315 !important;
-}
-
-body[data-glow="false"] .sc,
-body[data-glow="false"] .tw,
-body[data-glow="false"] .fc,
-body[data-glow="false"] .mbox,
-body[data-glow="false"] #bulk-bar {
+body[data-glow="false"] .sc, body[data-glow="false"] .tw, body[data-glow="false"] .fc, body[data-glow="false"] .mbox, body[data-glow="false"] #bulk-bar {
     box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
     border: 1px solid #333 !important;
     background: #1d2024 !important;
 }
-
-body[data-glow="false"] .finp,
-body[data-glow="false"] .sw input,
-body[data-glow="false"] .fsel {
-    background: #2a2e33 !important;
-    box-shadow: none !important;
-    border: 1px solid #444 !important;
-}
-
-body[data-glow="false"] .btn.bp {
-    background: var(--acc) !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-    border: none !important;
-}
-
-body[data-glow="false"] .btn.bs {
-    background: #4a5057 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-    border: none !important;
-}
-
-body[data-glow="false"] .sidebar {
-    background: #1d2024 !important;
-    border-left: 1px solid #333 !important;
-    box-shadow: none !important;
-}
+body[data-glow="false"] .finp, body[data-glow="false"] .sw input, body[data-glow="false"] .fsel { background: #2a2e33 !important; box-shadow: none !important; border: 1px solid #444 !important; }
+body[data-glow="false"] .btn.bp { background: var(--acc) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important; border: none !important; }
+body[data-glow="false"] .btn.bs { background: #4a5057 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important; border: none !important; }
+body[data-glow="false"] .sidebar { background: #1d2024 !important; border-left: 1px solid #333 !important; box-shadow: none !important; }
