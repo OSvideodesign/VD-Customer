@@ -342,50 +342,57 @@ document.head.appendChild(_link);
       <div class="tw"><div class="panel-title">💰 הכנסות לפי טכנאי</div><div id="rep-income-tech" class="panel-body"></div></div>
       <div class="tw"><div class="panel-title">📋 סטטוס משימות</div>    <div id="rep-status"      class="panel-body"></div></div>
     </div>
-  </div><div class="pg" id="pg-settings">
-    
-    <div class="tw" id="s-design-panel" style="padding:22px;margin-bottom:16px">
-      <div class="stit">🎨 עיצוב והתאמה אישית</div>
-      <div class="fgrid">
-        <div><label class="flbl">רקע המערכת</label>
-          <select class="finp" id="ds-bg" onchange="applyDesignSettings()">
-            <option value="stone">🪨 אבן טבעית (ברירת מחדל)</option>
-            <option value="metal">⚙️ מתכת מוברשת</option>
-            <option value="carbon">⬛ קרבון ספורטיבי</option>
-            <option value="dark">🌙 שחור חלק ונקי</option>
-          </select>
-        </div>
-        <div><label class="flbl">צבע נושא מרכזי</label>
-          <input class="finp" type="color" id="ds-color" value="#3b82f6" onchange="applyDesignSettings()" style="height:42px;padding:4px;cursor:pointer">
-        </div>
-        <div class="fg1" style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer" onclick="document.getElementById('ds-glow').click()">
-          <input type="checkbox" id="ds-glow" onchange="applyDesignSettings()" checked style="width:18px;height:18px;cursor:pointer">
-          <label class="flbl" style="margin-bottom:0;cursor:pointer">הפעל אפקט הברקות תלת-ממד (Skeuomorphism)</label>
+  </div>
+  
+  <div class="pg" id="pg-settings">
+    <div class="settings-grid">
+      
+      <div class="tw settings-panel">
+        <div class="stit">🏢 פרטי החברה ויומן</div>
+        <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
+        <div style="margin-bottom:12px"><label class="flbl">טלפון</label>    <input class="finp" id="s-phone"   placeholder="050-0000000"></div>
+        <div style="margin-bottom:20px"><label class="flbl">מייל שולח</label><input class="finp" type="email" id="s-email" placeholder="info@videodesign.co.il"></div>
+        
+        <div class="stit" style="margin-top:24px; border-top: 1px solid rgba(255,255,255,0.05); padding-top:12px;">📅 יומן Google</div>
+        <div style="margin-bottom:6px"><label class="flbl">כתובת Gmail</label><input class="finp" type="email" id="s-gcal" placeholder="yourname@gmail.com"></div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
+        <button class="btn bp" style="width:100%" onclick="saveSettings()">💾 שמור הגדרות</button>
+        
+        <div class="stit" style="margin-top:30px">🔔 התראות</div>
+        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
+      </div>
+
+      <div class="tw settings-panel" id="s-users-panel" style="display:none;">
+        <div class="stit">👥 ניהול משתמשים והרשאות</div>
+        <div id="s-users-list" style="margin-bottom:16px"></div>
+        <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש</button>
+      </div>
+
+      <div class="tw settings-panel" id="s-design-panel">
+        <div class="stit">🎨 עיצוב והתאמה אישית</div>
+        <div class="fgrid">
+          <div class="fg1"><label class="flbl">רקע המערכת</label>
+            <select class="finp" id="ds-bg" onchange="applyDesignSettings()">
+              <option value="stone">🪨 אבן טבעית (ברירת מחדל)</option>
+              <option value="metal">⚙️ מתכת מוברשת</option>
+              <option value="carbon">⬛ קרבון ספורטיבי</option>
+              <option value="dark">🌙 שחור חלק ונקי</option>
+            </select>
+          </div>
+          <div class="fg1"><label class="flbl">צבע נושא מרכזי</label>
+            <input class="finp" type="color" id="ds-color" value="#3b82f6" onchange="applyDesignSettings()" style="height:42px;padding:4px;cursor:pointer">
+          </div>
+          <div class="fg1" style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer" onclick="document.getElementById('ds-glow').click()">
+            <input type="checkbox" id="ds-glow" onchange="applyDesignSettings()" checked style="width:18px;height:18px;cursor:pointer">
+            <label class="flbl" style="margin-bottom:0;cursor:pointer">הפעל אפקט הברקות תלת-ממד</label>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="tw" style="padding:22px">
-      <div class="stit">פרטי החברה</div>
-      <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
-      <div style="margin-bottom:12px"><label class="flbl">טלפון</label>    <input class="finp" id="s-phone"   placeholder="050-0000000"></div>
-      <div style="margin-bottom:20px"><label class="flbl">מייל שולח</label><input class="finp" type="email" id="s-email" placeholder="info@videodesign.co.il"></div>
-      <div class="stit">יומן Google</div>
-      <div style="margin-bottom:6px"><label class="flbl">כתובת Gmail</label><input class="finp" type="email" id="s-gcal" placeholder="yourname@gmail.com"></div>
-      <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
-      <button class="btn bp" onclick="saveSettings()">💾 שמור הגדרות</button>
-      
-      <div class="stit" style="margin-top:24px">🔔 התראות</div>
-      <div style="font-size:12px;color:var(--tx3);margin-bottom:12px">קבל התראה בטלפון כשמתווספת משימה חדשה</div>
-      <button class="btn bs" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
     </div>
-    
-    <div class="tw" id="s-users-panel" style="padding:22px;display:none;margin-top:16px">
-      <div class="stit">👥 ניהול משתמשים והרשאות</div>
-      <div id="s-users-list" style="margin-bottom:16px"></div>
-      <button class="btn bs" onclick="openAddUser()">➕ הוסף משתמש</button>
-    </div>
-  </div></main><div class="modal" id="M-cust">
+  </div></main>
+
+<div class="modal" id="M-cust">
   <div class="mbox">
     <div class="mhd"><h2 id="M-cust-title">לקוח חדש</h2><button class="btn bs btn-sm" onclick="closeM('M-cust')">✕</button></div>
     <div class="mbody"><div class="fgrid">
@@ -553,9 +560,7 @@ document.head.appendChild(_link);
 </div>
 
 <script>
-  // מנגנון הגדלה והקטנה (עד 10 רמות למעלה, עד 10 רמות למטה)
   let currentFontLevel = 0;
-
   function changeFontScale(delta) {
     currentFontLevel += delta;
     if (currentFontLevel > 10) currentFontLevel = 10;
@@ -563,39 +568,25 @@ document.head.appendChild(_link);
     localStorage.setItem('vd_crm_font_lvl', currentFontLevel);
     applyFontScale();
   }
-
   function applyFontScale() {
-    // כל שלב משנה את הגודל ב-5%
     const scale = 1 + (currentFontLevel * 0.05); 
     document.documentElement.style.setProperty('--fz-scale', scale);
-    
     const lbls = document.querySelectorAll('.font-scale-lbl');
-    lbls.forEach(lbl => {
-      lbl.textContent = currentFontLevel > 0 ? '+' + currentFontLevel : currentFontLevel;
-    });
+    lbls.forEach(lbl => { lbl.textContent = currentFontLevel > 0 ? '+' + currentFontLevel : currentFontLevel; });
   }
-
-  // שמירת והחלת הגדרות העיצוב של הרקע והתלת-ממד
   function applyDesignSettings() {
     const bg = document.getElementById('ds-bg').value;
     const color = document.getElementById('ds-color').value;
     const glow = document.getElementById('ds-glow').checked;
-
     document.documentElement.style.setProperty('--acc', color);
     document.body.setAttribute('data-bg', bg);
     document.body.setAttribute('data-glow', glow ? 'true' : 'false');
     localStorage.setItem('vd_crm_design', JSON.stringify({ bg, color, glow }));
   }
-
-  // טעינת הגדרות עם פתיחת המערכת
   window.addEventListener('DOMContentLoaded', () => {
-    
     const savedFont = localStorage.getItem('vd_crm_font_lvl');
-    if (savedFont !== null) {
-      currentFontLevel = parseInt(savedFont);
-    }
+    if (savedFont !== null) currentFontLevel = parseInt(savedFont);
     applyFontScale();
-
     const savedDesign = localStorage.getItem('vd_crm_design');
     if (savedDesign) {
       try {
