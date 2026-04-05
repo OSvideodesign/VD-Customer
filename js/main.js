@@ -140,33 +140,35 @@ function renderBoard() {
     const cols = { open: document.getElementById('board-open'), scheduled: document.getElementById('board-scheduled'), done: document.getElementById('board-done') };
     if (!cols.open) return;
     Object.values(cols).forEach(el => el.innerHTML = '');
-    window.faults.filter(f => !f.archived).forEach(f => {
+    window.faults.filter(f => f.status !== 'done').forEach(f => {
         const card = document.createElement('div');
         card.className = 'board-card'; card.dataset.id = f.id;
-        const custName = window.custs.find(c => c.id === f.customerId)?.name || f.guestName || 'לקוח';
-        card.innerHTML = `<strong>${custName}</strong><p style="font-size:12px; margin:4px 0">${f.description.substring(0,40)}...</p>`;
+        const custName = window.custs.find(c => c.id === f.custId)?.name || f.guestName || 'לקוח';
+        card.innerHTML = `<strong>${custName}</strong><p style="font-size:12px; margin:4px 0">${(f.desc || '').substring(0,40)}...</p>`;
         card.onclick = () => window.editFaultById(f.id);
         if (cols[f.status]) cols[f.status].appendChild(card);
     });
     initSortable();
 }
 function initSortable() {
+    if (!window.Sortable) return;
     document.querySelectorAll('.board-col-list').forEach(el => {
         new Sortable(el, { group: 'tasks', animation: 150, onEnd: (evt) => {
             const id = evt.item.dataset.id; const status = evt.to.parentElement.dataset.status;
             const task = window.faults.find(f => f.id === id);
             if (task && task.status !== status) {
                 task.status = status; if(window.saveFault) window.saveFault(task);
-                sendPush(`משימה של ${task.guestName || 'לקוח'} עודכנה ל-${status}`);
             }
         }});
     });
 }
-function sendPush(msg) {
-    if (Notification.permission === "granted") {
-        new Notification("CRM עדכון", { body: msg, icon: "app-icon-192.jpg" });
-    }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    console.log('SW Registered');
+  }).catch(e => console.log('SW Failed', e));
 }
+
 if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
     setTimeout(() => toast('📱 לקבלת התראות: לחץ על "שתף" ואז "הוסף למסך הבית"', 'info'), 4000);
 }
