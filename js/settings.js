@@ -126,6 +126,7 @@ export function saveUser() {
   const pass   = nopass ? '' : document.getElementById('u-pass').value.trim();
   const color  = document.getElementById('u-color').value;
   const role   = document.getElementById('u-role').value;
+  
   const tokens = [...document.querySelectorAll('.token-val')].map(i => i.value);
   const perms = getPermsFromGrid();
 
@@ -133,10 +134,25 @@ export function saveUser() {
     const idx = USERS.findIndex(x => x.name === _editUserName);
     if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color, role, perms, tokens };
   } else {
+    if (USERS.find(x => x.name === name)) { toast('משתמש עם שם זה כבר קיים', 'err'); return; }
     USERS.push({ name, pass, color, role, perms, tokens });
   }
   if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
-  closeM('M-user'); renderUsersList(); toast('נשמר ✅');
+  closeM('M-user');
+  renderUsersList();
+  toast('משתמש נשמר ✅');
+}
+
+export function deleteUser() {
+  if (!_editUserName) return;
+  if (_editUserName === 'רז') { toast('לא ניתן למחוק את רז', 'err'); return; }
+  if (!confirm('למחוק את המשתמש ' + _editUserName + '?')) return;
+  const idx = USERS.findIndex(x => x.name === _editUserName);
+  if (idx >= 0) USERS.splice(idx, 1);
+  if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
+  closeM('M-user');
+  renderUsersList();
+  toast('משתמש נמחק ✅');
 }
 
 export function renderPermsGrid(perms) {
@@ -145,8 +161,11 @@ export function renderPermsGrid(perms) {
   grid.innerHTML = PERM_MODULES.map(m => `
     <div style="background:var(--sur2);border-radius:8px;padding:8px 10px">
       <div style="font-size:12px;font-weight:600;margin-bottom:6px">${m.label}</div>
-      <select class="finp perm-sel" data-key="${m.key}" style="font-size:12px;">
-        <option value="0">🚫 אין גישה</option><option value="1">👁️ צפייה</option><option value="2">✏️ עריכה</option><option value="3">🔓 מלאה</option>
+      <select class="finp perm-sel" data-key="${m.key}" style="font-size:12px;padding:5px 8px">
+        <option value="0">🚫 אין גישה</option>
+        <option value="1">👁️ צפייה בלבד</option>
+        <option value="2">✏️ צפייה + עריכה</option>
+        <option value="3">🔓 גישה מלאה</option>
       </select>
     </div>`).join('');
   PERM_MODULES.forEach(m => {
