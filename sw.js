@@ -14,21 +14,21 @@ self.addEventListener('push', e => {
   
   const n = data.notification || data;
 
-  const options = {
-    body: n.body || '',
-    icon: '/Client-PRO/app-icon-192.jpg',
-    badge: '/Client-PRO/app-icon-192.jpg',
-    vibrate: [200, 100, 200],
-    data: { url: n.click_action || n.url || '/Client-PRO/' },
-    dir: 'rtl', lang: 'he',
-    tag: 'vd-notif',
-    renotify: true
-  };
-
-  e.waitUntil(self.registration.showNotification(n.title || 'וידאו דיזיין', options));
+  e.waitUntil(
+    self.registration.showNotification(n.title || 'וידאו דיזיין', {
+      body: n.body || '',
+      icon: '/Client-PRO/app-icon-192.jpg',
+      badge: '/Client-PRO/app-icon-192.jpg',
+      vibrate: [200, 100, 200],
+      data: { url: n.click_action || n.url || '/Client-PRO/' },
+      dir: 'rtl', lang: 'he',
+      tag: 'vd-notif',
+      renotify: true
+    })
+  );
 });
 
-// לחיצה על התראה
+// לחיצה על התראה → פתיחת האפליקציה
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   const url = e.notification.data?.url || '/Client-PRO/';
