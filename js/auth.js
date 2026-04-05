@@ -137,7 +137,7 @@ async function registerPushToken(userName) {
         const messaging = getMessaging(app);
         const registration = await navigator.serviceWorker.ready;
         
-        // ניקוי טוקן קודם כדי למנוע כפילויות ושגיאות הרשאה ישנות
+        // ניקוי טוקן קודם למניעת שגיאות
         try { await deleteToken(messaging); } catch(e) {}
 
         const token = await getToken(messaging, { 
