@@ -54,7 +54,7 @@ export function renderFaults() {
         </div>
       </div>
       <div style="font-size:11px;color:var(--tx3);margin-bottom:4px">${TMAP[f.type || 'fault'] || '🔧 משימה'}
-        ${displayAmount > 0 ? ' &nbsp;|&nbsp; 💰 ₪' + Math.round(displayAmount).toLocaleString('he-IL') : ''}
+        ${displayAmount > 0 ? ' &nbsp;|&nbsp; 💰 ₪' + Math.round(displayAmount).toLocaleString('he-IL') + (f.paid === 'yes' ? ' ✅' : f.paid === 'partial' ? ' (חלקי)' : '') : ''}
       </div>
       <div class="fdesc">${f.desc || ''}</div>
       <div class="fmeta">
@@ -97,6 +97,7 @@ export function openNewFault(preCustId) {
   document.getElementById('mf-time').value    = '';
   document.getElementById('mf-amount').value  = '';
   document.getElementById('mf-amount-vat').checked = false;
+  document.getElementById('mf-paid').value    = 'no';
   document.getElementById('mf-notes').value   = '';
   openM('M-fault');
 }
@@ -119,6 +120,7 @@ export function editFaultById(id) {
   document.getElementById('mf-time').value    = f.time     || '';
   document.getElementById('mf-amount').value  = f.amount   || '';
   document.getElementById('mf-amount-vat').checked = !!f.amountPlusVat;
+  document.getElementById('mf-paid').value    = f.paid     || 'no';
   document.getElementById('mf-notes').value   = f.notes    || '';
   openM('M-fault');
 }
@@ -141,13 +143,16 @@ export async function saveFault() {
   const custVal  = document.getElementById('mf-cust').value;
   const isGuest  = custVal === '__guest__';
   const desc     = document.getElementById('mf-desc').value.trim();
-  if ((!custVal && !isGuest) || !desc) { toast('מלא שדות חובה', 'err'); return; }
+  const guestName  = isGuest ? document.getElementById('mf-guest-name').value.trim()  : '';
+  const guestPhone = isGuest ? document.getElementById('mf-guest-phone').value.trim() : '';
+  if ((!custVal && !isGuest) || !desc) { toast('בחר לקוח ותאר את הבעיה', 'err'); return; }
+  if (isGuest && !guestName) { toast('הכנס שם לקוח מזדמן', 'err'); return; }
 
   const f = {
     id:          _eFault || uid(),
     custId:      isGuest ? '' : custVal,
-    guestName:   isGuest ? document.getElementById('mf-guest-name').value.trim() : '',
-    guestPhone:  isGuest ? document.getElementById('mf-guest-phone').value.trim() : '',
+    guestName:   isGuest ? guestName  : '',
+    guestPhone:  isGuest ? guestPhone : '',
     desc,
     type:        document.getElementById('mf-type').value,
     priority:    document.getElementById('mf-pri').value,
@@ -156,6 +161,7 @@ export async function saveFault() {
     time:        document.getElementById('mf-time').value,
     amount:      parseFloat(document.getElementById('mf-amount').value) || 0,
     amountPlusVat: document.getElementById('mf-amount-vat').checked,
+    paid:        document.getElementById('mf-paid').value,
     notes:       document.getElementById('mf-notes').value.trim(),
     updatedBy:   window._currentUser || '',
     created:     _eFault ? (window.faults.find(x => x.id === _eFault) || {}).created : today(),
