@@ -170,53 +170,46 @@ export async function saveFault() {
     created:     _eFault ? (window.faults.find(x => x.id === _eFault) || {}).created : today(),
   };
 
+  const isNew = !_eFault;
   if (_eFault) window.faults = window.faults.map(x => x.id === _eFault ? f : x);
   else         window.faults.push(f);
   if (window._dbSaveFaults) await window._dbSaveFaults(window.faults);
 
   const fCust = f.custId ? window.custs.find(x => x.id === f.custId) : null;
   const custLabel = fCust ? fCust.name : f.guestName || 'לקוח מזדמן';
-  addLog('fault', _eFault ? 'עריכת משימה' : 'הוספת משימה', custLabel + ' — ' + (f.desc || '').slice(0, 40));
+  addLog('fault', isNew ? 'הוספת משימה' : 'עריכת משימה', custLabel + ' — ' + (f.desc || '').slice(0, 40));
 
   closeM('M-fault');
   renderFaults(); renderDash();
-  toast(_eFault ? 'משימה עודכנה ✅' : 'משימה נוספה ✅');
+  toast(isNew ? 'משימה נוספה ✅' : 'משימה עודכנה ✅');
 
-  // שליחת Push גלובלי לכל שאר הצוות
-  _broadcastPushNotification(f, custLabel);
+  // שליחת Push לכל המכשירים של הצוות (מלבד המשתמש הנוכחי)
+  _broadcastPushNotification(isNew ? 'חדשה' : 'עודכנה', custLabel, f.desc);
 
   if (f.date && f.status === 'scheduled') {
     setTimeout(() => { if (confirm('לפתוח Google Calendar?')) window._gcalFault(f.id); }, 400);
   }
 }
 
-async function _broadcastPushNotification(f, custLabel) {
-    const myName = window._currentUser;
-    const title = `🔧 ${myName} ${(_eFault ? 'עדכן' : 'הוסיף')} משימה`;
-    const body = `${custLabel}: ${f.desc.substring(0, 50)}`;
-
-    // איסוף כל הטוקנים של המשתמשים שהם לא אני
+async function _broadcastPushNotification(action, custLabel, desc) {
+    const title = `🔧 משימה ${action} - ${window._currentUser}`;
+    const body = `${custLabel}: ${desc.substring(0, 50)}`;
     const allTokens = [];
     USERS.forEach(u => {
-        if (u.name !== myName && u.tokens) {
+        if (u.name !== window._currentUser && u.tokens) {
             allTokens.push(...u.tokens);
         }
     });
 
-    if (allTokens.length === 0) return;
+    if (allTokens.length === 0 || !FCM_SERVER_KEY) return;
 
-    // שליחה דרך FCM Legacy API (דורש FCM_SERVER_KEY ב-config.js)
     try {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'key=' + FCM_SERVER_KEY
-            },
-            body: JSON.stringify({
-                registration_ids: allTokens,
-                notification: { title, body, icon: '/Client-PRO/icon.png', click_action: '/Client-PRO/', sound: 'default' },
-                data: { url: '/Client-PRO/' }
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'key=' + FCM_SERVER_KEY },
+            body: JSON.stringify({ 
+                registration_ids: allTokens, 
+                notification: { title, body, icon: '/Client-PRO/app-icon-192.jpg', click_action: '/Client-PRO/' }
             })
         });
     } catch (err) { console.error("Push Broadcast Error:", err); }
@@ -229,15 +222,13 @@ export async function delFault() {
   const fCust = faultToDelete?.custId ? window.custs.find(x => x.id === faultToDelete.custId) : null;
   const fName = fCust ? fCust.name : (faultToDelete?.guestName || 'לקוח מזדמן');
   closeM('M-fault');
-  toast('מוחק...');
-  if (window._dbDel) {
-    const ok = await window._dbDel('faults', id);
-    if (!ok) { toast('שגיאה במחיקה', 'err'); return; }
-  }
+  if (window._dbDel) await window._dbDel('faults', id);
   window.faults = window.faults.filter(x => x.id !== id);
   addLog('fault', 'מחיקת משימה', fName + ' — ' + (faultToDelete?.desc || '').slice(0, 40));
   renderFaults(); renderDash();
   toast('משימה נמחקה ✅');
+  
+  if(faultToDelete) _broadcastPushNotification('נמחקה', fName, faultToDelete.desc);
 }
 
 export function toggleSelectMode(on) {
@@ -272,7 +263,6 @@ export async function deleteSelected() {
   if (_selectedIds.size === 0) return;
   if (!confirm('למחוק ' + _selectedIds.size + ' תקלות?')) return;
   const ids = [..._selectedIds];
-  toast('מוחק ' + ids.length + ' משימות...');
   const ok = window._dbDelMulti ? await window._dbDelMulti('faults', ids) : true;
   if (!ok) { toast('שגיאה במחיקה', 'err'); return; }
   window.faults = window.faults.filter(f => !ids.includes(f.id));
@@ -284,8 +274,14 @@ export async function deleteSelected() {
 
 export function requestNotificationPermission() {
   if (!('Notification' in window)) { toast('הדפדפן לא תומך בהתראות', 'err'); return; }
-  Notification.requestPermission().then(p => {
-    if (p === 'granted') toast('התראות הופעלו ✅');
-    else toast('התראות נדחו', 'err');
+  Notification.requestPermission().then(async p => {
+    if (p === 'granted') {
+        toast('מנסה להפעיל...');
+        if (window._registerPushToken) {
+            const ok = await window._registerPushToken();
+            if (ok) toast('התראות הופעלו ✅');
+            else toast('הרשאה ניתנה, אך הרישום נכשל', 'err');
+        }
+    } else toast('התראות נדחו', 'err');
   });
 }
