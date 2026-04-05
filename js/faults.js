@@ -198,8 +198,15 @@ export async function delFault() {
 
 export function toggleSelectMode(on) {
   _selectMode = on; _selectedIds.clear();
-  document.getElementById('select-mode-btn').style.display = on ? 'none' : '';
-  document.getElementById('bulk-bar').classList[on ? 'add' : 'remove']('show');
+  const pg = document.getElementById('pg-faults');
+  if (on) {
+    pg?.classList.add('select-mode');
+    document.getElementById('select-mode-btn').style.display = 'none';
+  } else {
+    pg?.classList.remove('select-mode');
+    document.getElementById('select-mode-btn').style.display = '';
+    document.getElementById('bulk-bar').classList.remove('show');
+  }
   renderFaults();
 }
 
