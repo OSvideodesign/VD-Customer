@@ -2,33 +2,33 @@
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
 
-// Push notification received
+// קבלת הודעת Push
 self.addEventListener('push', e => {
   if(!e.data) return;
   let data;
-  try{ 
+  try { 
       data = e.data.json(); 
-  } catch(err){ 
+  } catch(err) { 
       data = { title: 'וידאו דיזיין', body: e.data.text() }; 
   }
   
   const n = data.notification || data;
 
-  e.waitUntil(
-    self.registration.showNotification(n.title || 'וידאו דיזיין', {
-      body: n.body || '',
-      icon: '/Client-PRO/app-icon-192.jpg',
-      badge: '/Client-PRO/app-icon-192.jpg',
-      vibrate: [200, 100, 200],
-      data: { url: n.click_action || n.url || '/Client-PRO/' },
-      dir: 'rtl', lang: 'he',
-      tag: 'vd-notif',
-      renotify: true
-    })
-  );
+  const options = {
+    body: n.body || '',
+    icon: '/Client-PRO/app-icon-192.jpg',
+    badge: '/Client-PRO/app-icon-192.jpg',
+    vibrate: [200, 100, 200],
+    data: { url: n.click_action || n.url || '/Client-PRO/' },
+    dir: 'rtl', lang: 'he',
+    tag: 'vd-notif',
+    renotify: true
+  };
+
+  e.waitUntil(self.registration.showNotification(n.title || 'וידאו דיזיין', options));
 });
 
-// Click on notification → open app
+// לחיצה על התראה
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   const url = e.notification.data?.url || '/Client-PRO/';
@@ -42,7 +42,7 @@ self.addEventListener('notificationclick', e => {
   );
 });
 
-// Firebase background messaging compatibility
+// תאימות ל-Firebase background messaging
 importScripts('https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging-compat.js');
 
