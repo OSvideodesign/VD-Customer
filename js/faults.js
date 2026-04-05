@@ -7,7 +7,7 @@ import { addLog } from './log.js';
 import { renderDash } from './dashboard.js';
 import { renderArchive } from './archive.js';
 
-// ייבוא פונקציות Firestore לצורך שליחת התראות דרך מסד הנתונים
+// ייבוא פונקציות Firestore לצורך שליחת התראות
 import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
 
 let _eFault      = null;
@@ -171,17 +171,15 @@ export async function saveFault() {
 
   closeM('M-fault'); renderFaults(); renderDash(); toast('נשמר ✅');
   
-  // שליחת התראה דרך Firestore (פותר את שגיאת ה-401)
+  // שליחת בקשת התראה ל-Firestore
   _requestPushNotification(isNew ? 'חדשה' : 'עודכנה', custLabel, f.desc);
 }
 
-// פונקציה חדשה שכותבת את הבקשה ל-Firestore במקום לשלוח ישירות לגוגל
 async function _requestPushNotification(action, custLabel, desc) {
     const db = getFirestore();
     const title = `🔧 משימה ${action} - ${window._currentUser}`;
     const body = `${custLabel}: ${desc.substring(0, 50)}`;
     
-    // מוצאים את כל הטוקנים של המשתמשים האחרים
     const targetTokens = [];
     USERS.forEach(u => {
         if (u.name !== window._currentUser && u.tokens) {
@@ -192,8 +190,6 @@ async function _requestPushNotification(action, custLabel, desc) {
     if (targetTokens.length === 0) return;
 
     try {
-        // כתיבה ל-Collection שנקרא notifications. 
-        // שרת חיצוני או Cloud Function יכול להאזין כאן ולשלוח Push.
         await addDoc(collection(db, 'notifications'), {
             title,
             body,
@@ -202,9 +198,8 @@ async function _requestPushNotification(action, custLabel, desc) {
             createdAt: new Date().toISOString(),
             status: 'pending'
         });
-        console.log("Notification request saved to Firestore.");
     } catch (e) {
-        console.error("Failed to save notification request:", e);
+        console.error("Failed to save notification:", e);
     }
 }
 
