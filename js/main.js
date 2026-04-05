@@ -17,23 +17,8 @@ import { renderLog, addLog, clearLog } from './log.js';
 import { gcalInit, gcalSignIn, gcalSignOut, fetchWk, wkPrev, wkNext, wkToday, gcalFault } from './gcal.js';
 import { loadAll } from './db.js';
 
-window.custs       = [];
-window.faults      = [];
-window.notes       = [];
-window.waMessages  = [];
-window.logEntries  = [];
-window.cfg         = {};
-window._deletingIds = new Set();
-window._gsResults  = [];
-
-(function () {
-  try {
-    const b = localStorage.getItem('crm_cfg');
-    if (b) Object.assign(window.cfg, JSON.parse(b));
-  } catch (e) {}
-})();
-
-// Expose globals for HTML onclick handlers
+// Expose globals for HTML onclick handlers - חובה בתחילת הקובץ למניעת שגיאות defined
+window.toggleGuestFields = toggleGuestFields;
 window.doLogin          = doLogin;
 window.backToUsers      = backToUsers;
 window.logout           = logout;
@@ -69,7 +54,6 @@ window.openNewFault     = openNewFault;
 window._openNewFault    = openNewFault;
 window.saveFault        = saveFault;
 window.delFault         = delFault;
-window.toggleGuestFields = toggleGuestFields;
 window.renderFaults     = renderFaults;
 window._editFaultById   = editFaultById;
 window.editFaultById    = editFaultById;
@@ -113,17 +97,32 @@ window.wkNext           = wkNext;
 window.wkToday          = wkToday;
 window._gcalFault       = gcalFault;
 
+window.custs       = [];
+window.faults      = [];
+window.notes       = [];
+window.waMessages  = [];
+window.logEntries  = [];
+window.cfg         = {};
+window._deletingIds = new Set();
+window._gsResults  = [];
+
+(function () {
+  try {
+    const b = localStorage.getItem('crm_cfg');
+    if (b) Object.assign(window.cfg, JSON.parse(b));
+  } catch (e) {}
+})();
+
 initLogin();
 loadAll();
 
-// ── TASKS BOARD LOGIC (Original Feature) ──────────────────────────────────
+// ── TASKS BOARD LOGIC (החזרת הלוח המקורי) ──────────────────────────────────
 let isBoardMode = localStorage.getItem('vd_tasks_mode') === 'board';
 window.toggleBoardMode = function() {
     isBoardMode = !isBoardMode;
     localStorage.setItem('vd_tasks_mode', isBoardMode ? 'board' : 'list');
     updateTasksUI();
 };
-
 function updateTasksUI() {
     const listV = document.getElementById('tasks-list-view');
     const boardV = document.getElementById('tasks-board-view');
@@ -137,7 +136,6 @@ function updateTasksUI() {
         toggleTxt.textContent = '🔲 תצוגת כרטיסיות'; renderFaults();
     }
 }
-
 function renderBoard() {
     const cols = { open: document.getElementById('board-open'), scheduled: document.getElementById('board-scheduled'), done: document.getElementById('board-done') };
     if (!cols.open) return;
@@ -152,7 +150,6 @@ function renderBoard() {
     });
     initSortable();
 }
-
 function initSortable() {
     if (!window.Sortable) return;
     document.querySelectorAll('.board-col-list').forEach(el => {
@@ -166,15 +163,13 @@ function initSortable() {
     });
 }
 
-// ── Service Worker Registration ──────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
     console.log('SW Registered');
-  }).catch(e => console.error('SW Registration Failed:', e));
+  }).catch(e => console.log('SW Failed', e));
 }
 
 if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
     setTimeout(() => toast('📱 לקבלת התראות: לחץ על "שתף" ואז "הוסף למסך הבית"', 'info'), 4000);
 }
-
 setTimeout(updateTasksUI, 500);
