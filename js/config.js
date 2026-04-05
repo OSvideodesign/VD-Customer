@@ -15,8 +15,8 @@ export const SERVICE_ACCOUNT = {
   projectId: "vd-clientpro"
 };
 
-// מפתח VAPID המעודכן שסיפקת מה-Firebase Console
-export const VAPID_KEY = "iHrJljWYvy-xJh818-z9Yl58h35k0R351BdXZjFrlW4_"; 
+// מפתח VAPID המדויק מצילום המסך שלך
+export const VAPID_KEY = "BD8IYRHCK9bzvSxtKeufngOY03oo_CEV1Wme9TzgidWKQkv12EINV73mRb3izMaFgfFFkrr-bpNW8fcjQllOjCE"; 
 
 export const USERS = [
   { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner', tokens: [] },
