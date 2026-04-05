@@ -20,7 +20,7 @@ import { loadAll } from './db.js';
 window.custs = []; window.faults = []; window.notes = []; window.cfg = {};
 window._gsResults = [];
 
-// Expose globals
+// Expose globals for HTML onclick handlers
 window.doLogin = doLogin; window.backToUsers = backToUsers; window.logout = logout; window._selectUser = selectUser;
 window.nav = nav; window.openM = openM; window.closeM = closeM; window.openDrawer = openDrawer; window.closeDrawer = closeDrawer; window.navD = navD;
 window.openGlobalSearch = openGlobalSearch; window.runGlobalSearch = runGlobalSearch; window.renderDash = renderDash; window.jumpTo = jumpTo;
@@ -43,7 +43,7 @@ window.gcalInit = gcalInit; window.gcalSignIn = gcalSignIn; window.gcalSignOut =
 initLogin();
 loadAll();
 
-// TASKS BOARD LOGIC
+// ── TASKS BOARD LOGIC (Original Board Feature) ──────────────────────────
 let isBoardMode = localStorage.getItem('vd_tasks_mode') === 'board';
 window.toggleBoardMode = function() {
     isBoardMode = !isBoardMode;
@@ -90,7 +90,7 @@ function initSortable() {
     });
 }
 
-// Service Worker Registration
+// ── Service Worker Registration ──────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
     console.log('SW Registered');
