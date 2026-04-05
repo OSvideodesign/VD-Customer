@@ -48,15 +48,20 @@ export function initLogin() {
       }
     } catch (e) {}
   }
+  
   const btns = document.getElementById('user-btns');
-  btns.innerHTML = USERS.map(u => {
-    const glowColor = u.color + '40';
-    return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
-       <div class="login-user-icon">${u.name[0]}</div>
-       <div class="login-user-name">${u.name}</div>
-     </button>`;
-  }).join('');
-  document.getElementById('login-screen').style.display = 'flex';
+  if (btns) {
+    btns.innerHTML = USERS.map(u => {
+      const glowColor = u.color + '40';
+      return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
+         <div class="login-user-icon">${u.name[0]}</div>
+         <div class="login-user-name">${u.name}</div>
+       </button>`;
+    }).join('');
+  }
+  
+  const loginScreen = document.getElementById('login-screen');
+  if (loginScreen) loginScreen.style.display = 'flex';
 }
 
 export function selectUser(name) {
@@ -102,7 +107,8 @@ export async function applyUser(u) {
   window._currentColor = u.color;
   window._currentRole  = u.role || 'tech';
 
-  document.getElementById('login-screen').style.display = 'none';
+  const loginScreen = document.getElementById('login-screen');
+  if (loginScreen) loginScreen.style.display = 'none';
   toggleAppView(true);
 
   const badgeDisplay = document.getElementById('user-badge-display');
@@ -115,7 +121,7 @@ export async function applyUser(u) {
     if (el) el.style.display = (perms[mod] || 0) >= 1 ? '' : 'none';
   });
 
-  // רישום טוקן לאחר כניסה
+  // רישום טוקן למכשיר
   window._registerPushToken = () => registerPushToken(u.name);
   setTimeout(window._registerPushToken, 3000);
 
