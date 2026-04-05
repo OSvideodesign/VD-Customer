@@ -9,14 +9,14 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
-// נתוני חשבון שירות עבור FCM v1 (מתוך ה-JSON שסיפקת)
+// נתוני חשבון שירות עבור FCM v1
 export const SERVICE_ACCOUNT = {
   clientEmail: "firebase-adminsdk-fbsvc@vd-clientpro.iam.gserviceaccount.com",
   projectId: "vd-clientpro"
 };
 
-// מפתח VAPID מהגדרות Cloud Messaging
-export const VAPID_KEY = "BD8IYRHCK9bzvsxtKeufngOY03oo_CEV1Wme9TzgidWKQkv12EINV73mRb3izMaFgfFFkrr-bpNW8fcjQllOjCE"; 
+// מפתח VAPID המעודכן שסיפקת מה-Firebase Console
+export const VAPID_KEY = "iHrJljWYvy-xJh818-z9Yl58h35k0R351BdXZjFrlW4_"; 
 
 export const USERS = [
   { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner', tokens: [] },
