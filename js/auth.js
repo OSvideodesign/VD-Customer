@@ -125,8 +125,8 @@ export async function applyUser(u) {
     if (el) el.style.display = canSeeLog ? '' : 'none';
   });
 
-  // רישום טוקן לאחר כניסה
   window._registerPushToken = () => registerPushToken(u.name);
+  // הפעלה מושהית כדי לוודא ש-Service Worker מוכן
   setTimeout(window._registerPushToken, 3000);
 
   setTimeout(() => { try { addLog('other', 'כניסה למערכת', u.name); } catch (e) {} }, 3000);
@@ -136,10 +136,16 @@ async function registerPushToken(userName) {
     try {
         const app = getApps().length === 0 ? initializeApp(FIREBASE_CONFIG) : getApp();
         const messaging = getMessaging(app);
+        
+        // וידאו דיזיין - שימוש ב-Registration תקין
         const registration = await navigator.serviceWorker.ready;
-        const token = await getToken(messaging, { serviceWorkerRegistration: registration, vapidKey: VAPID_KEY });
+        const token = await getToken(messaging, { 
+            serviceWorkerRegistration: registration, 
+            vapidKey: VAPID_KEY 
+        });
 
         if (token) {
+            console.log("Token generated:", token);
             const u = USERS.find(x => x.name === userName);
             if (u) {
                 u.tokens = u.tokens || [];
@@ -150,6 +156,8 @@ async function registerPushToken(userName) {
             }
             return true;
         }
-    } catch (err) { console.error("Push Reg Failed:", err); }
+    } catch (err) { 
+        console.error("Push Reg Failed:", err); 
+    }
     return false;
 }
