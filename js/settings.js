@@ -86,36 +86,37 @@ export function openEditUser(name) {
 }
 
 export function renderTokenManager(tokens) {
-  const grid = document.getElementById('u-perms-grid'); // שימוש באותו קונטיינר או מתחתיו
+  const grid = document.getElementById('u-perms-grid');
+  const old = document.getElementById('token-mgmt-sec');
+  if (old) old.remove();
+
   let tokenHtml = `
-    <div style="grid-column: 1/-1; margin-top: 20px;">
+    <div id="token-mgmt-sec" style="grid-column: 1/-1; margin-top: 20px; border-top:1px solid #333; padding-top:15px;">
       <div class="stit">📱 ניהול מכשירים (Push Tokens)</div>
       <div id="token-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
         ${tokens.map((t, i) => `
           <div style="display:flex; gap:6px; align-items:center; background:var(--sur3); padding:6px 10px; border-radius:6px;">
-            <input class="finp token-val" style="font-size:10px; padding:5px;" value="${t}" readonly>
+            <input class="finp token-val" style="font-size:10px; padding:5px; flex:1" value="${t}" readonly>
             <button class="btn bs btn-sm" onclick="this.parentElement.remove()" style="color:var(--red)">✕</button>
           </div>
         `).join('')}
       </div>
       <div style="display:flex; gap:8px;">
-        <input class="finp" id="new-token-inp" placeholder="הדבק טוקן חדש..." style="font-size:12px;">
+        <input class="finp" id="new-token-inp" placeholder="הדבק טוקן חדש..." style="font-size:12px; flex:1">
         <button class="btn bp btn-sm" onclick="window._addTokenRow()">+</button>
       </div>
     </div>
   `;
-  grid.insertAdjacentHTML('beforeend', tokenHtml);
+  grid.insertAdjacentHTML('afterend', tokenHtml);
 }
 
 window._addTokenRow = () => {
     const val = document.getElementById('new-token-inp').value.trim();
     if(!val) return;
-    const list = document.getElementById('token-list');
     const div = document.createElement('div');
     div.style.cssText = "display:flex; gap:6px; align-items:center; background:var(--sur3); padding:6px 10px; border-radius:6px;";
-    div.innerHTML = `<input class="finp token-val" style="font-size:10px; padding:5px;" value="${val}" readonly>
-                     <button class="btn bs btn-sm" onclick="this.parentElement.remove()" style="color:var(--red)">✕</button>`;
-    list.appendChild(div);
+    div.innerHTML = `<input class="finp token-val" style="font-size:10px; padding:5px; flex:1" value="${val}" readonly><button class="btn bs btn-sm" onclick="this.parentElement.remove()" style="color:var(--red)">✕</button>`;
+    document.getElementById('token-list').appendChild(div);
     document.getElementById('new-token-inp').value = '';
 };
 
