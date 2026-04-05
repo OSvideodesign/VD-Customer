@@ -1,4 +1,4 @@
-// ══ main.js — entry point, wires all modules, exposes globals for HTML onclick handlers ══
+// ══ main.js — entry point, wires all modules, exposes globals ══
 
 import { USERS }       from './config.js';
 import { toast, openWA, openNav } from './utils.js';
@@ -17,106 +17,33 @@ import { renderLog, addLog, clearLog } from './log.js';
 import { gcalInit, gcalSignIn, gcalSignOut, fetchWk, wkPrev, wkNext, wkToday, gcalFault } from './gcal.js';
 import { loadAll } from './db.js';
 
-window.custs       = [];
-window.faults      = [];
-window.notes       = [];
-window.waMessages  = [];
-window.logEntries  = [];
-window.cfg         = {};
-window._deletingIds = new Set();
-window._gsResults  = [];
+window.custs = []; window.faults = []; window.notes = []; window.cfg = {};
+window._gsResults = [];
 
-(function () {
-  try {
-    const b = localStorage.getItem('crm_cfg');
-    if (b) Object.assign(window.cfg, JSON.parse(b));
-  } catch (e) {}
-})();
-
-// Expose globals for HTML onclick handlers
-window.doLogin          = doLogin;
-window.backToUsers      = backToUsers;
-window.logout           = logout;
-window._selectUser      = selectUser;
-window.nav              = nav;
-window._nav             = nav;
-window.openM            = openM;
-window.closeM            = closeM;
-window.openDrawer       = openDrawer;
-window.closeDrawer      = closeDrawer;
-window.navD             = navD;
-window.openGlobalSearch = openGlobalSearch;
-window.runGlobalSearch  = runGlobalSearch;
-window.renderDash       = renderDash;
-window._jumpTo          = jumpTo;
-window.jumpTo           = jumpTo;
-window._editNoteById    = editNoteById;
-window.openNewCust      = openNewCust;
-window.saveCust         = saveCust;
-window.delCust          = delCust;
-window.addContactRow    = addContactRow;
-window.addAddressRow    = addAddressRow;
-window.renderCusts      = renderCusts;
-window._viewCust        = viewCust;
-window.viewCust         = viewCust;
-window._editCustById    = editCustById;
-window.editCustById     = editCustById;
-window._openWA          = openWA;
-window.openWA           = openWA;
-window._openNav         = openNav;
-window.openNav          = openNav;
-window.openNewFault     = openNewFault;
-window._openNewFault    = openNewFault;
-window.saveFault        = saveFault;
-window.delFault         = delFault;
-window.toggleGuestFields = toggleGuestFields;
-window.renderFaults     = renderFaults;
-window._editFaultById   = editFaultById;
-window.editFaultById    = editFaultById;
-window.toggleSelectMode = toggleSelectMode;
-window._toggleSelect    = toggleSelect;
-window.deleteSelected   = deleteSelected;
-window.requestNotificationPermission = requestNotificationPermission;
-window._updateFaultVatNote = updateFaultVatNote;
-window.openNewNote          = openNewNote;
-window.saveNote             = saveNote;
-window.delNote              = delNote;
-window.editNoteById         = editNoteById;
-window.toggleNoteSelectMode = toggleNoteSelectMode;
-window._toggleNoteSelect    = toggleNoteSelect;
-window.deleteSelectedNotes  = deleteSelectedNotes;
-window.renderNotes          = renderNotes;
-window.renderArchive    = renderArchive;
-window._restoreFault    = restoreFault;
-window._markPaid        = markPaid;
-window._markFaultPaid   = markFaultPaid;
-window.renderReports    = renderReports;
-window.exportBackup     = exportBackup;
-window.exportCustomersExcel = exportCustomersExcel;
-window.renderWarr       = renderWarr;
-window.renderDebts      = renderDebts;
-window.loadSettings     = loadSettings;
-window.saveSettings     = saveSettings;
-window.openAddUser      = openAddUser;
-window._openEditUser    = openEditUser;
-window.saveUser         = saveUser;
-window.deleteUser       = deleteUser;
-window.addLog           = addLog;
-window.clearLog         = clearLog;
-window.renderLog        = renderLog;
-window.gcalInit         = gcalInit;
-window.gcalSignIn       = gcalSignIn;
-window.gcalSignOut      = gcalSignOut;
-window.fetchWk          = fetchWk;
-window.wkPrev           = wkPrev;
-window.wkNext           = wkNext;
-window.wkToday          = wkToday;
-window._gcalFault       = gcalFault;
+// Expose globals
+window.doLogin = doLogin; window.backToUsers = backToUsers; window.logout = logout; window._selectUser = selectUser;
+window.nav = nav; window.openM = openM; window.closeM = closeM; window.openDrawer = openDrawer; window.closeDrawer = closeDrawer; window.navD = navD;
+window.openGlobalSearch = openGlobalSearch; window.runGlobalSearch = runGlobalSearch; window.renderDash = renderDash; window.jumpTo = jumpTo;
+window._viewCust = viewCust; window._editCustById = editCustById; window.saveCust = saveCust; window.delCust = delCust;
+window.addContactRow = addContactRow; window.addAddressRow = addAddressRow; window.renderCusts = renderCusts;
+window._openWA = openWA; window.openWA = openWA; window._openNav = openNav; window.openNav = openNav;
+window.openNewFault = openNewFault; window._openNewFault = openNewFault; window.saveFault = saveFault; window.delFault = delFault;
+window.renderFaults = renderFaults; window._editFaultById = editFaultById; window.editFaultById = editFaultById;
+window.toggleSelectMode = toggleSelectMode; window._toggleSelect = toggleSelect; window.deleteSelected = deleteSelected;
+window.requestNotificationPermission = requestNotificationPermission; window._updateFaultVatNote = updateFaultVatNote;
+window.openNewNote = openNewNote; window.saveNote = saveNote; window.delNote = delNote; window.editNoteById = editNoteById;
+window.toggleNoteSelectMode = toggleNoteSelectMode; window.renderNotes = renderNotes;
+window.renderArchive = renderArchive; window._restoreFault = restoreFault; window._markPaid = markPaid; window._markFaultPaid = markFaultPaid;
+window.renderReports = renderReports; window.exportBackup = exportBackup; window.exportCustomersExcel = exportCustomersExcel;
+window.renderWarr = renderWarr; window.renderDebts = renderDebts; window.loadSettings = loadSettings; window.saveSettings = saveSettings;
+window.openAddUser = openAddUser; window._openEditUser = openEditUser; window.saveUser = saveUser; window.deleteUser = deleteUser;
+window.addLog = addLog; window.clearLog = clearLog; window.renderLog = renderLog;
+window.gcalInit = gcalInit; window.gcalSignIn = gcalSignIn; window.gcalSignOut = gcalSignOut; window.fetchWk = fetchWk; window.wkPrev = wkPrev; window.wkNext = wkNext; window.wkToday = wkToday; window._gcalFault = gcalFault;
 
 initLogin();
 loadAll();
 
-// TASKS BOARD & PUSH LOGIC
+// TASKS BOARD LOGIC
 let isBoardMode = localStorage.getItem('vd_tasks_mode') === 'board';
 window.toggleBoardMode = function() {
     isBoardMode = !isBoardMode;
@@ -163,10 +90,11 @@ function initSortable() {
     });
 }
 
+// Service Worker Registration
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then(reg => {
+  navigator.serviceWorker.register('sw.js').then(reg => {
     console.log('SW Registered');
-  }).catch(e => console.log('SW Failed', e));
+  }).catch(e => console.error('SW Registration Failed:', e));
 }
 
 if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
