@@ -9,13 +9,13 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
-// נתוני חשבון שירות עבור FCM v1 (נלקחו מה-JSON ששלחת)
+// נתוני חשבון שירות עבור FCM v1 (מתוך ה-JSON שסיפקת)
 export const SERVICE_ACCOUNT = {
   clientEmail: "firebase-adminsdk-fbsvc@vd-clientpro.iam.gserviceaccount.com",
   projectId: "vd-clientpro"
 };
 
-// מפתח VAPID עבור רישום מכשירים
+// מפתח VAPID מהגדרות Cloud Messaging
 export const VAPID_KEY = "BD8IYRHCK9bzvsxtKeufngOY03oo_CEV1Wme9TzgidWKQkv12EINV73mRb3izMaFgfFFkrr-bpNW8fcjQllOjCE"; 
 
 export const USERS = [
@@ -25,20 +25,34 @@ export const USERS = [
   { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer', tokens: [] },
 ];
 
-export const NCAT = { general: '📌 כללי', meeting: '🤝 פגישה', reminder: '⏰ תזכורת' };
-export const NCAT_CLR = { general: 'var(--acc)', meeting: 'var(--grn)', reminder: 'var(--yel)' };
+export const NCAT = {
+  general:  '📌 כללי',
+  meeting:  '🤝 פגישה',
+  reminder: '⏰ תזכורת',
+};
+
+export const NCAT_CLR = {
+  general:  'var(--acc)',
+  meeting:  'var(--grn)',
+  reminder: 'var(--yel)',
+};
 
 export const DEFAULT_PERMS = {
-  owner: { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3 },
-  admin: { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3 },
-  manager: { customers: 2, faults: 2, archive: 2, notes: 2, warranties: 2, debts: 2, reports: 2 },
+  owner:     { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3 },
+  admin:     { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3 },
+  manager:   { customers: 2, faults: 2, archive: 2, notes: 2, warranties: 2, debts: 2, reports: 2 },
   installer: { customers: 1, faults: 2, archive: 2, notes: 2, warranties: 1, debts: 0, reports: 0 },
-  tech: { customers: 1, faults: 2, archive: 2, notes: 2, warranties: 1, debts: 0, reports: 0 },
+  tech:      { customers: 1, faults: 2, archive: 2, notes: 2, warranties: 1, debts: 0, reports: 0 },
 };
 
 export const PERM_MODULES = [
-  { key: 'customers', label: '👥 לקוחות' }, { key: 'faults', label: '🔧 משימות' }, { key: 'archive', label: '✅ ארכיון' },
-  { key: 'notes', label: '📝 הערות' }, { key: 'warranties', label: '🛡️ אחריות' }, { key: 'debts', label: '💰 חובות' }, { key: 'reports', label: '📈 דוחות' },
+  { key: 'customers',  label: '👥 לקוחות' },
+  { key: 'faults',     label: '🔧 משימות' },
+  { key: 'archive',    label: '✅ ארכיון' },
+  { key: 'notes',      label: '📝 הערות' },
+  { key: 'warranties', label: '🛡️ אחריות' },
+  { key: 'debts',      label: '💰 חובות' },
+  { key: 'reports',    label: '📈 דוחות' },
 ];
 
 export const GCAL_CID = '830672993595-f7fdfqj14qtnns6g0cmrb7m7nh30obqg.apps.googleusercontent.com';
