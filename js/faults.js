@@ -23,8 +23,8 @@ export function renderFaults() {
   let list = window.faults.filter(f => {
     if (f.status === 'done') return false;
     const c = window.custs.find(x => x.id === f.custId);
-    const custName = c ? c.name : (f.guestName || '');
-    if (q && !custName.toLowerCase().includes(q) && !(f.desc || '').toLowerCase().includes(q)) return false;
+    const custName = (c ? c.name : (f.guestName || '')).toLowerCase();
+    if (q && !custName.includes(q) && !(f.desc || '').toLowerCase().includes(q)) return false;
     if (sf && f.status !== sf) return false;
     return true;
   }).sort((a, b) => ({ urgent: 0, high: 1, medium: 2, low: 3 }[a.priority || 'medium'] - { urgent: 0, high: 1, medium: 2, low: 3 }[b.priority || 'medium']));
@@ -40,8 +40,7 @@ export function renderFaults() {
     const cbHtml  = _selectMode ? `<input type="checkbox" class="fc-cb" onclick="event.stopPropagation();window._toggleSelect('${f.id}',this)" ${_selectedIds.has(f.id) ? 'checked' : ''}>` : '';
     const fcClick = _selectMode ? `window._toggleSelect('${f.id}',this.querySelector('.fc-cb'))` : `window._editFaultById('${f.id}')`;
     
-    let displayAmount = parseFloat(f.amount) || 0;
-    if (f.amountPlusVat) displayAmount *= 1.18;
+    let displayAmount = (parseFloat(f.amount) || 0) * (f.amountPlusVat ? 1.18 : 1);
 
     return `<div class="fc ${_selectMode && _selectedIds.has(f.id) ? 'selected' : ''}" onclick="${fcClick}">${cbHtml}
       <div class="fch"><div class="ci">
@@ -53,9 +52,7 @@ export function renderFaults() {
           ${f.date ? `<button class="btn bs btn-sm" onclick="event.stopPropagation();window._gcalFault('${f.id}')">📅</button>` : ''}
         </div>
       </div>
-      <div style="font-size:11px;color:var(--tx3);margin-bottom:4px">${TMAP[f.type || 'fault'] || '🔧 משימה'}
-        ${displayAmount > 0 ? ' &nbsp;|&nbsp; 💰 ₪' + Math.round(displayAmount).toLocaleString('he-IL') + (f.paid === 'yes' ? ' ✅' : f.paid === 'partial' ? ' (חלקי)' : '') : ''}
-      </div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:4px">${TMAP[f.type || 'fault']} ${displayAmount > 0 ? ' | 💰 ₪' + Math.round(displayAmount).toLocaleString('he-IL') : ''}</div>
       <div class="fdesc">${f.desc || ''}</div>
       <div class="fmeta">
         <span>${PMAP[f.priority || 'medium']}</span>
@@ -67,18 +64,14 @@ export function renderFaults() {
 }
 
 export function updateFaultVatNote() {
-  const amtInp = document.getElementById('mf-amount');
-  const vatChk = document.getElementById('mf-amount-vat');
+  const amt = parseFloat(document.getElementById('mf-amount').value) || 0;
+  const vat = document.getElementById('mf-amount-vat').checked;
   const noteInp = document.getElementById('mf-notes');
-  const base = parseFloat(amtInp.value) || 0;
-  if (base <= 0) return;
-  if (vatChk.checked) {
-    const total = Math.round(base * 1.18);
-    const vatStr = `${base} + מע"מ = ${total} ₪`;
-    if (!noteInp.value.trim() || noteInp.value.includes('+ מע"מ =')) noteInp.value = vatStr;
-  } else if (noteInp.value.includes('+ מע"מ =')) {
-    noteInp.value = '';
-  }
+  if (amt > 0 && vat) {
+    const total = Math.round(amt * 1.18);
+    const str = `${amt} + מע"מ = ${total} ₪`;
+    if (!noteInp.value || noteInp.value.includes('+ מע"מ =')) noteInp.value = str;
+  } else if (noteInp.value.includes('+ מע"מ =')) { noteInp.value = ''; }
 }
 
 export function openNewFault(preCustId) {
@@ -143,16 +136,13 @@ export async function saveFault() {
   const custVal  = document.getElementById('mf-cust').value;
   const isGuest  = custVal === '__guest__';
   const desc     = document.getElementById('mf-desc').value.trim();
-  const guestName  = isGuest ? document.getElementById('mf-guest-name').value.trim()  : '';
-  const guestPhone = isGuest ? document.getElementById('mf-guest-phone').value.trim() : '';
-  if ((!custVal && !isGuest) || !desc) { toast('בחר לקוח ותאר את הבעיה', 'err'); return; }
-  if (isGuest && !guestName) { toast('הכנס שם לקוח מזדמן', 'err'); return; }
+  if ((!custVal && !isGuest) || !desc) { toast('מלא שדות חובה', 'err'); return; }
 
   const f = {
     id:          _eFault || uid(),
     custId:      isGuest ? '' : custVal,
-    guestName:   isGuest ? guestName  : '',
-    guestPhone:  isGuest ? guestPhone : '',
+    guestName:   isGuest ? document.getElementById('mf-guest-name').value.trim() : '',
+    guestPhone:  isGuest ? document.getElementById('mf-guest-phone').value.trim() : '',
     desc,
     type:        document.getElementById('mf-type').value,
     priority:    document.getElementById('mf-pri').value,
@@ -176,10 +166,7 @@ export async function saveFault() {
   const custLabel = fCust ? fCust.name : f.guestName || 'לקוח מזדמן';
   addLog('fault', isNew ? 'הוספת משימה' : 'עריכת משימה', custLabel + ' — ' + (f.desc || '').slice(0, 40));
 
-  closeM('M-fault');
-  renderFaults(); renderDash();
-  toast(isNew ? 'משימה נוספה ✅' : 'משימה עודכנה ✅');
-
+  closeM('M-fault'); renderFaults(); renderDash(); toast('נשמר ✅');
   _broadcastPushV1(isNew ? 'חדשה' : 'עודכנה', custLabel, f.desc);
 }
 
@@ -188,23 +175,15 @@ async function _broadcastPushV1(action, custLabel, desc) {
     const body = `${custLabel}: ${desc.substring(0, 50)}`;
     const allTokens = [];
     USERS.forEach(u => { if (u.name !== window._currentUser && u.tokens) allTokens.push(...u.tokens); });
-
     if (allTokens.length === 0) return;
-
     allTokens.forEach(async (token) => {
         try {
             await fetch(`https://fcm.googleapis.com/v1/projects/${SERVICE_ACCOUNT.projectId}/messages:send`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: {
-                        token: token,
-                        notification: { title, body },
-                        data: { url: '/Client-PRO/' }
-                    }
-                })
+                body: JSON.stringify({ message: { token: token, notification: { title, body }, data: { url: '/Client-PRO/' } } })
             });
-        } catch (e) { console.warn("Push failed", e); }
+        } catch (e) {}
     });
 }
 
@@ -214,22 +193,13 @@ export async function delFault() {
   closeM('M-fault');
   if (window._dbDel) await window._dbDel('faults', id);
   window.faults = window.faults.filter(x => x.id !== id);
-  renderFaults(); renderDash();
-  toast('משימה נמחקה ✅');
+  renderFaults(); renderDash(); toast('נמחקה ✅');
 }
 
 export function toggleSelectMode(on) {
-  _selectMode = on;
-  _selectedIds.clear();
-  const pg = document.getElementById('pg-faults');
-  if (on) {
-    pg?.classList.add('select-mode');
-    document.getElementById('select-mode-btn').style.display = 'none';
-  } else {
-    pg?.classList.remove('select-mode');
-    document.getElementById('select-mode-btn').style.display = '';
-    document.getElementById('bulk-bar').classList.remove('show');
-  }
+  _selectMode = on; _selectedIds.clear();
+  document.getElementById('select-mode-btn').style.display = on ? 'none' : '';
+  document.getElementById('bulk-bar').classList[on ? 'add' : 'remove']('show');
   renderFaults();
 }
 
@@ -248,8 +218,7 @@ export async function deleteSelected() {
   const ok = window._dbDelMulti ? await window._dbDelMulti('faults', ids) : true;
   if (!ok) { toast('שגיאה במחיקה', 'err'); return; }
   window.faults = window.faults.filter(f => !ids.includes(f.id));
-  toggleSelectMode(false); renderFaults(); renderDash();
-  toast(ids.length + ' משימות נמחקו ✅');
+  toggleSelectMode(false); renderFaults(); renderDash(); toast(ids.length + ' משימות נמחקו ✅');
 }
 
 export function requestNotificationPermission() {
