@@ -137,7 +137,7 @@ async function registerPushToken(userName) {
         const messaging = getMessaging(app);
         const registration = await navigator.serviceWorker.ready;
         
-        // מחיקת הטוקן הישן (זה מה שיפתור את שגיאת ה-401)
+        // הוספתי פה ניקוי של הטוקן השגוי הישן כדי לפתור את ה-401
         try { await deleteToken(messaging); } catch(e) {}
 
         const token = await getToken(messaging, { 
