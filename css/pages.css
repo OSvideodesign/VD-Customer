@@ -8,7 +8,7 @@
   z-index: 10000; /* מעל הכל באייפון */
 }
 
-/* השורה הזו היא זו שגורמת ללחצן "עוד" לעבוד! */
+/* הצגת התפריט כשהוא במצב פתוח */
 #m-drawer.open {
   display: block !important;
 }
@@ -75,7 +75,7 @@
   width: 100%;
   max-width: 180px;
   height: auto;
-  margin: 0 auto 15px;  /* סוגר מרווח עם התמונה העליונה */
+  margin: 0 auto 15px;
   display: block;
   opacity: 0.85;
 }
@@ -166,7 +166,7 @@
 
 .login-full-btn.btn:active {
   transform: translateY(3px);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 3px 6px rgba(0,0,0,0.5);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 3px 6px rgba(0,0,0,0.5);
 }
 
 #pass-err {
@@ -274,60 +274,6 @@
   font-family: Heebo, sans-serif;
 }
 
-/* ── Google Calendar section ──────────────────────────────────────────────── */
-#gcal-grid   { padding: 12px; display: none; }
-#gcal-out    { padding: 8px 16px; border-top: 1px solid var(--brd); display: none; justify-content: flex-end; }
-#gcal-signin { padding: 30px; text-align: center; }
-
-.gcal-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--brd);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.gcal-title { font-weight: 700; font-size: 14px; }
-
-.gcal-nav {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.gcal-signin-text {
-  font-size: 13px;
-  color: var(--tx2);
-  margin-bottom: 14px;
-}
-
-.gcal-signin-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fff;
-  color: #3c4043;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: Heebo, sans-serif;
-}
-
-.gcal-signout-btn {
-  font-size: 11px;
-  color: var(--tx3);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: Heebo, sans-serif;
-}
-
 /* ── Modal generic close button ───────────────────────────────────────────── */
 .modal-close-btn {
   background: none;
@@ -335,30 +281,6 @@
   color: var(--tx2);
   font-size: 20px;
   cursor: pointer;
-}
-
-/* ── Reports stats override (4 cols) ─────────────────────────────────────── */
-#rep-stats {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-@media (max-width: 768px) {
-  #rep-stats { grid-template-columns: 1fr 1fr; }
-}
-
-/* ── Fault guest fields ───────────────────────────────────────────────────── */
-#mf-guest-fields { display: none; }
-
-/* ── Note bulk bar (flex) ─────────────────────────────────────────────────── */
-#note-bulk-bar {
-  background: var(--sur2);
-  border: 1px solid var(--acc);
-  border-radius: 10px;
-  padding: 10px 16px;
-  margin-bottom: 12px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
 }
 
 /* ── Settings Row Layout (GRID) ────────────────────────────────────────────── */
@@ -375,22 +297,6 @@
   min-height: 520px; 
 }
 
-@media (max-width: 1100px) {
-  .settings-grid {
-    grid-template-columns: 1fr;
-  }
-  .settings-panel {
-    min-height: auto;
-  }
-}
-
-/* ── פתרון סופי למניעת כפילויות של אייקונים מכותרות (ביטול פקודות ישנות) ─────── */
-.ph .pt::before, 
-.ph .pt::after {
-    display: none !important;
-    content: none !important;
-}
-
 /* ── User badge in sidebar ────────────────────────────────────────────────── */
 #user-badge {
   display: inline-block;
@@ -404,9 +310,6 @@
   text-shadow: 0 1px 2px rgba(0,0,0,0.8);
   color: #fff !important;
 }
-
-/* ── wk-label (calendar week range label) ────────────────────────────────── */
-#wk-label { font-size: 12px; color: var(--tx3); }
 
 /* ── Tasks Board View (Trello Style) ─────────────────────────────────────── */
 .board-container {
