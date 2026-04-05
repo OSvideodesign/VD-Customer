@@ -9,9 +9,9 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
-// מפתחות להתראות Push - הכנס כאן את המפתחות מה-Console
-export const VAPID_KEY = "YOUR_VAPID_KEY_HERE"; 
-export const FCM_SERVER_KEY = "iHrJljWYvy-xJh818-z9Yl58h35k0R351BdXZjFrlW4"; 
+// מפתחות להתראות Push - הוכנסו מהתמונות ששלחת
+export const VAPID_KEY = "BERH6ce2DPqX2TbbnEhqqWmiOzhVuWbf5I7HOdfq_S8aKa3d_OgW3FCsta5GH_VzGk268EnRkcvryjt7jGAXhwM"; 
+export const FCM_SERVER_KEY = "ihrJlWvvy-xJh818-z9Y158h35k0R351BdXZjFrlw4"; 
 
 export const USERS = [
   { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner', tokens: [] },
