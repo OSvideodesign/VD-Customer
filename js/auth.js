@@ -1,7 +1,7 @@
 // ══ auth.js — login, logout, session, permissions ══
 
 import { initializeApp, getApp, getApps } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js';
+import { getMessaging, getToken, deleteToken } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js';
 import { FIREBASE_CONFIG, USERS, DEFAULT_PERMS, VAPID_KEY } from './config.js';
 import { toast } from './utils.js';
 import { addLog } from './log.js';
@@ -126,7 +126,6 @@ export async function applyUser(u) {
   });
 
   window._registerPushToken = () => registerPushToken(u.name);
-  // הפעלה מושהית כדי לוודא ש-Service Worker מוכן
   setTimeout(window._registerPushToken, 3000);
 
   setTimeout(() => { try { addLog('other', 'כניסה למערכת', u.name); } catch (e) {} }, 3000);
@@ -136,9 +135,11 @@ async function registerPushToken(userName) {
     try {
         const app = getApps().length === 0 ? initializeApp(FIREBASE_CONFIG) : getApp();
         const messaging = getMessaging(app);
-        
-        // וידאו דיזיין - שימוש ב-Registration תקין
         const registration = await navigator.serviceWorker.ready;
+        
+        // ניקוי טוקן קודם כדי למנוע כפילויות ושגיאות הרשאה ישנות
+        try { await deleteToken(messaging); } catch(e) {}
+
         const token = await getToken(messaging, { 
             serviceWorkerRegistration: registration, 
             vapidKey: VAPID_KEY 
