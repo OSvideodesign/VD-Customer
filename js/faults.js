@@ -171,7 +171,7 @@ export async function saveFault() {
 
   closeM('M-fault'); renderFaults(); renderDash(); toast('נשמר ✅');
   
-  // שליחת בקשת התראה ל-Firestore
+  // שימוש ב-Firestore לשליחת ההתראות בצורה מאובטחת
   _requestPushNotification(isNew ? 'חדשה' : 'עודכנה', custLabel, f.desc);
 }
 
