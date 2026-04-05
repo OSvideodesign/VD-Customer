@@ -2,7 +2,7 @@
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
 
-// Push notification received (background handling)
+// Push notification received
 self.addEventListener('push', e => {
   if(!e.data) return;
   let data;
@@ -12,14 +12,13 @@ self.addEventListener('push', e => {
       data = { title: 'וידאו דיזיין', body: e.data.text() }; 
   }
   
-  // אם זו הודעה גולמית מ-FCM Legacy (בלי מעטפת json תקינה)
   const n = data.notification || data;
 
   e.waitUntil(
     self.registration.showNotification(n.title || 'וידאו דיזיין', {
       body: n.body || '',
-      icon: '/Client-PRO/icon.png',
-      badge: '/Client-PRO/icon.png',
+      icon: '/Client-PRO/app-icon-192.jpg',
+      badge: '/Client-PRO/app-icon-192.jpg',
       vibrate: [200, 100, 200],
       data: { url: n.click_action || n.url || '/Client-PRO/' },
       dir: 'rtl', lang: 'he',
@@ -61,7 +60,7 @@ messaging.onBackgroundMessage(payload => {
   const n = payload.notification || {};
   return self.registration.showNotification(n.title || 'וידאו דיזיין', {
     body: n.body || '',
-    icon: '/Client-PRO/icon.png',
+    icon: '/Client-PRO/app-icon-192.jpg',
     dir: 'rtl', lang: 'he', tag: 'vd-notif', renotify: true
   });
 });
