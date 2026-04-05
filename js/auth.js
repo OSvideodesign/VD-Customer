@@ -1,12 +1,13 @@
 // ══ auth.js — login, logout, session, permissions ══
 
-import { USERS, DEFAULT_PERMS } from './config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js';
+import { FIREBASE_CONFIG, USERS, DEFAULT_PERMS, VAPID_KEY } from './config.js';
 import { toast } from './utils.js';
 import { addLog } from './log.js';
 
 let _loginTarget = null;
 
-// ── Helper to hide/show app content ────────────────────────────────────────
 function toggleAppView(show) {
   const els = ['.sidebar', '.main', '#mnav'];
   els.forEach(sel => {
@@ -15,7 +16,6 @@ function toggleAppView(show) {
   });
 }
 
-// ── Clean corrupt session on load ──────────────────────────────────────────
 (function () {
   try {
     const s = sessionStorage.getItem('crm_user');
@@ -26,7 +26,6 @@ function toggleAppView(show) {
   } catch (e) { sessionStorage.removeItem('crm_user'); }
 })();
 
-// ── Public: getPerms, canDo ────────────────────────────────────────────────
 export function getPerms(u) {
   return u.perms || DEFAULT_PERMS[u.role || 'tech'] || DEFAULT_PERMS.tech;
 }
@@ -37,33 +36,26 @@ export function canDo(module, level) {
   return (getPerms(u)[module] || 0) >= level;
 }
 
-// ── initLogin — show user buttons or restore session ───────────────────────
 export function initLogin() {
   toggleAppView(false);
-
   const saved = sessionStorage.getItem('crm_user');
   if (saved) {
     try {
       const u = JSON.parse(saved);
-      if (u && u.name && u.pass !== undefined && USERS.find(x => x.name === u.name && x.pass === u.pass)) {
+      if (u && u.name && USERS.find(x => x.name === u.name)) {
         applyUser(u);
         return;
-      } else {
-        sessionStorage.removeItem('crm_user');
       }
-    } catch (e) { sessionStorage.removeItem('crm_user'); }
+    } catch (e) {}
   }
-
   const btns = document.getElementById('user-btns');
   btns.innerHTML = USERS.map(u => {
-    // הוספת 40 להקסאדצימלי של הצבע יוצרת שקיפות של בערך 25% עבור ההילה
     const glowColor = u.color + '40';
     return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
        <div class="login-user-icon">${u.name[0]}</div>
        <div class="login-user-name">${u.name}</div>
      </button>`;
   }).join('');
-  
   document.getElementById('login-screen').style.display = 'flex';
 }
 
@@ -101,13 +93,10 @@ export function backToUsers() {
 
 export function logout() {
   sessionStorage.removeItem('crm_user');
-  document.getElementById('login-screen').style.display = 'flex';
-  toggleAppView(false); 
-  backToUsers();
+  location.reload();
 }
 
-// ── applyUser — set globals, show/hide nav, log entry ─────────────────────
-export function applyUser(u) {
+export async function applyUser(u) {
   if (!u || !u.name) return;
   window._currentUser  = u.name;
   window._currentColor = u.color;
@@ -116,30 +105,39 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  // הזרקת שם המשתמש לפאנל החדש שבתחתית התפריט
   const badgeDisplay = document.getElementById('user-badge-display');
-  if (badgeDisplay) {
-    badgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:16px;">👤</span> מחובר כ: ${u.name}`;
-  }
+  if (badgeDisplay) badgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:16px;">👤</span> מחובר כ: ${u.name}`;
 
   const perms = getPerms(u);
-  const moduleToNav = {
-    customers: 'nb-customers', faults: 'nb-faults', archive: 'nb-archive',
-    notes: 'nb-notes', warranties: 'nb-warranties', debts: 'nb-debts', reports: 'nb-reports',
-  };
+  const moduleToNav = { customers: 'nb-customers', faults: 'nb-faults', archive: 'nb-archive', notes: 'nb-notes', warranties: 'nb-warranties', debts: 'nb-debts', reports: 'nb-reports' };
   Object.entries(moduleToNav).forEach(([mod, nbId]) => {
     const el = document.getElementById(nbId);
     if (el) el.style.display = (perms[mod] || 0) >= 1 ? '' : 'none';
   });
 
-  const canSeeLog = ['רז', 'אופיר'].includes(u.name) || ['owner', 'admin'].includes(u.role);
-  ['nb-log', 'm-drawer-log'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = canSeeLog ? '' : 'none';
-  });
+  // רישום טוקן למכשיר הנוכחי
+  window._registerPushToken = () => registerPushToken(u.name);
+  window._registerPushToken();
 
-  const isMobile = /iPhone|iPad|Android/.test(navigator.userAgent);
-  setTimeout(() => {
-    try { addLog('other', 'כניסה למערכת', u.name + ' — ' + (isMobile ? '📱 מובייל' : '💻 מחשב')); } catch (e) {}
-  }, 3000);
+  setTimeout(() => { try { addLog('other', 'כניסה למערכת', u.name); } catch (e) {} }, 3000);
+}
+
+async function registerPushToken(userName) {
+    try {
+        const app = initializeApp(FIREBASE_CONFIG);
+        const messaging = getMessaging(app);
+        const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+        if (token) {
+            const u = USERS.find(x => x.name === userName);
+            if (u) {
+                u.tokens = u.tokens || [];
+                if (!u.tokens.includes(token)) {
+                    u.tokens.push(token);
+                    if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
+                }
+            }
+            return true;
+        }
+    } catch (err) { console.warn("Push Reg Failed:", err); }
+    return false;
 }
