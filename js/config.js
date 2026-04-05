@@ -9,7 +9,7 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
-// נתוני חשבון שירות עבור FCM v1
+// נתוני חשבון שירות עבור FCM v1 (נלקחו מה-JSON ששלחת)
 export const SERVICE_ACCOUNT = {
   clientEmail: "firebase-adminsdk-fbsvc@vd-clientpro.iam.gserviceaccount.com",
   projectId: "vd-clientpro"
@@ -37,13 +37,8 @@ export const DEFAULT_PERMS = {
 };
 
 export const PERM_MODULES = [
-  { key: 'customers', label: '👥 לקוחות' },
-  { key: 'faults', label: '🔧 משימות' },
-  { key: 'archive', label: '✅ ארכיון' },
-  { key: 'notes', label: '📝 הערות' },
-  { key: 'warranties', label: '🛡️ אחריות' },
-  { key: 'debts', label: '💰 חובות' },
-  { key: 'reports', label: '📈 דוחות' },
+  { key: 'customers', label: '👥 לקוחות' }, { key: 'faults', label: '🔧 משימות' }, { key: 'archive', label: '✅ ארכיון' },
+  { key: 'notes', label: '📝 הערות' }, { key: 'warranties', label: '🛡️ אחריות' }, { key: 'debts', label: '💰 חובות' }, { key: 'reports', label: '📈 דוחות' },
 ];
 
 export const GCAL_CID = '830672993595-f7fdfqj14qtnns6g0cmrb7m7nh30obqg.apps.googleusercontent.com';
