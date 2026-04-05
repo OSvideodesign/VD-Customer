@@ -28,7 +28,7 @@ self.addEventListener('push', e => {
   );
 });
 
-// לחיצה על התראה → פתיחת האפליקציה
+// לחיצה על התראה
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   const url = e.notification.data?.url || '/Client-PRO/';
