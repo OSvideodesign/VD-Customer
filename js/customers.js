@@ -13,7 +13,6 @@ export function renderCusts() {
   const q  = (document.getElementById('q-custs')?.value || '').toLowerCase();
   const fw = document.getElementById('f-warr')?.value || '';
   const fd = document.getElementById('f-debt')?.value || '';
-  const VAT = 1.18;
 
   let list = window.custs.filter(c => {
     if (q && !c.name.toLowerCase().includes(q) && !(c.phone || '').includes(q) && !(c.city || '').toLowerCase().includes(q)) return false;
@@ -36,7 +35,6 @@ export function renderCusts() {
   }
   tb.innerHTML = list.map(c => {
     const s = wStat(c);
-    const displayDebt = c.debtPlusVat ? c.debt * VAT : c.debt;
     return `<tr>
       <td><div class="ci"><div class="av" style="background:${avClr(c.name)}">${ini(c.name)}</div>
         <div><div style="font-weight:600">${c.name}</div>
@@ -44,7 +42,7 @@ export function renderCusts() {
       <td>${c.phone ? `<a href="tel:${c.phone}" style="color:var(--acc);text-decoration:none">${c.phone}</a>` : '—'}</td>
       <td>${c.city || '—'}</td>
       <td>${s ? `<span class="badge ${s.cls}">${s.lbl}</span>` : '—'}</td>
-      <td>${c.debt > 0 ? `<span class="badge br">₪${Math.round(displayDebt).toLocaleString('he-IL')}</span>` : '<span class="badge bg">✓</span>'}</td>
+      <td>${c.debt > 0 ? `<span class="badge br">₪${c.debt.toLocaleString('he-IL')}</span>` : '<span class="badge bg">✓</span>'}</td>
       <td style="white-space:nowrap">
         <button class="btn bs btn-sm" onclick="window._viewCust('${c.id}')">👁️</button>
         <button class="btn bs btn-sm" onclick="window._editCustById('${c.id}')">✏️</button>
@@ -65,7 +63,6 @@ export function openNewCust() {
   document.getElementById('mc-install').value = '';
   document.getElementById('mc-warr').value = '0';
   document.getElementById('mc-debt').value = '0';
-  document.getElementById('mc-debt-vat').checked = false;
   document.getElementById('mc-contacts-list').innerHTML = '';
   document.getElementById('mc-addresses-list').innerHTML = '';
   openM('M-cust');
@@ -86,7 +83,6 @@ export function editCustById(id) {
   document.getElementById('mc-project').value   = c.projectType || '';
   document.getElementById('mc-equip').value     = c.equipment || '';
   document.getElementById('mc-debt').value      = c.debt || 0;
-  document.getElementById('mc-debt-vat').checked = !!c.debtPlusVat;
   document.getElementById('mc-debt-desc').value = c.debtDesc || '';
   document.getElementById('mc-notes').value     = c.techNotes || '';
   document.getElementById('mc-contacts-list').innerHTML = '';
@@ -118,7 +114,6 @@ export function saveCust() {
     equipment:   document.getElementById('mc-equip').value.trim(),
     techNotes:   document.getElementById('mc-notes').value.trim(),
     debt:        Number(document.getElementById('mc-debt').value) || 0,
-    debtPlusVat: document.getElementById('mc-debt-vat').checked,
     debtDesc:    document.getElementById('mc-debt-desc').value.trim(),
     contacts: [...document.querySelectorAll('#mc-contacts-list .contact-row')].map(row => ({
       name:  row.querySelector('.ct-name').value.trim(),
@@ -179,9 +174,6 @@ export async function delCust() {
 export function viewCust(id) {
   const c = window.custs.find(x => x.id === id); if (!c) return;
   const s = wStat(c);
-  const VAT = 1.18;
-  const displayDebt = c.debtPlusVat ? c.debt * VAT : c.debt;
-
   document.getElementById('Mv-name').textContent = c.name;
   document.getElementById('Mv-body').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
@@ -194,7 +186,7 @@ export function viewCust(id) {
       ${c.warrantyYears ? `<div><div class="flbl">אחריות</div><div>${c.warrantyYears} שנים ${s ? `<span class="badge ${s.cls}">${s.lbl}</span>` : ''}</div></div>` : ''}
       ${c.projectType ? `<div><div class="flbl">פרויקט</div><div>${c.projectType}</div></div>` : ''}
       ${c.equipment ? `<div style="grid-column:1/-1"><div class="flbl">ציוד</div><div>${c.equipment}</div></div>` : ''}
-      ${c.debt > 0 ? `<div style="grid-column:1/-1"><div class="flbl">חוב</div><div style="color:var(--red);font-weight:700">₪${Math.round(displayDebt).toLocaleString('he-IL')}${c.debtDesc ? ' — ' + c.debtDesc : ''}${c.debtPlusVat ? ' (כולל מע"מ)' : ''}</div></div>` : ''}
+      ${c.debt > 0 ? `<div style="grid-column:1/-1"><div class="flbl">חוב</div><div style="color:var(--red);font-weight:700">₪${c.debt.toLocaleString('he-IL')}${c.debtDesc ? ' — ' + c.debtDesc : ''}</div></div>` : ''}
       ${c.techNotes ? `<div style="grid-column:1/-1"><div class="flbl">הערות</div><div style="color:var(--tx2)">${c.techNotes}</div></div>` : ''}
       ${(c.contacts && c.contacts.length) ? `<div style="grid-column:1/-1">
         <div class="flbl" style="margin-bottom:8px">👥 אנשי קשר נוספים</div>
@@ -215,20 +207,17 @@ export function viewCust(id) {
     document.getElementById('Mv-body').innerHTML += `
       <div style="margin-top:16px;border-top:1px solid var(--brd);padding-top:14px">
         <div class="flbl" style="margin-bottom:10px">🔧 היסטוריית משימות (${custFaults.length})</div>
-        ${custFaults.map(f => {
-          const fAmt = parseFloat(f.amount) || 0;
-          const fFinal = f.amountPlusVat ? fAmt * VAT : fAmt;
-          return `<div style="padding:8px 10px;background:var(--sur2);border-radius:8px;margin-bottom:6px;border-right:3px solid ${f.status === 'done' ? 'var(--grn)' : f.status === 'scheduled' ? 'var(--yel)' : 'var(--acc)'}">
+        ${custFaults.map(f => `<div style="padding:8px 10px;background:var(--sur2);border-radius:8px;margin-bottom:6px;border-right:3px solid ${f.status === 'done' ? 'var(--grn)' : f.status === 'scheduled' ? 'var(--yel)' : 'var(--acc)'}">
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
             <div style="font-size:13px;font-weight:600;flex:1">${f.desc || ''}</div>
             <span style="font-size:11px;color:var(--tx3);white-space:nowrap;margin-right:8px">${SMAP[f.status] || f.status}</span>
           </div>
           <div style="font-size:11px;color:var(--tx3);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap">
             ${f.created ? `<span>📅 ${fmtD(f.created)}</span>` : ''}
-            ${fAmt > 0 ? `<span>💰 ₪${Math.round(fFinal).toLocaleString('he-IL')} — ${f.paid === 'yes' ? '✅ שולם' : f.paid === 'partial' ? '⚠️ חלקי' : '❌ לא שולם'}</span>` : ''}
+            ${f.amount > 0 ? `<span>💰 ₪${parseFloat(f.amount).toLocaleString('he-IL')} — ${f.paid === 'yes' ? '✅ שולם' : f.paid === 'partial' ? '⚠️ חלקי' : '❌ לא שולם'}</span>` : ''}
             ${f.updatedBy ? `<span>✏️ ${f.updatedBy}</span>` : ''}
           </div>
-        </div>`}).join('')}
+        </div>`).join('')}
       </div>`;
   }
 

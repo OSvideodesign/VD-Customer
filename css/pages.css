@@ -1,45 +1,10 @@
 /* ══ pages.css — page-specific overrides ══ */
 
-/* ── Drawer (Menu) Fix for iPhone — תיקון גישה לתפריט עוד ────────────────── */
-#m-drawer { 
-  display: none; 
-  position: fixed; 
-  inset: 0; 
-  z-index: 10000; /* מעל הכל באייפון */
-}
-
-/* השורה הזו היא זו שגורמת ללחצן "עוד" לעבוד! */
-#m-drawer.open {
-  display: block !important;
-}
-
-#m-drawer-bg { 
-    position: absolute; 
-    inset: 0; 
-    background: rgba(0,0,0,.7); 
-    backdrop-filter: blur(4px);
-}
-
-#m-drawer-panel {
-  position: absolute; 
-  top: 0; 
-  right: 0; 
-  width: 260px; 
-  height: 100%;
-  background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
-  border-left: 2px solid #8a9097; 
-  overflow-y: auto; 
-  display: flex; 
-  flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0,0,0,0.8);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
 /* ── Login screen ─────────────────────────────────────────────────────────── */
 #login-screen {
   position: fixed;
   inset: 0;
-  background: #1d2024;
+  background: transparent;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -75,7 +40,7 @@
   width: 100%;
   max-width: 180px;
   height: auto;
-  margin: 0 auto 15px;  /* סוגר מרווח עם התמונה העליונה */
+  margin: 0 auto 15px;
   display: block;
   opacity: 0.85;
 }
@@ -197,32 +162,6 @@
   line-height: 1;
 }
 
-.m-drawer-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
-  background: none;
-  border: none;
-  color: #e5e7eb;
-  font-family: 'Heebo', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  text-align: right;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.m-drawer-sec {
-  padding: 20px 20px 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #8a9097;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
 .m-drawer-search { color: var(--acc); }
 .m-drawer-logout  { color: var(--red); margin-top: 8px; }
 
@@ -262,6 +201,11 @@
 .sidebar-search-btn:hover {
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
+}
+
+.nav-btn-logout {
+  color: #ff6b6b;
+  margin-top: 15px;
 }
 
 /* ── Dashboard panel link buttons ─────────────────────────────────────────── */
@@ -364,17 +308,18 @@
 /* ── Settings Row Layout (GRID) ────────────────────────────────────────────── */
 .settings-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+  grid-template-columns: repeat(3, 1fr); /* יוצר 3 עמודות שוות */
   gap: 20px;
   align-items: start;
-  margin-top: 20px; 
+  margin-top: 20px; /* מוריד את הפאנלים למטה לטובת הכותרת */
 }
 
 .settings-panel {
   padding: 22px;
-  min-height: 520px; 
+  min-height: 520px; /* גובה אחיד לפאנלים בשורה */
 }
 
+/* התאמה למסכים קטנים/מובייל - חזרה למבנה טור */
 @media (max-width: 1100px) {
   .settings-grid {
     grid-template-columns: 1fr;
@@ -384,11 +329,11 @@
   }
 }
 
-/* ── פתרון סופי למניעת כפילויות של אייקונים מכותרות (ביטול פקודות ישנות) ─────── */
-.ph .pt::before, 
-.ph .pt::after {
-    display: none !important;
-    content: none !important;
+/* ── Perms grid in user modal ─────────────────────────────────────────────── */
+#u-perms-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 /* ── User badge in sidebar ────────────────────────────────────────────────── */
@@ -407,73 +352,3 @@
 
 /* ── wk-label (calendar week range label) ────────────────────────────────── */
 #wk-label { font-size: 12px; color: var(--tx3); }
-
-/* ── Tasks Board View (Trello Style) ─────────────────────────────────────── */
-.board-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 20px; 
-    align-items: start;
-    overflow-x: auto;
-    padding-bottom: 20px;
-}
-
-.board-col {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
-    min-height: 500px;
-    display: flex;
-    flex-direction: column;
-}
-
-.board-col-hd {
-    padding: 14px 16px;
-    font-weight: 700;
-    font-size: 15px;
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    border-radius: 12px 12px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.bc-count {
-    background: #2a2e33;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 12px;
-    color: #8a9097;
-}
-
-.board-col-list {
-    flex: 1;
-    padding: 10px;
-    min-height: 100px;
-}
-
-.board-card {
-    background: #2a2e33;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    cursor: grab;
-    transition: transform 0.15s;
-}
-
-.board-card:active { cursor: grabbing; }
-
-/* ── User Activity Status ────────────────────────────────────────────────── */
-.user-status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 8px;
-}
-.status-online  { background: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
-.status-offline { background: #95a5a6; opacity: 0.5; }

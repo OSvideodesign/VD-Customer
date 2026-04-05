@@ -9,20 +9,11 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
-// נתוני חשבון שירות עבור FCM v1
-export const SERVICE_ACCOUNT = {
-  clientEmail: "firebase-adminsdk-fbsvc@vd-clientpro.iam.gserviceaccount.com",
-  projectId: "vd-clientpro"
-};
-
-// מפתח VAPID מתוקן (עם S גדולה)
-export const VAPID_KEY = "BD8IYRHCK9bzvSxtKeufngOY03oo_CEV1Wme9TzgidWKQkv12EINV73mRb3izMaFgfFFkrr-bpNW8fcjQllOjCE"; 
-
 export const USERS = [
-  { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner', tokens: [] },
-  { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'admin', tokens: [] },
-  { name: 'גלאל',  pass: 'Jalal4123', color: '#10b981', role: 'installer', tokens: [] },
-  { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer', tokens: [] },
+  { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner' },
+  { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'admin' },
+  { name: 'גלאל',  pass: 'Jalal4123', color: '#10b981', role: 'installer' },
+  { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer' },
 ];
 
 export const NCAT = {
