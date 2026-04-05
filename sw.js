@@ -17,10 +17,10 @@ self.addEventListener('push', e => {
   e.waitUntil(
     self.registration.showNotification(n.title || 'וידאו דיזיין', {
       body: n.body || '',
-      icon: '/Client-PRO/app-icon-192.jpg',
-      badge: '/Client-PRO/app-icon-192.jpg',
+      icon: './app-icon-192.jpg',
+      badge: './app-icon-192.jpg',
       vibrate: [200, 100, 200],
-      data: { url: n.click_action || n.url || '/Client-PRO/' },
+      data: { url: n.click_action || n.url || './' },
       dir: 'rtl', lang: 'he',
       tag: 'vd-notif',
       renotify: true
@@ -31,11 +31,11 @@ self.addEventListener('push', e => {
 // לחיצה על התראה
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  const url = e.notification.data?.url || '/Client-PRO/';
+  const url = e.notification.data?.url || './';
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const c of list) {
-        if (c.url.includes('Client-PRO') && 'focus' in c) return c.focus();
+        if (c.url.includes(location.origin) && 'focus' in c) return c.focus();
       }
       return clients.openWindow(url);
     })
@@ -60,7 +60,7 @@ messaging.onBackgroundMessage(payload => {
   const n = payload.notification || {};
   return self.registration.showNotification(n.title || 'וידאו דיזיין', {
     body: n.body || '',
-    icon: '/Client-PRO/app-icon-192.jpg',
-    dir: 'rtl', lang: 'he', tag: 'vd-notif', renotify: true
+    icon: './app-icon-192.jpg',
+    dir: 'rtl', tag: 'vd-notif', renotify: true
   });
 });
