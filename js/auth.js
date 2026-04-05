@@ -60,8 +60,7 @@ export function initLogin() {
     }).join('');
   }
   
-  const loginScreen = document.getElementById('login-screen');
-  if (loginScreen) loginScreen.style.display = 'flex';
+  document.getElementById('login-screen').style.display = 'flex';
 }
 
 export function selectUser(name) {
@@ -107,8 +106,7 @@ export async function applyUser(u) {
   window._currentColor = u.color;
   window._currentRole  = u.role || 'tech';
 
-  const loginScreen = document.getElementById('login-screen');
-  if (loginScreen) loginScreen.style.display = 'none';
+  document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
   const badgeDisplay = document.getElementById('user-badge-display');
@@ -121,7 +119,13 @@ export async function applyUser(u) {
     if (el) el.style.display = (perms[mod] || 0) >= 1 ? '' : 'none';
   });
 
-  // רישום טוקן למכשיר
+  const canSeeLog = ['רז', 'אופיר'].includes(u.name) || ['owner', 'admin'].includes(u.role);
+  ['nb-log', 'm-drawer-log'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = canSeeLog ? '' : 'none';
+  });
+
+  // רישום טוקן לאחר כניסה
   window._registerPushToken = () => registerPushToken(u.name);
   setTimeout(window._registerPushToken, 3000);
 
