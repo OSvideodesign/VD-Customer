@@ -17,23 +17,7 @@ import { renderLog, addLog, clearLog } from './log.js';
 import { gcalInit, gcalSignIn, gcalSignOut, fetchWk, wkPrev, wkNext, wkToday, gcalFault } from './gcal.js';
 import { loadAll } from './db.js';
 
-window.custs       = [];
-window.faults      = [];
-window.notes       = [];
-window.waMessages  = [];
-window.logEntries  = [];
-window.cfg         = {};
-window._deletingIds = new Set();
-window._gsResults  = [];
-
-(function () {
-  try {
-    const b = localStorage.getItem('crm_cfg');
-    if (b) Object.assign(window.cfg, JSON.parse(b));
-  } catch (e) {}
-})();
-
-// Expose globals for HTML onclick handlers
+// Expose globals for HTML onclick handlers - חובה בתחילת הקובץ למניעת שגיאות Undefined
 window.toggleGuestFields = toggleGuestFields;
 window.doLogin          = doLogin;
 window.backToUsers      = backToUsers;
@@ -113,6 +97,22 @@ window.wkNext           = wkNext;
 window.wkToday          = wkToday;
 window._gcalFault       = gcalFault;
 
+window.custs       = [];
+window.faults      = [];
+window.notes       = [];
+window.waMessages  = [];
+window.logEntries  = [];
+window.cfg         = {};
+window._deletingIds = new Set();
+window._gsResults  = [];
+
+(function () {
+  try {
+    const b = localStorage.getItem('crm_cfg');
+    if (b) Object.assign(window.cfg, JSON.parse(b));
+  } catch (e) {}
+})();
+
 initLogin();
 loadAll();
 
@@ -164,9 +164,10 @@ function initSortable() {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(reg => { console.log('SW Registered'); })
-  .catch(e => console.log('SW Registration Failed:', e));
+  navigator.serviceWorker.register('./sw.js').then(reg => { console.log('SW Registered'); })
+  .catch(e => console.error('SW Registration Failed:', e));
 }
+
 if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
     setTimeout(() => toast('📱 לקבלת התראות: לחץ על "שתף" ואז "הוסף למסך הבית"', 'info'), 4000);
 }
