@@ -7,6 +7,9 @@ import { addLog } from './log.js';
 import { renderDash } from './dashboard.js';
 import { renderArchive } from './archive.js';
 
+// ייבוא פונקציות Firestore לצורך שליחת התראות דרך מסד הנתונים
+import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
+
 let _eFault      = null;
 let _selectMode  = false;
 let _selectedIds = new Set();
@@ -167,24 +170,42 @@ export async function saveFault() {
   addLog('fault', isNew ? 'הוספת משימה' : 'עריכת משימה', custLabel + ' — ' + (f.desc || '').slice(0, 40));
 
   closeM('M-fault'); renderFaults(); renderDash(); toast('נשמר ✅');
-  _broadcastPushV1(isNew ? 'חדשה' : 'עודכנה', custLabel, f.desc);
+  
+  // שליחת התראה דרך Firestore (פותר את שגיאת ה-401)
+  _requestPushNotification(isNew ? 'חדשה' : 'עודכנה', custLabel, f.desc);
 }
 
-async function _broadcastPushV1(action, custLabel, desc) {
+// פונקציה חדשה שכותבת את הבקשה ל-Firestore במקום לשלוח ישירות לגוגל
+async function _requestPushNotification(action, custLabel, desc) {
+    const db = getFirestore();
     const title = `🔧 משימה ${action} - ${window._currentUser}`;
     const body = `${custLabel}: ${desc.substring(0, 50)}`;
-    const allTokens = [];
-    USERS.forEach(u => { if (u.name !== window._currentUser && u.tokens) allTokens.push(...u.tokens); });
-    if (allTokens.length === 0) return;
-    allTokens.forEach(async (token) => {
-        try {
-            await fetch(`https://fcm.googleapis.com/v1/projects/${SERVICE_ACCOUNT.projectId}/messages:send`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: { token: token, notification: { title, body }, data: { url: '/Client-PRO/' } } })
-            });
-        } catch (e) {}
+    
+    // מוצאים את כל הטוקנים של המשתמשים האחרים
+    const targetTokens = [];
+    USERS.forEach(u => {
+        if (u.name !== window._currentUser && u.tokens) {
+            targetTokens.push(...u.tokens);
+        }
     });
+
+    if (targetTokens.length === 0) return;
+
+    try {
+        // כתיבה ל-Collection שנקרא notifications. 
+        // שרת חיצוני או Cloud Function יכול להאזין כאן ולשלוח Push.
+        await addDoc(collection(db, 'notifications'), {
+            title,
+            body,
+            tokens: targetTokens,
+            url: '/Client-PRO/',
+            createdAt: new Date().toISOString(),
+            status: 'pending'
+        });
+        console.log("Notification request saved to Firestore.");
+    } catch (e) {
+        console.error("Failed to save notification request:", e);
+    }
 }
 
 export async function delFault() {
