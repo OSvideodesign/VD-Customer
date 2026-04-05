@@ -1,6 +1,6 @@
 // ══ auth.js — login, logout, session, permissions ══
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+import { initializeApp, getApp, getApps } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js';
 import { FIREBASE_CONFIG, USERS, DEFAULT_PERMS, VAPID_KEY } from './config.js';
 import { toast } from './utils.js';
@@ -115,18 +115,20 @@ export async function applyUser(u) {
     if (el) el.style.display = (perms[mod] || 0) >= 1 ? '' : 'none';
   });
 
-  // רישום טוקן למכשיר הנוכחי
+  // רישום טוקן לאחר כניסה
   window._registerPushToken = () => registerPushToken(u.name);
-  window._registerPushToken();
+  setTimeout(window._registerPushToken, 3000);
 
   setTimeout(() => { try { addLog('other', 'כניסה למערכת', u.name); } catch (e) {} }, 3000);
 }
 
 async function registerPushToken(userName) {
     try {
-        const app = initializeApp(FIREBASE_CONFIG);
+        const app = getApps().length === 0 ? initializeApp(FIREBASE_CONFIG) : getApp();
         const messaging = getMessaging(app);
-        const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+        const registration = await navigator.serviceWorker.ready;
+        const token = await getToken(messaging, { serviceWorkerRegistration: registration, vapidKey: VAPID_KEY });
+
         if (token) {
             const u = USERS.find(x => x.name === userName);
             if (u) {
@@ -138,6 +140,6 @@ async function registerPushToken(userName) {
             }
             return true;
         }
-    } catch (err) { console.warn("Push Reg Failed:", err); }
+    } catch (err) { console.error("Push Reg Failed:", err); }
     return false;
 }
