@@ -15,7 +15,7 @@ export const SERVICE_ACCOUNT = {
   projectId: "vd-clientpro"
 };
 
-// מפתח VAPID המדויק (כולל S גדולה)
+// מפתח VAPID מתוקן (עם S גדולה)
 export const VAPID_KEY = "BD8IYRHCK9bzvSxtKeufngOY03oo_CEV1Wme9TzgidWKQkv12EINV73mRb3izMaFgfFFkrr-bpNW8fcjQllOjCE"; 
 
 export const USERS = [
