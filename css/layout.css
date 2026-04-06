@@ -135,7 +135,6 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  /* כאן הוגדל הריווח ל-100 פיקסלים לדחיפה משמעותית שמאלה */
   padding-right: 100px; 
   flex-wrap: wrap;
   gap: 10px;
@@ -171,6 +170,7 @@
   border-top: 2px solid #8a9097;
   z-index: 200;
   height: 60px;
+  /* מרווח בטיחות בתחתית עבור הבר התחתון של האייפון */
   padding-bottom: env(safe-area-inset-bottom);
 }
 #mnav .mns { display: flex; height: 100%; align-items: stretch; }
@@ -208,7 +208,8 @@
 
 @media (max-width: 768px) {
   .sidebar { display: none; }
-  .main    { margin-right: 0; margin-left: 0; width: 100%; padding: 12px 12px 76px; }
+  /* הוספת env(safe-area-inset-top) כדי שהאפליקציה לא תעלה על השעון באייפון */
+  .main    { margin-right: 0; margin-left: 0; width: 100%; padding: calc(12px + env(safe-area-inset-top)) 12px calc(76px + env(safe-area-inset-bottom)); }
   #mnav    { display: block; }
   .stats   { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash3   { grid-template-columns: 1fr; }
