@@ -20,10 +20,20 @@ import { renderLog }       from './log.js';
 const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
 
-// משתנה שמונע הקפצת התראות על כל המשימות בפעם הראשונה שהאפליקציה עולה
-let _firstLoadFaults = true;
+// ── _db* helpers ─────────────────────────────────────────────────────────
 
-// ── _db* helpers exposed on window ────────────────────────────────────────
+// שמירת Token של משתמש להתראות פוש
+window._dbSaveToken = async (user, token) => {
+  if (!user || !token) return;
+  try {
+    await setDoc(doc(db, 'fcm_tokens', user), {
+      token: token,
+      updated: new Date().toISOString(),
+      platform: navigator.platform
+    });
+    console.log('Push token saved for:', user);
+  } catch (e) { console.error('Error saving token:', e); }
+};
 
 window._dbSaveCusts = async (items) => {
   try {
@@ -79,36 +89,13 @@ window._dbDelMulti = async (col, ids) => {
   }
 };
 
-// ── פונקציה להקפצת התראה ממכשיר אחר (בזמן אמת) ──
-function _triggerRemoteNotification(f) {
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
-  if (Notification.permission === 'granted') {
-    const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-    const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-    const body = `נוסף ע"י ${f.updatedBy || 'מערכת'}: ${name} — ${(f.desc || '').slice(0, 50)}`;
-
-    navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification('🔧 משימה חדשה!', {
-        body: body,
-        icon: 'app-icon-192.jpg',
-        badge: 'app-icon-192.jpg',
-        vibrate: [200, 100, 200, 100, 200],
-        dir: 'rtl',
-        lang: 'he',
-        tag: 'remote-fault-' + f.id
-      });
-    });
-  }
-}
-
 // ── loadAll — initial bulk load + start listeners ─────────────────────────
 export async function loadAll() {
   loader('מתחבר לענן...');
 
   const timeout = setTimeout(() => {
     hideLoader();
-    window.custs = [];
-    window.faults = [];
+    window.custs = []; window.faults = [];
     renderDash();
     setTimeout(gcalInit, 400);
     toast('עובד ללא חיבור לענן', 'warn');
@@ -125,7 +112,6 @@ export async function loadAll() {
     ]);
     clearTimeout(timeout);
 
-    // settings / users
     const cfgDoc = ss.docs.find(d => d.id === 'main');
     if (cfgDoc) {
       Object.assign(window.cfg, cfgDoc.data());
@@ -136,7 +122,6 @@ export async function loadAll() {
       }
     }
 
-    // populate global state
     window.custs      = cs.docs.map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; });
     window.faults     = fs.docs.map(d => d.data());
     window.notes      = ns.docs.map(d => d.data());
@@ -144,78 +129,25 @@ export async function loadAll() {
     window.logEntries = ls.docs.map(d => d.data());
 
     hideLoader();
-
-    // ── data-integrity patches ──
-    setTimeout(() => {
-      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
-      if (warNeedsFix.length > 0) {
-        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
-        window._dbSaveCusts(window.custs).catch(() => {});
-      }
-      cs.docs.forEach(d => {
-        const raw = d.data().debt;
-        if (typeof raw === 'string' && raw !== '' && raw !== '0') {
-          const val = Math.max(0, Number(raw) || 0);
-          setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
-        }
-      });
-    }, 5000); 
-
     renderDash();
     setTimeout(gcalInit, 400);
 
-    // ── real-time listeners ─────────────────────────────────────────────
-    
+    // ── Listeners ──
     onSnapshot(collection(db, 'customers'), snap => {
       const del = window._deletingIds || new Set();
-      window.custs = snap.docs
-        .map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; })
-        .filter(c => !del.has('customers:' + c.id));
+      window.custs = snap.docs.map(d => d.data()).filter(c => !del.has('customers:' + c.id));
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
-      if (on('customers'))  renderCusts();
+      if (on('customers')) renderCusts();
       if (on('warranties')) renderWarr();
-      if (on('debts'))      renderDebts();
+      if (on('debts')) renderDebts();
       renderDash();
     });
 
     onSnapshot(collection(db, 'faults'), snap => {
       const del = window._deletingIds || new Set();
-      const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
-      
-      // מזהה אם נוספה משימה חדשה על ידי משתמש אחר
-      if (!_firstLoadFaults && window.faults) {
-        const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
-        newFaults.forEach(nf => {
-          // בודק שהמשימה לא נוצרה על ידי מי שמחובר עכשיו לטלפון (כדי למנוע התראה כפולה למי שייצר אותה)
-          if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
-            _triggerRemoteNotification(nf);
-          }
-        });
-      }
-
-      window.faults = currentFaults;
-      _firstLoadFaults = false; // מכבה את הדגל אחרי הטעינה הראשונה כדי שההתראות יעבדו מעכשיו
-
+      window.faults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
       if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
       if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
-      renderDash();
-    });
-
-    onSnapshot(collection(db, 'whatsapp'), snap => {
-      window.waMessages = snap.docs.map(d => d.data());
-      window.waMessages.forEach(m => {
-        if (!m.custId) {
-          const phone = (m.from || '').replace(/\D/g, '');
-          const matched = window.custs.find(c => c.phone && c.phone.replace(/\D/g, '').includes(phone.slice(-9)));
-          if (matched) m.custId = matched.id;
-        }
-      });
-    });
-
-    onSnapshot(collection(db, 'notes'), snap => {
-      const del = window._deletingIds || new Set();
-      window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
-      if (document.getElementById('pg-notes')?.classList.contains('on')) renderNotes();
       renderDash();
     });
 
@@ -224,20 +156,11 @@ export async function loadAll() {
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
     });
 
-    onSnapshot(doc(db, 'settings', 'main'), snap => {
-      if (snap.exists()) {
-        Object.assign(window.cfg, snap.data());
-        localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
-      }
-    });
-
   } catch (e) {
     clearTimeout(timeout);
     hideLoader();
     console.error('Firebase error:', e);
-    window.custs = []; window.faults = [];
     renderDash();
-    setTimeout(gcalInit, 400);
     toast('עובד במצב לא מקוון', 'warn');
   }
 }
