@@ -81,6 +81,7 @@ export function openNewFault(preCustId) {
   document.getElementById('mf-date').value    = '';
   document.getElementById('mf-time').value    = '';
   document.getElementById('mf-amount').value  = '';
+  document.getElementById('mf-vat').checked   = false; // איפוס תיבת מע"מ
   document.getElementById('mf-paid').value    = 'no';
   document.getElementById('mf-notes').value   = '';
   openM('M-fault');
@@ -103,6 +104,7 @@ export function editFaultById(id) {
   document.getElementById('mf-date').value    = f.date     || '';
   document.getElementById('mf-time').value    = f.time     || '';
   document.getElementById('mf-amount').value  = f.amount   || '';
+  document.getElementById('mf-vat').checked   = false; // איפוס תיבת מע"מ בעריכה כדי למנוע הוספה כפולה
   document.getElementById('mf-paid').value    = f.paid     || 'no';
   document.getElementById('mf-notes').value   = f.notes    || '';
   openM('M-fault');
@@ -132,6 +134,12 @@ export function saveFault() {
   if ((!custVal && !isGuest) || !desc) { toast('בחר לקוח ותאר את הבעיה', 'err'); return; }
   if (isGuest && !guestName) { toast('הכנס שם לקוח מזדמן', 'err'); return; }
 
+  // חישוב המע"מ
+  let finalAmount = parseFloat(document.getElementById('mf-amount').value) || 0;
+  if (document.getElementById('mf-vat').checked) {
+    finalAmount = parseFloat((finalAmount * 1.18).toFixed(2));
+  }
+
   const f = {
     id:          _eFault || uid(),
     custId:      isGuest ? '' : custVal,
@@ -143,7 +151,7 @@ export function saveFault() {
     status:      document.getElementById('mf-status').value,
     date:        document.getElementById('mf-date').value,
     time:        document.getElementById('mf-time').value,
-    amount:      parseFloat(document.getElementById('mf-amount').value) || 0,
+    amount:      finalAmount, // נשמר עם המע"מ
     paid:        document.getElementById('mf-paid').value,
     notes:       document.getElementById('mf-notes').value.trim(),
     updatedBy:   window._currentUser || '',
