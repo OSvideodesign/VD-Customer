@@ -1,11 +1,15 @@
 // ══ faults.js — faults / tasks page ══
 
-import { USERS } from './config.js';
+import { USERS, VAPID_KEY, FIREBASE_CONFIG } from './config.js';
 import { uid, today, fmtD, avClr, ini, toast } from './utils.js';
 import { openM, closeM } from './nav.js';
 import { addLog } from './log.js';
 import { renderDash } from './dashboard.js';
 import { renderArchive } from './archive.js';
+
+// ייבוא Firebase Messaging
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js';
 
 let _eFault      = null;
 let _selectMode  = false;
@@ -176,9 +180,6 @@ export function saveFault() {
     renderFaults(); renderDash();
     toast(_eFault ? 'משימה עודכנה ✅' : 'משימה נוספה ✅');
     if (!_eFault) _sendFaultNotification(f);
-    if (f.date && f.status === 'scheduled') {
-      setTimeout(() => { if (confirm('לפתוח Google Calendar?')) window._gcalFault(f.id); }, 400);
-    }
   }
 }
 
@@ -243,64 +244,54 @@ export async function deleteSelected() {
   toast(ids.length + ' משימות נמחקו ✅');
 }
 
-// ── notifications ──────────────────────────────────────────────────────────
-// כאן נעשה השינוי החשוב: התראות נשלחות דרך ה-Service Worker שמאושר ע"י אפל וגוגל למובייל
+// ── FCM Notifications ───────────────────────────────────────────────────────
 function _sendFaultNotification(f) {
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  if (!('Notification' in window)) return;
   const c    = f.custId ? window.custs.find(x => x.id === f.custId) : null;
   const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
   const body = `${name} — ${(f.desc || '').slice(0, 60)}`;
   
   if (Notification.permission === 'granted') {
     navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification('🔧 משימה חדשה נוספה', { 
-        body, 
-        icon: 'app-icon-192.jpg',
-        badge: 'app-icon-192.jpg',
-        vibrate: [200, 100, 200],
-        dir: 'rtl', 
-        lang: 'he' 
-      });
-    });
-  } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(p => {
-      if (p === 'granted') {
-        navigator.serviceWorker.ready.then(reg => {
-          reg.showNotification('🔧 משימה חדשה נוספה', { 
-            body, 
-            icon: 'app-icon-192.jpg',
-            badge: 'app-icon-192.jpg',
-            vibrate: [200, 100, 200],
-            dir: 'rtl', 
-            lang: 'he' 
-          });
-        });
-      }
+      reg.showNotification('🔧 משימה חדשה נוספה', { body, icon: 'app-icon-192.jpg' });
     });
   }
 }
 
-export function requestNotificationPermission() {
+export async function requestNotificationPermission() {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) { 
     toast('הדפדפן לא תומך בהתראות', 'err'); 
     return; 
   }
-  
-  Notification.requestPermission().then(p => {
-    if (p === 'granted') {
-      toast('שולח התראת בדיקה... ✅');
-      navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification('היי רז! 👋', { 
-          body: 'אם קפצה לך ההתראה הזו, המערכת עובדת פיקס!', 
-          icon: 'app-icon-192.jpg',
-          badge: 'app-icon-192.jpg',
-          vibrate: [200, 100, 200],
-          dir: 'rtl', 
-          lang: 'he' 
-        });
-      });
-    } else {
-      toast('ההתראות חסומות באייפון שלך ❌', 'err');
+
+  const permission = await Notification.requestPermission();
+  if (permission === 'granted') {
+    try {
+      const app = initializeApp(FIREBASE_CONFIG);
+      const messaging = getMessaging(app);
+      
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+      if (token) {
+        if (window._dbSaveToken && window._currentUser) {
+          await window._dbSaveToken(window._currentUser, token);
+          toast('התראות הופעלו בהצלחה! ✅');
+          
+          // התראת בדיקה מיידית
+          navigator.serviceWorker.ready.then(reg => {
+            reg.showNotification('וידאו דיזיין', { 
+              body: 'התראות פועלות כעת על מכשיר זה!', 
+              icon: 'app-icon-192.jpg' 
+            });
+          });
+        }
+      } else {
+        toast('לא ניתן להנפיק Token', 'err');
+      }
+    } catch (err) {
+      console.error('FCM Error:', err);
+      toast('שגיאה בחיבור לענן', 'err');
     }
-  });
+  } else {
+    toast('התראות נחסמו ע"י המשתמש', 'err');
+  }
 }
