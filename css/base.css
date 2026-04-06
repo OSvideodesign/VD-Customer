@@ -4,6 +4,13 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent; /* מבטל את הריבוע המהבהב בלחיצה באייפון */
+}
+
+/* תיקון לבאג הרקע באייפון (iOS Safari Background Bug) */
+html {
+  height: 100%;
+  overflow: hidden; 
 }
 
 :root {
@@ -26,16 +33,41 @@
 }
 
 body {
-  font-family: 'Heebo', sans-serif;
+  font-family: 'Heebo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg);
   background-image: url('../bg-silver.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: scroll; /* תוקן מ-fixed כדי לפתור את הבעיה באייפון */
   color: var(--tx);
-  min-height: 100vh;
+  height: 100%; /* חלק מתיקון הרקע - שומר על גוף באורך המסך בדיוק */
+  overflow-y: auto; /* הגלילה מתבצעת בתוך גוף האפליקציה ולא על כל המסמך */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; /* גלילה חלקה באייפון */
   direction: rtl;
+}
+
+/* מניעת סימון טקסט בטעות בתפריטים וכפתורים */
+button, a, .nav-btn, .mnb, .m-drawer-btn {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* עיצוב פס גלילה מודרני ויפה יותר */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--acc);
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
