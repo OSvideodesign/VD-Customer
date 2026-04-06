@@ -9,6 +9,9 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
+// המפתח הציבורי שהפקת ב-Firebase Console
+export const VAPID_KEY = "BD8lYRHCK9bzvSxtKeufngOY03oo_CEV1Wme9TzgidWKQkv12EINV73mRb3izMaFgfFFkrr-bpNW8fcjQlLojCE";
+
 export const USERS = [
   { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner' },
   { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'admin' },
