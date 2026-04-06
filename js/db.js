@@ -20,6 +20,9 @@ import { renderLog }       from './log.js';
 const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
 
+// משתנה שמונע הקפצת התראות על כל המשימות בפעם הראשונה שהאפליקציה עולה
+let _firstLoadFaults = true;
+
 // ── _db* helpers exposed on window ────────────────────────────────────────
 
 window._dbSaveCusts = async (items) => {
@@ -76,6 +79,28 @@ window._dbDelMulti = async (col, ids) => {
   }
 };
 
+// ── פונקציה להקפצת התראה ממכשיר אחר (בזמן אמת) ──
+function _triggerRemoteNotification(f) {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  if (Notification.permission === 'granted') {
+    const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
+    const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
+    const body = `נוסף ע"י ${f.updatedBy || 'מערכת'}: ${name} — ${(f.desc || '').slice(0, 50)}`;
+
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('🔧 משימה חדשה!', {
+        body: body,
+        icon: 'app-icon-192.jpg',
+        badge: 'app-icon-192.jpg',
+        vibrate: [200, 100, 200, 100, 200],
+        dir: 'rtl',
+        lang: 'he',
+        tag: 'remote-fault-' + f.id
+      });
+    });
+  }
+}
+
 // ── loadAll — initial bulk load + start listeners ─────────────────────────
 export async function loadAll() {
   loader('מתחבר לענן...');
@@ -120,26 +145,27 @@ export async function loadAll() {
 
     hideLoader();
 
-    // ── data-integrity patches ──────────────────────────────────────────
-    const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
-    if (warNeedsFix.length > 0) {
-      warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
-      window._dbSaveCusts(window.custs).catch(() => {});
-    }
-    cs.docs.forEach(d => {
-      const raw = d.data().debt;
-      if (typeof raw === 'string' && raw !== '' && raw !== '0') {
-        const val = Math.max(0, Number(raw) || 0);
-        setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
-        const local = window.custs.find(c => c.id === d.id);
-        if (local) local.debt = val;
+    // ── data-integrity patches ──
+    setTimeout(() => {
+      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
+      if (warNeedsFix.length > 0) {
+        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
+        window._dbSaveCusts(window.custs).catch(() => {});
       }
-    });
+      cs.docs.forEach(d => {
+        const raw = d.data().debt;
+        if (typeof raw === 'string' && raw !== '' && raw !== '0') {
+          const val = Math.max(0, Number(raw) || 0);
+          setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
+        }
+      });
+    }, 5000); 
 
     renderDash();
     setTimeout(gcalInit, 400);
 
     // ── real-time listeners ─────────────────────────────────────────────
+    
     onSnapshot(collection(db, 'customers'), snap => {
       const del = window._deletingIds || new Set();
       window.custs = snap.docs
@@ -153,8 +179,25 @@ export async function loadAll() {
     });
 
     onSnapshot(collection(db, 'faults'), snap => {
-      window.faults = snap.docs.map(d => d.data());
+      const del = window._deletingIds || new Set();
+      const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
+      
+      // מזהה אם נוספה משימה חדשה על ידי משתמש אחר
+      if (!_firstLoadFaults && window.faults) {
+        const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
+        newFaults.forEach(nf => {
+          // בודק שהמשימה לא נוצרה על ידי מי שמחובר עכשיו לטלפון (כדי למנוע התראה כפולה למי שייצר אותה)
+          if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
+            _triggerRemoteNotification(nf);
+          }
+        });
+      }
+
+      window.faults = currentFaults;
+      _firstLoadFaults = false; // מכבה את הדגל אחרי הטעינה הראשונה כדי שההתראות יעבדו מעכשיו
+
       if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
+      if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
       renderDash();
     });
 
@@ -170,7 +213,8 @@ export async function loadAll() {
     });
 
     onSnapshot(collection(db, 'notes'), snap => {
-      window.notes = snap.docs.map(d => d.data());
+      const del = window._deletingIds || new Set();
+      window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
       if (document.getElementById('pg-notes')?.classList.contains('on')) renderNotes();
       renderDash();
     });
