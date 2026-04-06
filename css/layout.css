@@ -1,48 +1,5 @@
 /* ══ layout.css — sidebar, main content, responsive ══ */
 
-/* ── iOS Background Fix — פתרון סופי לרקע יציב באייפון ────────────────────────── */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: background 0.3s ease;
-}
-
-/* הגדרת התמונות והצבעים לשכבת הרקע */
-body[data-bg="stone"]::before { background-image: url('../bg-silver.jpg'); }
-body[data-bg="metal"]::before { background: linear-gradient(135deg, #7b838c 0%, #b2b8c0 50%, #51585f 100%); }
-body[data-bg="carbon"]::before {
-    background: 
-      linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
-      linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
-      linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
-      linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
-      linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
-      linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, #1d1d1d 50%, #1d1d1d 75%, #1a1a1a 75%, #1a1a1a 100%);
-    background-color: #131313;
-    background-size: 20px 20px;
-}
-body[data-bg="dark"]::before { background: #111315; }
-
-body {
-  font-family: 'Heebo', sans-serif;
-  margin: 0;
-  padding: 0;
-  color: var(--tx);
-  line-height: 1.5;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-  background-color: #1d2024; /* Fallback */
-}
-
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 .sidebar {
   position: fixed;
@@ -59,6 +16,7 @@ body {
   overflow: hidden;
 }
 
+/* פס 1: מתחת ללוגו */
 .sidebar .logo {
   padding: 25px 16px 20px;
   text-align: center;
@@ -80,18 +38,21 @@ body {
   margin-top: 2px; 
 }
 
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
 .nav {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
 }
 
+/* פס 2: מתחת לחיפוש הגלובלי */
 .sidebar-search-div {
   padding: 10px 0px 18px;
   margin-bottom: 8px;
   border-bottom: 2px solid #8a9097; 
 }
 
+/* פס 3 + 4: מעל דוחות ומעל מערכת */
 .nav-sec {
   font-size: calc(13px * var(--fz-scale, 1)); 
   font-weight: 700;
@@ -103,6 +64,7 @@ body {
   border-top: 2px solid #8a9097;
 }
 
+/* ביטול הפס הכפול מעל 'ניהול' */
 .sidebar-search-div + .nav-sec {
   border-top: none;
 }
@@ -135,6 +97,7 @@ body {
   font-weight: 600;
 }
 
+/* פס 5 + 6: פסי כסף שתומחים את כפתור ההתנתק */
 .nav-btn-logout { 
   color: #ff6b6b; 
   margin-top: 15px; 
@@ -145,6 +108,7 @@ body {
   border-bottom: 2px solid #8a9097;
 }
 
+/* ── Main content ─────────────────────────────────────────────────────────── */
 .main {
   margin-right: 220px;
   margin-left: 0;
@@ -152,8 +116,6 @@ body {
   min-height: 100vh;
   width: calc(100% - 220px);
   box-sizing: border-box;
-  /* מרווח בטיחות לאייפון בתחתית */
-  padding-bottom: calc(30px + env(safe-area-inset-bottom));
 }
 
 #user-badge-display-wrapper {
@@ -164,6 +126,7 @@ body {
     text-align: center;
 }
 
+/* ── Pages ────────────────────────────────────────────────────────────────── */
 .pg     { display: none; }
 .pg.on  { display: block; }
 
@@ -172,32 +135,21 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  padding-right: 20px; 
+  /* כאן הוגדל הריווח ל-100 פיקסלים לדחיפה משמעותית שמאלה */
+  padding-right: 100px; 
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 10px;
 }
 
-/* ── כותרות דפים בעיצוב כסוף (Silver) ───────────────────── */
 .pt { 
-    display: flex;
-    align-items: center;
-    gap: 12px;
     font-size: calc(34px * var(--fz-scale, 1)); 
     font-weight: 800; 
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.9)) drop-shadow(0 1px 3px rgba(0,0,0,0.9));
-}
-
-.pt-i {
-    font-size: 0.9em;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
-
-.pt-t {
+    color: #e5e7eb; 
     background: linear-gradient(180deg, #fff 0%, #8a9097 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    color: #e5e7eb;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.9)) drop-shadow(0 1px 3px rgba(0,0,0,0.9));
 }
 
 .ps { 
@@ -210,7 +162,7 @@ body {
 .dash3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
 .fg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
 
-/* ── Mobile Navigation (mnav) ────────────────────────────────────────────── */
+/* ── Mobile bottom nav ────────────────────────────────────────────────────── */
 #mnav {
   display: none;
   position: fixed;
@@ -218,40 +170,116 @@ body {
   background: linear-gradient(160deg, #2a2e33 0%, #1d2024 100%);
   border-top: 2px solid #8a9097;
   z-index: 200;
-  /* גובה מותאם עם שטח בטיחות לאייפון */
-  height: calc(65px + env(safe-area-inset-bottom));
+  height: 60px;
   padding-bottom: env(safe-area-inset-bottom);
 }
-
 #mnav .mns { display: flex; height: 100%; align-items: stretch; }
-
 .mnb {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 2px; background: none; border: none; color: #8a9097; font-family: 'Heebo', sans-serif;
-  font-size: 10px; cursor: pointer; padding: 10px 4px; transition: color .15s;
-  -webkit-tap-highlight-color: transparent;
+  font-size: calc(10px * var(--fz-scale, 1)); cursor: pointer; padding: 4px; transition: color .15s;
 }
 .mnb.on { color: var(--acc); text-shadow: 0 0 10px var(--acc); }
 
-/* ── Media Queries ───────────────────────────────────────────────────────── */
+/* ── Mobile slide-in drawer ───────────────────────────────────────────────── */
+#m-drawer { display: none; position: fixed; inset: 0; z-index: 500; }
+#m-drawer-bg { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
+#m-drawer-panel {
+  position: absolute; top: 0; right: 0; width: 240px; height: 100%;
+  background: linear-gradient(160deg, #2a2e33 0%, #1d2024 50%, #22262a 100%);
+  border-left: 2px solid #8a9097; overflow-y: auto; display: flex; flex-direction: column;
+}
+#m-drawer.open { display: block; }
+.m-drawer-btn {
+  display: block; width: 100%; text-align: right; padding: 12px 20px;
+  background: none; border: none; color: #a0a5ab; font-family: 'Heebo', sans-serif;
+  font-size: calc(15px * var(--fz-scale, 1)); cursor: pointer; transition: background .15s;
+}
+.m-drawer-btn:hover, .m-drawer-btn.on { background: rgba(255,255,255,0.05); color: #fff; }
+.m-drawer-sec {
+  font-size: calc(13px * var(--fz-scale, 1)); color: #8a9097; padding: 14px 20px 4px; font-weight: 700;
+  letter-spacing: .5px; border-top: 2px solid #8a9097;
+}
+.m-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px 16px; border-bottom: 2px solid #8a9097; font-weight: 700; font-size: calc(15px * var(--fz-scale, 1));
+}
+.m-drawer-close { background: none; border: none; color: #a0a5ab; font-size: 22px; cursor: pointer; }
+
 @media (max-width: 768px) {
-  .sidebar { display: none !important; }
-  .main    { margin-right: 0 !important; margin-left: 0 !important; width: 100% !important; padding: 12px 12px 85px !important; }
-  #mnav    { display: block !important; }
+  .sidebar { display: none; }
+  .main    { margin-right: 0; margin-left: 0; width: 100%; padding: 12px 12px 76px; }
+  #mnav    { display: block; }
   .stats   { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash3   { grid-template-columns: 1fr; }
   .fg-grid { grid-template-columns: 1fr; }
-  .ph      { flex-direction: column; align-items: flex-start; padding-right: 0 !important; }
+  .ph      { flex-direction: column; align-items: flex-start; padding-right: 0; }
   .pt      { font-size: calc(24px * var(--fz-scale, 1)); }
 }
+@media (min-width: 769px) {
+  #mnav    { display: none !important; }
+  #m-drawer{ display: none !important; }
+}
 
-/* ── Glow / Minimalism Settings ─────────────────────────────────────────── */
-body[data-glow="false"] .sc, body[data-glow="false"] .tw, body[data-glow="false"] .fc, body[data-glow="false"] .mbox, body[data-glow="false"] #bulk-bar {
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── DESIGN SETTINGS THEMES (מערכת עיצוב ורקעים) ─────────────────────────── */
+
+body[data-bg="stone"] {
+    background-color: transparent; 
+}
+
+body[data-bg="metal"] {
+    background: linear-gradient(135deg, #7b838c 0%, #b2b8c0 50%, #51585f 100%) !important;
+}
+
+body[data-bg="carbon"] {
+    background: 
+      linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+      linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+      linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+      linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+      linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+      linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, #1d1d1d 50%, #1d1d1d 75%, #1a1a1a 75%, #1a1a1a 100%) !important;
+    background-color: #131313 !important;
+    background-size: 20px 20px !important;
+}
+
+body[data-bg="dark"] {
+    background: #111315 !important;
+}
+
+body[data-glow="false"] .sc,
+body[data-glow="false"] .tw,
+body[data-glow="false"] .fc,
+body[data-glow="false"] .mbox,
+body[data-glow="false"] #bulk-bar {
     box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
     border: 1px solid #333 !important;
     background: #1d2024 !important;
 }
-body[data-glow="false"] .finp, body[data-glow="false"] .sw input, body[data-glow="false"] .fsel { background: #2a2e33 !important; box-shadow: none !important; border: 1px solid #444 !important; }
-body[data-glow="false"] .btn.bp { background: var(--acc) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important; border: none !important; }
-body[data-glow="false"] .btn.bs { background: #4a5057 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important; border: none !important; }
-body[data-glow="false"] .sidebar { background: #1d2024 !important; border-left: 1px solid #333 !important; box-shadow: none !important; }
+
+body[data-glow="false"] .finp,
+body[data-glow="false"] .sw input,
+body[data-glow="false"] .fsel {
+    background: #2a2e33 !important;
+    box-shadow: none !important;
+    border: 1px solid #444 !important;
+}
+
+body[data-glow="false"] .btn.bp {
+    background: var(--acc) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    border: none !important;
+}
+
+body[data-glow="false"] .btn.bs {
+    background: #4a5057 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    border: none !important;
+}
+
+body[data-glow="false"] .sidebar {
+    background: #1d2024 !important;
+    border-left: 1px solid #333 !important;
+    box-shadow: none !important;
+}

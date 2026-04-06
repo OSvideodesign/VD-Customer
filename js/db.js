@@ -120,21 +120,21 @@ export async function loadAll() {
 
     hideLoader();
 
-    // ── data-integrity patches (Running in background to save performance) ──
-    setTimeout(() => {
-      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
-      if (warNeedsFix.length > 0) {
-        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
-        window._dbSaveCusts(window.custs).catch(() => {});
+    // ── data-integrity patches ──────────────────────────────────────────
+    const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
+    if (warNeedsFix.length > 0) {
+      warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
+      window._dbSaveCusts(window.custs).catch(() => {});
+    }
+    cs.docs.forEach(d => {
+      const raw = d.data().debt;
+      if (typeof raw === 'string' && raw !== '' && raw !== '0') {
+        const val = Math.max(0, Number(raw) || 0);
+        setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
+        const local = window.custs.find(c => c.id === d.id);
+        if (local) local.debt = val;
       }
-      cs.docs.forEach(d => {
-        const raw = d.data().debt;
-        if (typeof raw === 'string' && raw !== '' && raw !== '0') {
-          const val = Math.max(0, Number(raw) || 0);
-          setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
-        }
-      });
-    }, 5000); // רץ 5 שניות אחרי העלייה כדי לא להאט את המערכת
+    });
 
     renderDash();
     setTimeout(gcalInit, 400);
@@ -153,10 +153,8 @@ export async function loadAll() {
     });
 
     onSnapshot(collection(db, 'faults'), snap => {
-      const del = window._deletingIds || new Set();
-      window.faults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
+      window.faults = snap.docs.map(d => d.data());
       if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
-      if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
       renderDash();
     });
 
@@ -172,14 +170,12 @@ export async function loadAll() {
     });
 
     onSnapshot(collection(db, 'notes'), snap => {
-      const del = window._deletingIds || new Set();
-      window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
+      window.notes = snap.docs.map(d => d.data());
       if (document.getElementById('pg-notes')?.classList.contains('on')) renderNotes();
       renderDash();
     });
 
     onSnapshot(collection(db, 'log'), snap => {
-      // טוען רק את הלוגים כדי לא להעמיס
       window.logEntries = snap.docs.map(d => d.data());
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
     });
