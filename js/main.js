@@ -140,5 +140,15 @@ window.wkToday          = wkToday;
 window._gcalFault       = gcalFault;
 
 // ── Boot ───────────────────────────────────────────────────────────────────
+
+// רישום ה-Service Worker להפעלת PWA והתראות
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker registered successfully', reg.scope))
+      .catch(err => console.error('Service Worker registration failed', err));
+  });
+}
+
 initLogin();
 loadAll();
