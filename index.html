@@ -528,7 +528,16 @@ document.head.appendChild(_link);
       </div>
       <div><label class="flbl">תאריך הגעה</label><input class="finp" id="mf-date" type="date"></div>
       <div><label class="flbl">שעה</label>         <input class="finp" id="mf-time" type="time"></div>
-      <div><label class="flbl">💰 סכום שירות (₪)</label><input class="finp" id="mf-amount" type="number" min="0" placeholder="לא חובה"></div>
+      <div>
+        <label class="flbl">💰 סכום שירות (₪)</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input class="finp" id="mf-amount" type="number" min="0" placeholder="לא חובה" style="flex:1;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--tx2); cursor:pointer;">
+            <input type="checkbox" id="mf-vat" style="width:16px;height:16px;cursor:pointer;">
+            +18% מע"מ
+          </label>
+        </div>
+      </div>
       <div><label class="flbl">שולם?</label>
         <select class="finp" id="mf-paid">
           <option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option>
