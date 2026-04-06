@@ -1,4 +1,397 @@
-<div class="pg" id="pg-settings">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="וידאו דיזיין">
+<meta name="theme-color" content="#1d2024">
+<title>לקוחות וידאו דיזיין</title>
+
+<link rel="icon" href="app-icon-192.jpg?v=4" type="image/jpeg">
+<link rel="apple-touch-icon" href="app-icon-192.jpg?v=4">
+
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+/* PWA Manifest */
+const _manifest = {
+  name: "Video Design CRM", 
+  short_name: "VD CRM", 
+  start_url: ".", 
+  display: "standalone",
+  background_color: "#1d2024", 
+  theme_color: "#1d2024",
+  icons: [
+    { "src": "app-icon-192.jpg?v=4", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "app-icon-512.jpg?v=4", "sizes": "512x512", "type": "image/jpeg" }
+  ]
+};
+const _blob = new Blob([JSON.stringify(_manifest)], {type:'application/json'});
+const _link  = document.createElement('link');
+_link.rel    = 'manifest';
+_link.href   = URL.createObjectURL(_blob);
+document.head.appendChild(_link);
+</script>
+</head>
+<body data-bg="stone" data-glow="true">
+
+<div id="login-screen">
+  <div class="login-card">
+    <img class="login-header-img" src="login-header.jpg" alt="Video Design Silver">
+    <img class="login-sub-text-img" src="customer-management-text.png" alt="ניהול לקוחות">
+    <div id="user-btns"></div>
+    <div id="pass-area">
+      <p id="pass-label"></p>
+      <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="סיסמה"
+             onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn bp login-full-btn" onclick="doLogin()">כניסה →</button>
+      <button class="btn bs btn-sm login-full-btn" onclick="backToUsers()">חזור</button>
+      <p id="pass-err">סיסמה שגויה ❌</p>
+    </div>
+  </div>
+</div>
+
+<div id="mnav">
+  <div class="mns">
+    <button class="mnb" onclick="nav('dashboard')"><span style="font-size:20px">🏠</span>ראשי</button>
+    <button class="mnb" onclick="nav('customers')"><span style="font-size:20px">👥</span>לקוחות</button>
+    <button class="mnb" onclick="nav('faults')"><span style="font-size:20px">🔧</span>משימות</button>
+    <button class="mnb" onclick="nav('notes')"><span style="font-size:20px">📝</span>הערות</button>
+    <button class="mnb" onclick="openDrawer()"><span style="font-size:20px">☰</span>עוד</button>
+  </div>
+</div>
+
+<div id="m-drawer">
+  <div id="m-drawer-bg" onclick="closeDrawer()"></div>
+  <div id="m-drawer-panel">
+    <div class="m-drawer-header">
+      <span>תפריט</span>
+      <button onclick="closeDrawer()" class="m-drawer-close">✕</button>
+    </div>
+    <div class="m-drawer-sec">ניהול</div>
+    <button class="m-drawer-btn" onclick="navD('dashboard')">📊 לוח בקרה</button>
+    <button class="m-drawer-btn" onclick="navD('customers')">👥 לקוחות</button>
+    <button class="m-drawer-btn" onclick="navD('faults')">🔧 משימות</button>
+    <button class="m-drawer-btn" onclick="navD('archive')">✅ ארכיון</button>
+    <div class="m-drawer-sec">דוחות</div>
+    <button class="m-drawer-btn" onclick="navD('warranties')">🛡️ אחריות</button>
+    <button class="m-drawer-btn" onclick="navD('debts')">💰 חובות</button>
+    <button class="m-drawer-btn" onclick="navD('notes')">📝 הערות</button>
+    <button class="m-drawer-btn" id="m-drawer-reports" onclick="navD('reports')">📈 דוחות</button>
+    <div class="m-drawer-sec">מערכת</div>
+    <button class="m-drawer-btn" onclick="navD('settings')">⚙️ הגדרות</button>
+    <button class="m-drawer-btn" id="m-drawer-log" style="display:none" onclick="navD('log')">📋 לוג שינויים</button>
+    <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer()">🔍 חיפוש גלובלי</button>
+    <button class="m-drawer-btn m-drawer-logout" onclick="logout()">🚪 התנתק</button>
+    
+    <div style="text-align:center; margin-top:20px; padding:10px;">
+      <div style="font-size:11px; color:#8a9097; margin-bottom:6px;">גודל טקסט אישי</div>
+      <div style="display:flex; justify-content:center; align-items:center; gap:12px;">
+        <button class="btn bs btn-sm" onclick="changeFontScale(1)" style="font-size:16px">+</button>
+        <span class="font-scale-lbl" style="font-size:14px; font-weight:700; width:20px; text-align:center; color:#fff">0</span>
+        <button class="btn bs btn-sm" onclick="changeFontScale(-1)" style="font-size:16px">-</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<div class="modal" id="M-gsearch">
+  <div class="mbox" style="max-width:640px">
+    <div class="mhd">
+      <h2>🔍 חיפוש גלובלי</h2>
+      <button class="btn bs btn-sm" onclick="closeM('M-gsearch')">✕</button>
+    </div>
+    <div class="mbody">
+      <input class="finp" id="gs-inp" placeholder="חפש לקוח, משימה או הערה..." oninput="runGlobalSearch()" autofocus>
+      <div id="gs-results" style="margin-top:14px"></div>
+    </div>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <div class="logo">
+    <img src="logo.jpg" class="sidebar-logo-img" alt="Video Design">
+  </div>
+  <nav class="nav">
+    <div class="sidebar-search-div">
+      <button onclick="openGlobalSearch()" class="sidebar-search-btn">
+        <span>🔍</span><span>חיפוש גלובלי...</span>
+      </button>
+    </div>
+    <div class="nav-sec">ניהול</div>
+    <button class="nav-btn on" id="nb-dashboard"  onclick="nav('dashboard')">📊 לוח בקרה</button>
+    <button class="nav-btn"    id="nb-customers"  onclick="nav('customers')">👥 לקוחות</button>
+    <button class="nav-btn"    id="nb-faults"     onclick="nav('faults')">🔧 משימות</button>
+    <button class="nav-btn"    id="nb-archive"    onclick="nav('archive')">✅ ארכיון</button>
+    <div class="nav-sec">דוחות</div>
+    <button class="nav-btn"    id="nb-warranties" onclick="nav('warranties')">🛡️ אחריות</button>
+    <button class="nav-btn"    id="nb-debts"      onclick="nav('debts')">💰 חובות</button>
+    <button class="nav-btn"    id="nb-notes"      onclick="nav('notes')">📝 הערות</button>
+    <button class="nav-btn"    id="nb-reports"    onclick="nav('reports')">📈 דוחות</button>
+    <div class="nav-sec">מערכת</div>
+    <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
+    <button class="nav-btn"    id="nb-log"        onclick="nav('log')" style="display:none">📋 לוג שינויים</button>
+    <button class="nav-btn nav-btn-logout"         onclick="logout()">🚪 התנתק</button>
+    
+    <div style="text-align:center; margin-top:20px; padding-bottom: 20px;">
+      <div id="user-badge-display"></div>
+    </div>
+  </nav>
+
+  <div id="user-badge-display-wrapper">
+    <div style="font-size:calc(11px * var(--fz-scale, 1)); color:#8a9097; margin-bottom:6px;">גודל טקסט אישי</div>
+    <div style="display:flex; justify-content:center; align-items:center; gap:12px;">
+      <button class="btn bs btn-sm" onclick="changeFontScale(1)" title="הגדל טקסט" style="font-size:16px; padding:2px 10px">+</button>
+      <span class="font-scale-lbl" style="font-size:calc(14px * var(--fz-scale, 1)); font-weight:700; width:20px; text-align:center; color:#fff">0</span>
+      <button class="btn bs btn-sm" onclick="changeFontScale(-1)" title="הקטן טקסט" style="font-size:16px; padding:2px 10px">-</button>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <div class="pg on" id="pg-dashboard">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">📊</div>
+        <div><div class="pt">לוח בקרה</div><div class="ps">סקירה כללית</div></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sc info">   <div class="sc-lbl">סה״כ לקוחות</div>      <div class="sc-val" id="st-total">—</div>    <div class="sc-sub">במערכת</div></div>
+      <div class="sc warn">   <div class="sc-lbl">אחריות פגה/בקרוב</div> <div class="sc-val" id="st-warr">—</div>     <div class="sc-sub">⚠️ דורש טיפול</div></div>
+      <div class="sc danger"> <div class="sc-lbl">לקוחות עם חוב</div>    <div class="sc-val" id="st-debts">—</div>    <div class="sc-sub">חובות פתוחים</div></div>
+      <div class="sc success"><div class="sc-lbl">סה״כ חוב</div>         <div class="sc-val" id="st-debt-sum">—</div> <div class="sc-sub">₪ לגבייה</div></div>
+      <div class="sc orange"> <div class="sc-lbl">משימות פתוחות</div>    <div class="sc-val" id="st-faults">—</div>   <div class="sc-sub">🔧 ממתינות</div></div>
+    </div>
+    <div class="dash3">
+      <div class="tw" style="border-top:3px solid var(--acc)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>⚠️ אחריות בפתח</span>
+          <button onclick="nav('warranties')" class="panel-link-btn">הכל ›</button>
+        </div>
+        <div class="panel-body" id="pan-warr"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid var(--grn)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>💰 חובות פתוחים</span>
+          <button onclick="nav('debts')" class="panel-link-btn" style="color:var(--grn)">הכל ›</button>
+        </div>
+        <div class="panel-body" id="pan-debts"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid var(--ora)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🔧 משימות פתוחות</span>
+          <button onclick="nav('faults')" class="panel-link-btn" style="color:var(--ora)">הכל ›</button>
+        </div>
+        <div class="panel-body" id="pan-faults"></div>
+      </div>
+    </div>
+    <div class="dash3" style="margin-top:14px">
+      <div class="tw" style="border-top:3px solid var(--acc)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>📌 כללי</span>
+          <button onclick="nav('notes')" class="panel-link-btn">כל ההערות ›</button>
+        </div>
+        <div class="panel-body" id="pan-notes-general"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid var(--grn)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🤝 פגישות</span>
+          <button onclick="nav('notes')" class="panel-link-btn" style="color:var(--grn)">כל ההערות ›</button>
+        </div>
+        <div class="panel-body" id="pan-notes-meeting"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid var(--yel)">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>⏰ תזכורות</span>
+          <button onclick="nav('notes')" class="panel-link-btn" style="color:var(--yel)">כל ההערות ›</button>
+        </div>
+        <div class="panel-body" id="pan-notes-reminder"></div>
+      </div>
+    </div>
+    <div class="tw" style="margin-top:16px">
+      <div class="gcal-header">
+        <div class="gcal-title">📅 יומן שבועי — Google Calendar</div>
+        <div class="gcal-nav">
+          <button class="btn bs btn-sm" onclick="wkPrev()">&#8249; קודם</button>
+          <button class="btn bs btn-sm" onclick="wkToday()">היום</button>
+          <button class="btn bs btn-sm" onclick="wkNext()">הבא &#8250;</button>
+          <span id="wk-label"></span>
+        </div>
+      </div>
+      <div id="gcal-signin">
+        <div class="gcal-signin-text">התחבר עם Google כדי לראות את היומן</div>
+        <button onclick="gcalSignIn()" class="gcal-signin-btn">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.2l6.6-6.6C35.4 2.4 30.1 0 24 0 14.8 0 6.9 5.4 3 13.3l7.7 6C12.5 13.2 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-16.9z"/><path fill="#FBBC05" d="M10.7 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7L2.6 13.3A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.6 10.6l8.1-5.9z"/><path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.4l-7.4-5.7c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.3-9.8l-7.7 6C6.9 42.6 14.8 48 24 48z"/></svg>
+          כניסה עם Google
+        </button>
+      </div>
+      <div id="gcal-grid"></div>
+      <div id="gcal-out">
+        <button onclick="gcalSignOut()" class="gcal-signout-btn">התנתק מ-Google</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="pg" id="pg-customers">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">👥</div>
+        <div><div class="pt">לקוחות</div><div class="ps" id="cnt-custs"></div></div>
+      </div>
+      <button class="btn bp" onclick="openNewCust()">+ לקוח חדש</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-custs" placeholder="חפש שם, טלפון, עיר..." oninput="renderCusts()"><span class="si">🔍</span></div>
+    </div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>לקוח</th><th>טלפון</th><th>עיר</th><th>אחריות</th><th>חוב</th><th>פעולות</th></tr></thead>
+      <tbody id="tb-custs"></tbody>
+    </table></div></div>
+  </div>
+  
+  <div class="pg" id="pg-warranties">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">🛡️</div>
+        <div><div class="pt">אחריות</div><div class="ps" id="cnt-warr"></div></div>
+      </div>
+    </div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>לקוח</th><th>התקנה</th><th>שנות אחריות</th><th>תפוגה</th><th>סטטוס</th><th>התקדמות</th></tr></thead>
+      <tbody id="tb-warr"></tbody>
+    </table></div></div>
+  </div>
+  
+  <div class="pg" id="pg-debts">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">💰</div>
+        <div><div class="pt">חובות</div><div class="ps" id="cnt-debts"></div></div>
+      </div>
+    </div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>לקוח</th><th>טלפון</th><th>סכום חוב</th><th>הערות</th><th>פעולות</th></tr></thead>
+      <tbody id="tb-debts"></tbody>
+    </table></div></div>
+  </div>
+  
+  <div class="pg" id="pg-faults">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">🔧</div>
+        <div><div class="pt">משימות</div><div class="ps" id="cnt-faults"></div></div>
+      </div>
+      <button class="btn bp" onclick="openNewFault(null)">+ משימה חדשה</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-faults" placeholder="חפש..." oninput="renderFaults()"><span class="si">🔍</span></div>
+      <button class="btn bs btn-sm" id="select-mode-btn" onclick="toggleSelectMode(true)">☑️ בחר מרובה</button>
+    </div>
+    <div id="bulk-bar">
+      <span id="bulk-count" style="font-size:13px;color:var(--tx2)">0 נבחרו</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn bs btn-sm" onclick="toggleSelectMode(false)">ביטול</button>
+        <button class="btn bd btn-sm" onclick="deleteSelected()">🗑️ מחק נבחרים</button>
+      </div>
+    </div>
+    <div id="list-faults"></div>
+  </div>
+  
+  <div class="pg" id="pg-notes">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">📝</div>
+        <div><div class="pt">הערות כלליות</div><div class="ps" id="notes-sub"></div></div>
+      </div>
+      <button class="btn bp" onclick="openNewNote()">+ הערה חדשה</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="note-search" placeholder="חפש..." oninput="renderNotes()"><span class="si">🔍</span></div>
+      <button class="btn bs btn-sm" id="note-select-mode-btn" onclick="toggleNoteSelectMode(true)">☑️ בחר מרובה</button>
+    </div>
+    <div id="note-bulk-bar" style="display:none">
+      <span id="note-bulk-count" style="font-size:13px;color:var(--tx2)">0 נבחרו</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn bs btn-sm" onclick="toggleNoteSelectMode(false)">ביטול</button>
+        <button class="btn bd btn-sm" onclick="deleteSelectedNotes()">🗑️ מחק נבחרים</button>
+      </div>
+    </div>
+    <div id="list-notes" class="fg-grid"></div>
+  </div>
+  
+  <div class="pg" id="pg-archive">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">✅</div>
+        <div><div class="pt">ארכיון משימות</div><div class="ps" id="cnt-archive"></div></div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-archive" placeholder="חפש..." oninput="renderArchive()"><span class="si">🔍</span></div>
+    </div>
+    <div id="list-archive" class="fg-grid"></div>
+  </div>
+  
+  <div class="pg" id="pg-log">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">📋</div>
+        <div><div class="pt">לוג שינויים</div><div class="ps" id="cnt-log"></div></div>
+      </div>
+      <button class="btn bd btn-sm" onclick="if(confirm('למחוק את כל הלוג?'))clearLog()">🗑️ נקה לוג</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-log" placeholder="חפש..." oninput="renderLog()"><span class="si">🔍</span></div>
+      <select class="fsel" id="f-log-user" onchange="renderLog()">
+        <option value="">כל המשתמשים</option>
+      </select>
+      <select class="fsel" id="f-log-type" onchange="renderLog()">
+        <option value="">כל הפעולות</option>
+        <option value="customer">לקוח</option><option value="fault">משימה</option><option value="note">הערה</option>
+      </select>
+    </div>
+    <div class="tw"><div class="tscroll"><table>
+      <thead><tr><th>תאריך ושעה</th><th>משתמש</th><th>פעולה</th><th>פרטים</th></tr></thead>
+      <tbody id="tb-log"></tbody>
+    </table></div></div>
+  </div>
+  
+  <div class="pg" id="pg-reports">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">📈</div>
+        <div><div class="pt">דוחות</div><div class="ps" id="cnt-reports"></div></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn bs btn-sm" onclick="exportCustomersExcel()">📥 ייצוא לקוחות Excel</button>
+        <button class="btn bs btn-sm" onclick="exportBackup()">💾 גיבוי נתונים</button>
+      </div>
+    </div>
+    <div class="toolbar" style="margin-bottom:14px">
+      <select class="fsel" id="rep-month" onchange="renderReports()"></select>
+      <select class="fsel" id="rep-year"  onchange="renderReports()"></select>
+    </div>
+    <div class="stats" id="rep-stats" style="margin-bottom:16px"></div>
+    <div class="dash3" style="margin-bottom:16px">
+      <div class="tw"><div class="panel-title">🔧 משימות לפי טכנאי</div>  <div id="rep-by-tech"     class="panel-body"></div></div>
+      <div class="tw"><div class="panel-title">💰 הכנסות לפי טכנאי</div><div id="rep-income-tech" class="panel-body"></div></div>
+      <div class="tw"><div class="panel-title">📋 סטטוס משימות</div>    <div id="rep-status"      class="panel-body"></div></div>
+    </div>
+  </div>
+  
+  <div class="pg" id="pg-settings">
     <div class="ph">
       <div style="display:flex; align-items:center; gap:14px;">
         <div style="font-size:32px; line-height:1;">⚙️</div>
@@ -9,16 +402,272 @@
       
       <div class="tw settings-panel">
         <div class="stit">🏢 פרטי החברה ויומן</div>
+        <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
+        <div style="margin-bottom:12px"><label class="flbl">טלפון</label>    <input class="finp" id="s-phone"   placeholder="0526223300"></div>
+        <div style="margin-bottom:20px"><label class="flbl">מייל שולח</label><input class="finp" type="email" id="s-email" placeholder="info@videodesign.co.il"></div>
+        
+        <div class="stit" style="margin-top:24px; border-top: 1px solid rgba(255,255,255,0.05); padding-top:12px;">📅 יומן Google</div>
+        <div style="margin-bottom:6px"><label class="flbl">כתובת Gmail</label><input class="finp" type="email" id="s-gcal" placeholder="info.videodesign@gmail.com"></div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
         <button class="btn bp" style="width:100%" onclick="saveSettings()">💾 שמור הגדרות</button>
         
-        <div class="stit" style="margin-top:30px">🔔 התראות פוש</div>
-        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות במכשיר זה</button>
-        
-        <div id="token-display-area" style="display:none; margin-top:15px;">
-            <label class="flbl" style="font-size: 11px; color: var(--tx3);">מזהה מכשיר ייחודי (Token):</label>
-            <textarea id="device-token" class="finp" readonly rows="3" style="font-size:10px; background:rgba(0,0,0,0.1); border:1px solid var(--brd);"></textarea>
-            <button class="btn bs btn-sm" style="margin-top:5px; width:100%;" onclick="navigator.clipboard.writeText(document.getElementById('device-token').value); toast('הועתק ללוח! ✅')">העתק Token</button>
+        <div class="stit" style="margin-top:30px">🔔 התראות</div>
+        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
+      </div>
+
+      <div class="tw settings-panel" id="s-users-panel" style="display:none;">
+        <div class="stit">👥 ניהול משתמשים והרשאות</div>
+        <div id="s-users-list" style="margin-bottom:16px"></div>
+        <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש</button>
+      </div>
+
+      <div class="tw settings-panel" id="s-design-panel">
+        <div class="stit">🎨 עיצוב והתאמה אישית</div>
+        <div class="fgrid">
+          <div class="fg1"><label class="flbl">רקע המערכת</label>
+            <select class="finp" id="ds-bg" onchange="applyDesignSettings()">
+              <option value="stone">🪨 אבן טבעית (ברירת מחדל)</option>
+              <option value="metal">⚙️ מתכת מוברשת</option>
+              <option value="carbon">⬛ קרבון ספורטיבי</option>
+              <option value="dark">🌙 שחור חלק ונקי</option>
+            </select>
+          </div>
+          <div class="fg1"><label class="flbl">צבע נושא מרכזי</label>
+            <input class="finp" type="color" id="ds-color" value="#3b82f6" onchange="applyDesignSettings()" style="height:42px;padding:4px;cursor:pointer">
+          </div>
+          <div class="fg1" style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer" onclick="document.getElementById('ds-glow').click()">
+            <input type="checkbox" id="ds-glow" onchange="applyDesignSettings()" checked style="width:18px;height:18px;cursor:pointer">
+            <label class="flbl" style="margin-bottom:0;cursor:pointer">הפעל אפקט הברקות תלת-ממד</label>
+          </div>
         </div>
       </div>
-      </div>
+
+    </div>
   </div>
+</main>
+
+<div class="modal" id="M-cust">
+  <div class="mbox">
+    <div class="mhd"><h2 id="M-cust-title">לקוח חדש</h2><button class="btn bs btn-sm" onclick="closeM('M-cust')">✕</button></div>
+    <div class="mbody"><div class="fgrid">
+      <div><label class="flbl">שם מלא *</label><input class="finp" id="mc-name"></div>
+      <div><label class="flbl">טלפון</label>   <input class="finp" id="mc-phone" type="tel"></div>
+      <div><label class="flbl">מייל</label>    <input class="finp" id="mc-email" type="email"></div>
+      <div><label class="flbl">עיר</label>     <input class="finp" id="mc-city"></div>
+      <div class="fg1"><label class="flbl">כתובת ראשית</label><input class="finp" id="mc-address"></div>
+      <div class="fg1">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <label class="flbl" style="margin-bottom:0">כתובות נוספות</label>
+          <button type="button" class="btn bs btn-sm" onclick="addAddressRow()">+ הוסף כתובת</button>
+        </div>
+        <div id="mc-addresses-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <div><label class="flbl">תאריך התקנה</label><input class="finp" id="mc-install" type="date"></div>
+      <div><label class="flbl">שנות אחריות</label><input class="finp" id="mc-warr" type="number" value="0" min="0" max="20"></div>
+      <div><label class="flbl">סוג פרויקט</label><input class="finp" id="mc-project" placeholder="מצלמות / אינטרקום..."></div>
+      <div><label class="flbl">ציוד</label><input class="finp" id="mc-equip"></div>
+      <div><label class="flbl">חוב (₪)</label><input class="finp" id="mc-debt" type="number" value="0" min="0" placeholder="0"></div>
+      <div class="fg1"><label class="flbl">הערות חוב</label><input class="finp" id="mc-debt-desc"></div>
+      <div class="fg1"><label class="flbl">הערות טכנאי</label><textarea class="finp" id="mc-notes" rows="3"></textarea></div>
+      <div class="fg1">
+        <div class="stit" style="margin-top:4px">👥 אנשי קשר נוספים</div>
+        <div id="mc-contacts-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+        <button type="button" class="btn bs btn-sm" onclick="addContactRow()">+ הוסף איש קשר</button>
+      </div>
+    </div></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="mc-del" style="display:none;margin-left:auto" onclick="delCust()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-cust')">ביטול</button>
+      <button class="btn bp" onclick="saveCust()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-view">
+  <div class="mbox">
+    <div class="mhd"><h2 id="Mv-name">פרטי לקוח</h2><button class="btn bs btn-sm" onclick="closeM('M-view')">✕</button></div>
+    <div class="mbody" id="Mv-body"></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="Mv-del"   style="margin-left:auto">🗑️ מחק</button>
+      <button class="btn bs btn-sm" id="Mv-edit">✏️ ערוך</button>
+      <button class="btn bp btn-sm" id="Mv-fault">🔧 משימה חדשה</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-fault">
+  <div class="mbox">
+    <div class="mhd"><h2 id="M-fault-title">משימה חדשה</h2><button class="btn bs btn-sm" onclick="closeM('M-fault')">✕</button></div>
+    <div class="mbody"><div class="fgrid">
+      <div class="fg1"><label class="flbl">סוג קריאה *</label>
+        <select class="finp" id="mf-type">
+          <option value="fault">🔧 משימה</option><option value="service">🛠️ שירות</option>
+          <option value="installation">📦 המשך התקנה</option><option value="other">📋 אחר</option>
+        </select>
+      </div>
+      <div class="fg1"><label class="flbl">לקוח</label>
+        <select class="finp" id="mf-cust" onchange="toggleGuestFields()"></select>
+      </div>
+      <div class="fg1" id="mf-guest-fields">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="flbl">שם לקוח מזדמן</label><input class="finp" id="mf-guest-name" placeholder="שם מלא"></div>
+          <div><label class="flbl">טלפון</label><input class="finp" id="mf-guest-phone" type="tel" placeholder="050-0000000"></div>
+        </div>
+      </div>
+      <div class="fg1"><label class="flbl">תיאור *</label><textarea class="finp" id="mf-desc" rows="3"></textarea></div>
+      <div><label class="flbl">דחיפות</label>
+        <select class="finp" id="mf-pri">
+          <option value="low">🟢 נמוכה</option><option value="medium" selected>🟡 בינונית</option>
+          <option value="high">🔴 גבוהה</option><option value="urgent">🚨 דחוף!</option>
+        </select>
+      </div>
+      <div><label class="flbl">סטטוס</label>
+        <select class="finp" id="mf-status">
+          <option value="open">פתוחה</option><option value="scheduled">נקבע תאריך</option><option value="done">טופלה</option>
+        </select>
+      </div>
+      <div><label class="flbl">תאריך הגעה</label><input class="finp" id="mf-date" type="date"></div>
+      <div><label class="flbl">שעה</label>         <input class="finp" id="mf-time" type="time"></div>
+      <div>
+        <label class="flbl">💰 סכום שירות (₪)</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input class="finp" id="mf-amount" type="number" min="0" placeholder="לא חובה" style="flex:1;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--tx2); cursor:pointer;">
+            <input type="checkbox" id="mf-vat" style="width:16px;height:16px;cursor:pointer;">
+            +18% מע"מ
+          </label>
+        </div>
+      </div>
+      <div><label class="flbl">שולם?</label>
+        <select class="finp" id="mf-paid">
+          <option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option>
+        </select>
+      </div>
+      <div class="fg1"><label class="flbl">הערות</label><textarea class="finp" id="mf-notes" rows="2"></textarea></div>
+    </div></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="mf-del" style="display:none;margin-left:auto" onclick="delFault()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-fault')">ביטול</button>
+      <button class="btn bp" onclick="saveFault()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-note">
+  <div class="mbox">
+    <div class="mhd">
+      <h2 id="M-note-title">הערה חדשה</h2>
+      <button onclick="closeM('M-note')" class="modal-close-btn">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="fg1"><label class="flbl">קטגוריה</label>
+          <select class="finp" id="mn-cat">
+            <option value="general">📌 כללי</option><option value="meeting">🤝 פגישה</option><option value="reminder">⏰ תזכורת</option>
+          </select>
+        </div>
+        <div class="fg1"><label class="flbl">קישור ללקוח (אופציונלי)</label>
+          <select class="finp" id="mn-cust"><option value="">ללא קישור</option></select>
+        </div>
+        <div class="fg1"><label class="flbl">תוכן ההערה</label>
+          <textarea class="finp" id="mn-text" rows="4" placeholder="כתוב כאן את ההערה..."></textarea>
+        </div>
+        <div><label class="flbl">תאריך (אופציונלי)</label><input class="finp" id="mn-date" type="date"></div>
+        <div><label class="flbl">שעה (אופציונלי)</label>    <input class="finp" id="mn-time" type="time"></div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="mn-del" style="display:none;margin-left:auto" onclick="delNote()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-note')">ביטול</button>
+      <button class="btn bp" onclick="saveNote()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-user">
+  <div class="mbox" style="max-width:400px">
+    <div class="mhd">
+      <h2 id="M-user-title">עריכת משתמש</h2>
+      <button class="btn bs btn-sm" onclick="closeM('M-user')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="fg1"><label class="flbl">שם</label><input class="finp" id="u-name" placeholder="שם המשתמש"></div>
+        <div><label class="flbl">סיסמה</label><input class="finp" id="u-pass" placeholder="סיסמה" type="text"></div>
+        <div><label class="flbl">צבע</label><input class="finp" id="u-color" type="color" value="#3b82f6" style="height:42px;padding:4px"></div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:6px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--tx2)">
+            <input type="checkbox" id="u-nopass"
+              onchange="document.getElementById('u-pass').disabled=this.checked;if(this.checked)document.getElementById('u-pass').value='';"
+              style="width:16px;height:16px;cursor:pointer">
+            כניסה ללא סיסמה
+          </label>
+        </div>
+        <div><label class="flbl">תפקיד</label>
+          <select class="finp" id="u-role">
+            <option value="owner">👑 בעלים</option><option value="admin">🔧 אדמין</option>
+            <option value="manager">📋 מנהל</option><option value="installer">🔨 מתקין</option>
+          </select>
+        </div>
+      </div>
+      <div class="stit" style="margin-top:16px">🔐 הרשאות גישה</div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">1 = צפייה בלבד &nbsp;|&nbsp; 2 = צפייה + הוספה + עריכה &nbsp;|&nbsp; 3 = גישה מלאה (כולל מחיקה)</div>
+      <div id="u-perms-grid"></div>
+    </div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="u-del-btn" onclick="deleteUser()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-user')">ביטול</button>
+      <button class="btn bp" onclick="saveUser()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentFontLevel = 0;
+  function changeFontScale(delta) {
+    currentFontLevel += delta;
+    if (currentFontLevel > 10) currentFontLevel = 10;
+    if (currentFontLevel < -10) currentFontLevel = -10;
+    localStorage.setItem('vd_crm_font_lvl', currentFontLevel);
+    applyFontScale();
+  }
+  function applyFontScale() {
+    const scale = 1 + (currentFontLevel * 0.05); 
+    document.documentElement.style.setProperty('--fz-scale', scale);
+    const lbls = document.querySelectorAll('.font-scale-lbl');
+    lbls.forEach(lbl => { lbl.textContent = currentFontLevel > 0 ? '+' + currentFontLevel : currentFontLevel; });
+  }
+  function applyDesignSettings() {
+    const bg = document.getElementById('ds-bg').value;
+    const color = document.getElementById('ds-color').value;
+    const glow = document.getElementById('ds-glow').checked;
+    document.documentElement.style.setProperty('--acc', color);
+    document.body.setAttribute('data-bg', bg);
+    document.body.setAttribute('data-glow', glow ? 'true' : 'false');
+    localStorage.setItem('vd_crm_design', JSON.stringify({ bg, color, glow }));
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedFont = localStorage.getItem('vd_crm_font_lvl');
+    if (savedFont !== null) currentFontLevel = parseInt(savedFont);
+    applyFontScale();
+    const savedDesign = localStorage.getItem('vd_crm_design');
+    if (savedDesign) {
+      try {
+        const d = JSON.parse(savedDesign);
+        if (document.getElementById('ds-bg')) {
+          document.getElementById('ds-bg').value = d.bg;
+          document.getElementById('ds-color').value = d.color;
+          document.getElementById('ds-glow').checked = d.glow;
+        }
+        document.documentElement.style.setProperty('--acc', d.color);
+        document.body.setAttribute('data-bg', d.bg);
+        document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
+      } catch (e) {}
+    }
+  });
+</script>
+
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>
