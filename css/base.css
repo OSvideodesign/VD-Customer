@@ -4,13 +4,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  -webkit-tap-highlight-color: transparent; /* מבטל את הריבוע המהבהב בלחיצה באייפון */
-}
-
-/* תיקון לבאג הרקע באייפון (iOS Safari Background Bug) */
-html {
-  height: 100%;
-  overflow: hidden; 
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root {
@@ -32,42 +26,36 @@ html {
   --r:    12px;
 }
 
-body {
-  font-family: 'Heebo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+/* הפתרון האולטימטיבי לאייפון - שכבת רקע נפרדת קבועה (לא מושפעת מגלילה) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: var(--bg);
   background-image: url('../bg-silver.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: scroll; /* תוקן מ-fixed כדי לפתור את הבעיה באייפון */
+  z-index: -1;
+}
+
+body {
+  font-family: 'Heebo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--tx);
-  height: 100%; /* חלק מתיקון הרקע - שומר על גוף באורך המסך בדיוק */
-  overflow-y: auto; /* הגלילה מתבצעת בתוך גוף האפליקציה ולא על כל המסמך */
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch; /* גלילה חלקה באייפון */
+  min-height: 100vh;
   direction: rtl;
 }
 
-/* מניעת סימון טקסט בטעות בתפריטים וכפתורים */
+/* מניעת סימון טקסט בטעות בתפריטים וכפתורים באייפון */
 button, a, .nav-btn, .mnb, .m-drawer-btn {
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* עיצוב פס גלילה מודרני ויפה יותר */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--acc);
-}
+/* פס גלילה יפה לאנדרואיד ומחשב */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--acc); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
