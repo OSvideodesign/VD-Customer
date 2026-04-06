@@ -281,9 +281,26 @@ function _sendFaultNotification(f) {
 }
 
 export function requestNotificationPermission() {
-  if (!('Notification' in window)) { toast('הדפדפן לא תומך בהתראות', 'err'); return; }
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) { 
+    toast('הדפדפן לא תומך בהתראות', 'err'); 
+    return; 
+  }
+  
   Notification.requestPermission().then(p => {
-    if (p === 'granted') toast('התראות הופעלו ✅');
-    else toast('התראות נדחו', 'err');
+    if (p === 'granted') {
+      toast('שולח התראת בדיקה... ✅');
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification('היי רז! 👋', { 
+          body: 'אם קפצה לך ההתראה הזו, המערכת עובדת פיקס!', 
+          icon: 'app-icon-192.jpg',
+          badge: 'app-icon-192.jpg',
+          vibrate: [200, 100, 200],
+          dir: 'rtl', 
+          lang: 'he' 
+        });
+      });
+    } else {
+      toast('ההתראות חסומות באייפון שלך ❌', 'err');
+    }
   });
 }
