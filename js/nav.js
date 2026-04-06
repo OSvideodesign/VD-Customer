@@ -72,8 +72,22 @@ export function runGlobalSearch() {
   const results = [];
 
   (window.custs || []).forEach(c => {
+    let match = false;
+    // חיפוש בשדות הראשיים
     if ((c.name || '').toLowerCase().includes(q) || (c.phone || '').includes(q) ||
         (c.city || '').toLowerCase().includes(q) || (c.address || '').toLowerCase().includes(q)) {
+      match = true;
+    }
+    // חיפוש באנשי קשר נוספים
+    if (!match && c.contacts) {
+      match = c.contacts.some(ct => (ct.name || '').toLowerCase().includes(q) || (ct.phone || '').includes(q));
+    }
+    // חיפוש בכתובות נוספות
+    if (!match && c.extraAddresses) {
+      match = c.extraAddresses.some(addr => (addr || '').toLowerCase().includes(q));
+    }
+
+    if (match) {
       results.push({
         icon: '👤', title: c.name,
         sub: (c.phone || '') + (c.city ? ' | ' + c.city : ''),
