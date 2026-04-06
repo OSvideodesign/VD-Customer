@@ -24,24 +24,24 @@ export function renderDash() {
   document.getElementById('st-debt-sum').textContent = '₪' + ds.toLocaleString('he-IL');
   document.getElementById('st-faults').textContent   = window.faults.filter(f => f.status !== 'done').length;
 
-  // Warranty panel
+  // Warranty panel - פותח כעת את כרטיס הלקוח באותו עמוד
   const pw = window.custs.filter(c => { const s = wStat(c); return s && s.d <= 90; });
   document.getElementById('pan-warr').innerHTML = pw.length
-    ? pw.map(c => { const s = wStat(c); return `<div class="ai ${s.d < 0 ? 'danger' : 'warn'}" onclick="window._jumpTo('${c.id}')">
+    ? pw.map(c => { const s = wStat(c); return `<div class="ai ${s.d < 0 ? 'danger' : 'warn'}" onclick="window._viewCust('${c.id}')">
         <span>${s.d < 0 ? '🔴' : '🟡'}</span>
         <div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${c.name}</div>
         <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">${s.d < 0 ? 'פגה לפני ' + Math.abs(s.d) + ' ימים' : 'עוד ' + s.d + ' ימים'}</div></div>
         <span style="color:var(--tx3)">›</span></div>`; }).join('')
     : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ הכל תקין</div>';
 
-  // Debts panel
+  // Debts panel - מפריד בין חוב של לקוח (פותח לקוח) לחוב משימה (פותח משימה)
   const pd = window.custs.filter(c => c.debt > 0);
   const pdu = window.faults.filter(f => f.amount > 0 && f.paid !== 'yes');
   const pdAll = [
-    ...pd.map(c  => ({ name: c.name, amount: c.debt, onclick: `window._jumpTo('${c.id}')` })),
+    ...pd.map(c  => ({ name: c.name, amount: c.debt, onclick: `window._viewCust('${c.id}')` })),
     ...pdu.map(f => {
       const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-      return { name: c ? c.name : (f.guestName || 'לקוח מזדמן'), amount: parseFloat(f.amount), desc: (f.desc || '').slice(0, 25), onclick: `window._nav('debts')` };
+      return { name: c ? c.name : (f.guestName || 'לקוח מזדמן'), amount: parseFloat(f.amount), desc: (f.desc || '').slice(0, 25), onclick: `window._editFaultById('${f.id}')` };
     }),
   ];
   document.getElementById('pan-debts').innerHTML = pdAll.length
@@ -51,13 +51,13 @@ export function renderDash() {
         <span style="color:var(--tx3)">›</span></div>`).join('')
     : '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:calc(13px * var(--fz-scale, 1))">✅ אין חובות</div>';
 
-  // Faults panel
+  // Faults panel - פותח כעת ישירות את מודאל המשימה
   const pf = window.faults.filter(f => f.status !== 'done');
   document.getElementById('pan-faults').innerHTML = pf.length
     ? pf.map(f => {
         const c = window.custs.find(x => x.id === f.custId);
         const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-        return `<div class="ai warn" onclick="window._nav('faults')">
+        return `<div class="ai warn" onclick="window._editFaultById('${f.id}')">
           <span>🔧</span><div style="flex:1"><div style="font-weight:600;font-size:calc(13px * var(--fz-scale, 1))">${name}</div>
           <div style="font-size:calc(11px * var(--fz-scale, 1));color:var(--tx3)">${(f.desc || '').slice(0, 40)}</div></div>
           <span style="color:var(--tx3)">›</span></div>`;
