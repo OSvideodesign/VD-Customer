@@ -104,7 +104,6 @@ export function editFaultById(id) {
   document.getElementById('mf-date').value    = f.date     || '';
   document.getElementById('mf-time').value    = f.time     || '';
   
-  // שינוי קריטי: מציג את סכום הבסיס אם קיים, ומשחזר את הסימון של המע"מ
   document.getElementById('mf-amount').value  = f.baseAmount !== undefined ? f.baseAmount : (f.amount || '');
   document.getElementById('mf-vat').checked   = f.hasVat || false;
   
@@ -137,7 +136,6 @@ export function saveFault() {
   if ((!custVal && !isGuest) || !desc) { toast('בחר לקוח ותאר את הבעיה', 'err'); return; }
   if (isGuest && !guestName) { toast('הכנס שם לקוח מזדמן', 'err'); return; }
 
-  // חישוב המע"מ - שמירת סכום בסיס בנפרד מהסכום הסופי
   const baseAmount = parseFloat(document.getElementById('mf-amount').value) || 0;
   const hasVat = document.getElementById('mf-vat').checked;
   const finalAmount = hasVat ? parseFloat((baseAmount * 1.18).toFixed(2)) : baseAmount;
@@ -153,9 +151,9 @@ export function saveFault() {
     status:      document.getElementById('mf-status').value,
     date:        document.getElementById('mf-date').value,
     time:        document.getElementById('mf-time').value,
-    amount:      finalAmount, // נשמר עם המע"מ, עבור לוח הבקרה והחובות
-    baseAmount:  baseAmount,  // שומרים גם את סכום הבסיס כדי להציג נכון בעריכה עתידית
-    hasVat:      hasVat,      // שומרים את הסטטוס של תיבת המע"מ
+    amount:      finalAmount, 
+    baseAmount:  baseAmount,  
+    hasVat:      hasVat,      
     paid:        document.getElementById('mf-paid').value,
     notes:       document.getElementById('mf-notes').value.trim(),
     updatedBy:   window._currentUser || '',
@@ -246,16 +244,38 @@ export async function deleteSelected() {
 }
 
 // ── notifications ──────────────────────────────────────────────────────────
+// כאן נעשה השינוי החשוב: התראות נשלחות דרך ה-Service Worker שמאושר ע"י אפל וגוגל למובייל
 function _sendFaultNotification(f) {
-  if (!('Notification' in window)) return;
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
   const c    = f.custId ? window.custs.find(x => x.id === f.custId) : null;
   const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
   const body = `${name} — ${(f.desc || '').slice(0, 60)}`;
+  
   if (Notification.permission === 'granted') {
-    new Notification('🔧 משימה חדשה נוספה', { body, dir: 'rtl', lang: 'he' });
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('🔧 משימה חדשה נוספה', { 
+        body, 
+        icon: 'app-icon-192.jpg',
+        badge: 'app-icon-192.jpg',
+        vibrate: [200, 100, 200],
+        dir: 'rtl', 
+        lang: 'he' 
+      });
+    });
   } else if (Notification.permission !== 'denied') {
     Notification.requestPermission().then(p => {
-      if (p === 'granted') new Notification('🔧 משימה חדשה נוספה', { body, dir: 'rtl', lang: 'he' });
+      if (p === 'granted') {
+        navigator.serviceWorker.ready.then(reg => {
+          reg.showNotification('🔧 משימה חדשה נוספה', { 
+            body, 
+            icon: 'app-icon-192.jpg',
+            badge: 'app-icon-192.jpg',
+            vibrate: [200, 100, 200],
+            dir: 'rtl', 
+            lang: 'he' 
+          });
+        });
+      }
     });
   }
 }
