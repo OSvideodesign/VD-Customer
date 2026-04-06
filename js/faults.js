@@ -53,7 +53,7 @@ export function renderFaults() {
         </div>
       </div>
       <div style="font-size:11px;color:var(--tx3);margin-bottom:4px">${TMAP[f.type || 'fault'] || '🔧 משימה'}
-        ${f.amount > 0 ? ' &nbsp;|&nbsp; 💰 ₪' + f.amount.toLocaleString('he-IL') + (f.paid === 'yes' ? ' ✅' : f.paid === 'partial' ? ' (חלקי)' : '') : ''}
+        ${f.amount > 0 ? ' &nbsp;|&nbsp; 💰 ₪' + f.amount.toLocaleString('he-IL') + (f.hasVat ? ' <span style="color:var(--tx2)">(כולל מע"מ)</span>' : '') + (f.paid === 'yes' ? ' ✅' : f.paid === 'partial' ? ' (חלקי)' : '') : ''}
       </div>
       <div class="fdesc">${f.desc || ''}</div>
       <div class="fmeta">
@@ -81,7 +81,7 @@ export function openNewFault(preCustId) {
   document.getElementById('mf-date').value    = '';
   document.getElementById('mf-time').value    = '';
   document.getElementById('mf-amount').value  = '';
-  document.getElementById('mf-vat').checked   = false; // איפוס תיבת מע"מ
+  document.getElementById('mf-vat').checked   = false;
   document.getElementById('mf-paid').value    = 'no';
   document.getElementById('mf-notes').value   = '';
   openM('M-fault');
@@ -103,8 +103,11 @@ export function editFaultById(id) {
   document.getElementById('mf-status').value  = f.status   || 'open';
   document.getElementById('mf-date').value    = f.date     || '';
   document.getElementById('mf-time').value    = f.time     || '';
-  document.getElementById('mf-amount').value  = f.amount   || '';
-  document.getElementById('mf-vat').checked   = false; // איפוס תיבת מע"מ בעריכה כדי למנוע הוספה כפולה
+  
+  // שינוי קריטי: מציג את סכום הבסיס אם קיים, ומשחזר את הסימון של המע"מ
+  document.getElementById('mf-amount').value  = f.baseAmount !== undefined ? f.baseAmount : (f.amount || '');
+  document.getElementById('mf-vat').checked   = f.hasVat || false;
+  
   document.getElementById('mf-paid').value    = f.paid     || 'no';
   document.getElementById('mf-notes').value   = f.notes    || '';
   openM('M-fault');
@@ -134,11 +137,10 @@ export function saveFault() {
   if ((!custVal && !isGuest) || !desc) { toast('בחר לקוח ותאר את הבעיה', 'err'); return; }
   if (isGuest && !guestName) { toast('הכנס שם לקוח מזדמן', 'err'); return; }
 
-  // חישוב המע"מ
-  let finalAmount = parseFloat(document.getElementById('mf-amount').value) || 0;
-  if (document.getElementById('mf-vat').checked) {
-    finalAmount = parseFloat((finalAmount * 1.18).toFixed(2));
-  }
+  // חישוב המע"מ - שמירת סכום בסיס בנפרד מהסכום הסופי
+  const baseAmount = parseFloat(document.getElementById('mf-amount').value) || 0;
+  const hasVat = document.getElementById('mf-vat').checked;
+  const finalAmount = hasVat ? parseFloat((baseAmount * 1.18).toFixed(2)) : baseAmount;
 
   const f = {
     id:          _eFault || uid(),
@@ -151,7 +153,9 @@ export function saveFault() {
     status:      document.getElementById('mf-status').value,
     date:        document.getElementById('mf-date').value,
     time:        document.getElementById('mf-time').value,
-    amount:      finalAmount, // נשמר עם המע"מ
+    amount:      finalAmount, // נשמר עם המע"מ, עבור לוח הבקרה והחובות
+    baseAmount:  baseAmount,  // שומרים גם את סכום הבסיס כדי להציג נכון בעריכה עתידית
+    hasVat:      hasVat,      // שומרים את הסטטוס של תיבת המע"מ
     paid:        document.getElementById('mf-paid').value,
     notes:       document.getElementById('mf-notes').value.trim(),
     updatedBy:   window._currentUser || '',
