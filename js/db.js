@@ -9,8 +9,6 @@ import { FIREBASE_CONFIG, USERS, VAPID_KEY } from './config.js';
 import { loader, hideLoader, toast } from './utils.js';
 import { gcalInit } from './gcal.js';
 
-// ❌ הורדתי מכאן את ה-imports ל-dashboard ול-faults כדי למנוע את הקריסה של הדפדפן ומסך הכניסה!
-
 export const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
 
@@ -157,11 +155,12 @@ export async function loadAll() {
       }
     }
 
-    window.custs      = cs.docs.map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; });
-    window.faults     = fs.docs.map(d => d.data());
-    window.notes      = ns.docs.map(d => d.data());
-    window.waMessages = ws.docs.map(d => d.data());
-    window.logEntries = ls.docs.map(d => d.data());
+    // הוספת id: d.id לכל השאילתות (תיקון קריטי לשמירת מידע עתידית)
+    window.custs      = cs.docs.map(d => { const data = d.data(); return { id: d.id, ...data, debt: Math.max(0, Number(data.debt) || 0) }; });
+    window.faults     = fs.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.notes      = ns.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.waMessages = ws.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.logEntries = ls.docs.map(d => ({ id: d.id, ...d.data() }));
     window.fcmTokens  = ts.docs.map(d => ({ id: d.id, ...d.data() }));
 
     hideLoader();
@@ -171,7 +170,7 @@ export async function loadAll() {
     // ── Listeners ──
     onSnapshot(collection(db, 'customers'), snap => {
       const del = window._deletingIds || new Set();
-      window.custs = snap.docs.map(d => d.data()).filter(c => !del.has('customers:' + c.id));
+      window.custs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => !del.has('customers:' + c.id));
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('customers') && window.renderCusts) window.renderCusts();
       if (on('warranties') && window.renderWarr) window.renderWarr();
@@ -181,7 +180,7 @@ export async function loadAll() {
 
     onSnapshot(collection(db, 'faults'), snap => {
       const del = window._deletingIds || new Set();
-      window.faults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
+      window.faults = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(f => !del.has('faults:' + f.id));
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('faults') && window.renderFaults) window.renderFaults();
       if (on('archive') && window.renderArchive) window.renderArchive();
@@ -190,14 +189,14 @@ export async function loadAll() {
 
     onSnapshot(collection(db, 'notes'), snap => {
       const del = window._deletingIds || new Set();
-      window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
+      window.notes = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(n => !del.has('notes:' + n.id));
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('notes') && window.renderNotes) window.renderNotes();
       if (window.renderDash) window.renderDash();
     });
 
     onSnapshot(collection(db, 'log'), snap => {
-      window.logEntries = snap.docs.map(d => d.data());
+      window.logEntries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('log') && window.renderLog) window.renderLog();
     });
