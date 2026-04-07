@@ -40,9 +40,19 @@ function wkRange(off) {
   return { sun, sat };
 }
 
-// מחזיר צבע גרדיאנט לפי רמת דחיפות
-function getPriColor(pri) {
-    switch(pri) {
+// מחזיר צבע למשימה ביומן (לפי צבע ידני או לפי דחיפות)
+function getTaskColor(f) {
+    // אם נבחר צבע ידני בהגדרות המשימה
+    if (f.color === 'blue') return 'linear-gradient(to bottom, #3b82f6, #1d4ed8)';
+    if (f.color === 'green') return 'linear-gradient(to bottom, #10b981, #059669)';
+    if (f.color === 'orange') return 'linear-gradient(to bottom, #f59e0b, #d97706)';
+    if (f.color === 'red') return 'linear-gradient(to bottom, #ef4444, #dc2626)';
+    if (f.color === 'purple') return 'linear-gradient(to bottom, #8b5cf6, #6d28d9)';
+    if (f.color === 'pink') return 'linear-gradient(to bottom, #ec4899, #be185d)';
+    if (f.color === 'black') return 'linear-gradient(to bottom, #374151, #111827)';
+    
+    // אם אין צבע ידני, השתמש בדחיפות כברירת מחדל
+    switch(f.priority) {
         case 'low': return 'linear-gradient(to bottom, #10b981, #059669)'; // ירוק
         case 'high': return 'linear-gradient(to bottom, #ef4444, #dc2626)'; // אדום
         case 'urgent': return 'linear-gradient(to bottom, #b91c1c, #991b1b)'; // אדום כהה
@@ -125,7 +135,8 @@ export function renderUnscheduledTasks() {
         const city = cust && cust.city ? `📍 ${cust.city}` : '';
         const amountHtml = (f.amount && Number(f.amount) > 0) ? `<span style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">💰 ${f.amount} ₪</span>` : '';
         
-        return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${f.id}')" style="background: ${getPriColor(f.pri)};">
+        // כאן ברשימה ההמתנה - תמיד כחול
+        return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${f.id}')" style="background: linear-gradient(to bottom, #3b82f6, #1d4ed8);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                <div style="font-weight:700; margin-bottom:4px; font-size:13px;">${typeIcon} ${name}</div>
                ${amountHtml}
@@ -165,11 +176,10 @@ export function renderScheduledTasks() {
            
            const div = document.createElement('div');
            div.className = 'cal-task';
-           div.style.background = getPriColor(f.pri);
+           div.style.background = getTaskColor(f); // שימוש בפונקציית הצבע החדשה
            div.style.cursor = 'grab';
            div.title = "לחץ לעריכה, או גרור לשינוי/ביטול";
            
-           // הפיכת המשימה ביומן לגרירה (כדי להזיז שעות או לבטל)
            div.draggable = true;
            div.ondragstart = (e) => { e.dataTransfer.setData('text/plain', f.id); };
            div.onclick = () => { if(window.editFaultById) window.editFaultById(f.id); };
@@ -183,7 +193,6 @@ export function renderScheduledTasks() {
    });
 }
 
-// גרירה לתוך היומן (שיבוץ או הזזה)
 window._dropTask = async function(e, cell) {
     e.preventDefault();
     cell.classList.remove('drag-over');
@@ -212,7 +221,6 @@ window._dropTask = async function(e, cell) {
     }
 };
 
-// גרירה החוצה מהיומן חזרה לרשימה (ביטול שיבוץ)
 window._unScheduleTask = async function(e, listEl) {
     e.preventDefault();
     listEl.style.background = 'transparent';
@@ -221,7 +229,7 @@ window._unScheduleTask = async function(e, listEl) {
     if (!faultId) return;
 
     const fault = (window.faults || []).find(f => f.id === faultId);
-    if (!fault || !fault.date) return; // לא עושים כלום אם היא כבר פתוחה
+    if (!fault || !fault.date) return; 
 
     fault.date = '';
     fault.time = '';
