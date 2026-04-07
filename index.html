@@ -412,7 +412,13 @@ document.head.appendChild(_link);
         <button class="btn bp" style="width:100%" onclick="saveSettings()">💾 שמור הגדרות</button>
         
         <div class="stit" style="margin-top:30px">🔔 התראות</div>
-        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
+        <button class="btn bs" style="width:100%" onclick="window._handlePushPermission()">🔔 הפעל התראות במכשיר זה</button>
+
+        <div id="token-display-area" style="display:none; margin-top:15px;">
+            <label class="flbl" style="font-size: 11px; color: var(--tx3);">מזהה מכשיר ייחודי (Token):</label>
+            <textarea id="device-token" class="finp" readonly rows="3" style="font-size:10px; background:rgba(0,0,0,0.1); border:1px solid var(--brd);"></textarea>
+            <button class="btn bs btn-sm" style="margin-top:5px; width:100%;" onclick="navigator.clipboard.writeText(document.getElementById('device-token').value); toast('הועתק ללוח! ✅')">העתק Token</button>
+        </div>
       </div>
 
       <div class="tw settings-panel" id="s-users-panel" style="display:none;">
@@ -609,6 +615,15 @@ document.head.appendChild(_link);
             <option value="manager">📋 מנהל</option><option value="installer">🔨 מתקין</option>
           </select>
         </div>
+        
+        <div style="grid-column: 1 / -1; margin-top: 8px;">
+          <label class="flbl">מזהה מכשיר להתראות (FCM Token)</label>
+          <div style="display:flex; gap:8px;">
+            <input class="finp" id="u-token" readonly placeholder="טרם הוגדר למשתמש זה מכשיר להתראות" style="font-size:10px; background:rgba(0,0,0,0.2); flex:1; direction:ltr;">
+            <button class="btn bs btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('u-token').value); toast('הועתק! ✅')">העתק</button>
+          </div>
+        </div>
+
       </div>
       <div class="stit" style="margin-top:16px">🔐 הרשאות גישה</div>
       <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">1 = צפייה בלבד &nbsp;|&nbsp; 2 = צפייה + הוספה + עריכה &nbsp;|&nbsp; 3 = גישה מלאה (כולל מחיקה)</div>
