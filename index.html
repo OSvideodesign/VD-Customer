@@ -62,9 +62,9 @@ document.head.appendChild(_link);
 <div id="mnav">
   <div class="mns">
     <button class="mnb" onclick="nav('dashboard')"><span style="font-size:20px">📊</span>לוח בקרה</button>
-    <button class="mnb" onclick="nav('calendar')"><span style="font-size:20px">📅</span>יומן</button>
     <button class="mnb" onclick="nav('customers')"><span style="font-size:20px">👥</span>לקוחות</button>
     <button class="mnb" onclick="nav('faults')"><span style="font-size:20px">🔧</span>משימות</button>
+    <button class="mnb" onclick="nav('notes')"><span style="font-size:20px">📝</span>הערות</button>
     <button class="mnb" onclick="openDrawer()"><span style="font-size:20px">☰</span>עוד</button>
   </div>
 </div>
@@ -81,7 +81,6 @@ document.head.appendChild(_link);
 
     <div class="m-drawer-sec">ניהול</div>
     <button class="m-drawer-btn" onclick="navD('dashboard')">📊 לוח בקרה</button>
-    <button class="m-drawer-btn" onclick="navD('calendar')">📅 יומן עבודה</button>
     <button class="m-drawer-btn" onclick="navD('customers')">👥 לקוחות</button>
     <button class="m-drawer-btn" onclick="navD('faults')">🔧 משימות</button>
     <button class="m-drawer-btn" onclick="navD('archive')">✅ ארכיון</button>
@@ -133,7 +132,6 @@ document.head.appendChild(_link);
     </div>
     <div class="nav-sec">ניהול</div>
     <button class="nav-btn on" id="nb-dashboard"  onclick="nav('dashboard')">📊 לוח בקרה</button>
-    <button class="nav-btn"    id="nb-calendar"   onclick="nav('calendar')">📅 יומן עבודה</button>
     <button class="nav-btn"    id="nb-customers"  onclick="nav('customers')">👥 לקוחות</button>
     <button class="nav-btn"    id="nb-faults"     onclick="nav('faults')">🔧 משימות</button>
     <button class="nav-btn"    id="nb-archive"    onclick="nav('archive')">✅ ארכיון</button>
@@ -177,6 +175,7 @@ document.head.appendChild(_link);
       <div class="sc success"><div class="sc-lbl">סה״כ חוב</div>         <div class="sc-val" id="st-debt-sum">—</div> <div class="sc-sub">₪ לגבייה</div></div>
       <div class="sc orange"> <div class="sc-lbl">משימות פתוחות</div>    <div class="sc-val" id="st-faults">—</div>   <div class="sc-sub">🔧 ממתינות</div></div>
     </div>
+    
     <div class="dash3">
       <div class="tw" style="border-top:3px solid var(--acc)">
         <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
@@ -200,6 +199,7 @@ document.head.appendChild(_link);
         <div class="panel-body" id="pan-faults"></div>
       </div>
     </div>
+    
     <div class="dash3" style="margin-top:14px">
       <div class="tw" style="border-top:3px solid var(--acc)">
         <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
@@ -223,36 +223,37 @@ document.head.appendChild(_link);
         <div class="panel-body" id="pan-notes-reminder"></div>
       </div>
     </div>
-  </div>
 
-  <div class="pg" id="pg-calendar">
-    <div class="ph">
-      <div style="display:flex; align-items:center; gap:14px;">
-        <div style="font-size:32px; line-height:1;">📅</div>
-        <div><div class="pt">יומן עבודה</div><div class="ps">ניהול לו"ז ומשימות</div></div>
-      </div>
-      <div style="display:flex; gap:8px;">
-         <button class="btn bs btn-sm" id="cal-btn-prev">&#8249; קודם</button>
-         <button class="btn bs btn-sm" id="cal-btn-today">היום</button>
-         <button class="btn bs btn-sm" id="cal-btn-next">הבא &#8250;</button>
-      </div>
-    </div>
-    
-    <div class="cal-layout">
-      <div class="tw cal-sidebar">
-        <div class="panel-title" style="border-bottom: 2px solid var(--ora)">🔧 משימות לשיבוץ</div>
-        <div class="panel-body" id="cal-unscheduled-list" style="padding:10px; display:flex; flex-direction:column; gap:8px; min-height:300px;">
-           <div style="text-align:center; color:var(--tx3); font-size:13px; margin-top:30px;">טוען משימות...</div>
+    <div class="tw" style="margin-top:16px;">
+      <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #111;">
+        <div style="font-size:16px; display:flex; align-items:center; gap:8px;">
+          <span>📅</span> <span>יומן עבודה ושיבוץ משימות</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+           <button class="btn bs btn-sm" id="cal-btn-prev">&#8249; קודם</button>
+           <button class="btn bs btn-sm" id="cal-btn-today">היום</button>
+           <button class="btn bs btn-sm" id="cal-btn-next">הבא &#8250;</button>
         </div>
       </div>
       
-      <div class="tw cal-main">
-        <div class="panel-title" id="cal-date-range" style="text-align:center; font-size:16px;">
-          טוען יומן...
-        </div>
-        <div class="cal-grid-container">
-          <div class="cal-grid" id="cal-grid-wrapper">
-             </div>
+      <div style="padding:16px;">
+        <div class="cal-layout" style="margin-top:0;">
+          <div class="tw cal-sidebar" style="border: 1px solid var(--brd);">
+            <div class="panel-title" style="border-bottom: 2px solid var(--ora)">🔧 משימות לשיבוץ</div>
+            <div id="cal-unscheduled-list" style="padding:10px; display:flex; flex-direction:column; gap:8px; min-height:300px; max-height:500px; overflow-y:auto;">
+               <div style="text-align:center; color:var(--tx3); font-size:13px; margin-top:30px;">טוען משימות...</div>
+            </div>
+          </div>
+          
+          <div class="tw cal-main" style="border: 1px solid var(--brd);">
+            <div class="panel-title" id="cal-date-range" style="text-align:center; font-size:16px;">
+              טוען יומן...
+            </div>
+            <div class="cal-grid-container">
+              <div class="cal-grid" id="cal-grid-wrapper">
+                 </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
