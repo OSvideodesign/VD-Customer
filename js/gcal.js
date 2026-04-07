@@ -1,10 +1,11 @@
-// ══ gcal.js — Google Calendar & Internal Drag & Drop Calendar ══
+// ══ gcal.js — Google Calendar (via Apps Script) & Internal Calendar ══
 
-import { GCAL_CID } from './config.js';
 import { toast, fmtD } from './utils.js';
 import { addLog } from './log.js';
 
-let gcalTok  = null;
+// הכתובת הייחודית שלך לגשר של גוגל:
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyEHAp35jPUm_ZxcsD68CcGHXnImPRTPNzbBOKUsIWjILsJ1jqC_vcY62dgruXUxTn4fg/exec'; 
+
 let wkOffset = 0;
 
 export function gcalInit() {
@@ -16,27 +17,14 @@ export function gcalInit() {
   if (btnNext) btnNext.onclick = wkNext;
   if (btnToday) btnToday.onclick = wkToday;
 
+  // מסתיר את כפתורי ההתחברות הישנים (כבר אין בהם צורך)
+  const loginBtn = document.getElementById('gcal-login-btn');
+  const logoutBtn = document.getElementById('gcal-logout-btn');
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (logoutBtn) logoutBtn.style.display = 'none';
+
   buildCalendarGrid();
-  updateGcalBtns();
-
-  const saved = localStorage.getItem('gcal_token');
-  if (saved) {
-    try { 
-      gcalTok = JSON.parse(saved); 
-      updateGcalBtns();
-      fetchWk(); 
-    } catch (e) {}
-  }
-}
-
-// מעדכן את תצוגת הכפתורים של גוגל ביומן
-function updateGcalBtns() {
-    const loginBtn = document.getElementById('gcal-login-btn');
-    const logoutBtn = document.getElementById('gcal-logout-btn');
-    if (loginBtn && logoutBtn) {
-        loginBtn.style.display = gcalTok ? 'none' : 'inline-flex';
-        logoutBtn.style.display = gcalTok ? 'inline-flex' : 'none';
-    }
+  fetchWk(); // מושך אוטומטית ברקע!
 }
 
 function wkRange(off) {
@@ -52,7 +40,6 @@ function wkRange(off) {
   return { sun, sat };
 }
 
-// מחזיר צבע למשימה ביומן (לפי צבע ידני או לפי דחיפות)
 function getTaskColor(f) {
     if (f.color === 'blue') return 'linear-gradient(to bottom, #3b82f6, #1d4ed8)';
     if (f.color === 'green') return 'linear-gradient(to bottom, #10b981, #059669)';
@@ -122,8 +109,6 @@ export function buildCalendarGrid() {
   
   renderUnscheduledTasks();
   renderScheduledTasks();
-  
-  if (gcalTok) fetchWk(); 
 }
 
 export function renderUnscheduledTasks() {
@@ -226,6 +211,7 @@ window._dropTask = async function(e, cell) {
         try { addLog('fault', isReschedule ? 'עדכון שיבוץ' : 'שיבוץ משימה', `משימה שובצה ל-${fmtD(date)} בשעה ${time}`); } catch(err){}
         toast(isReschedule ? 'השיבוץ עודכן בהצלחה! 🔄' : 'המשימה שובצה בהצלחה! ✅', 'success');
         buildCalendarGrid(); 
+        fetchWk(); // מרענן את אירועי גוגל גם
         if(window.renderDash) window.renderDash();
     }
 };
@@ -248,57 +234,36 @@ window._unScheduleTask = async function(e, listEl) {
         await window._dbSaveFaults([fault]);
         try { addLog('fault', 'ביטול שיבוץ', `בוטל שיבוץ למשימה`); } catch(err){}
         toast('השיבוץ בוטל - המשימה הוחזרה לרשימה 📥', 'info');
-        buildCalendarGrid(); 
+        buildCalendarGrid();
+        fetchWk(); 
         if(window.renderDash) window.renderDash();
     }
 };
 
-// ── Google Calendar Integrations ─────────────────────────────────────────
-
-export function gcalSignIn() {
-  if (typeof google === 'undefined') { toast('Google API לא נטען', 'err'); return; }
-  google.accounts.oauth2.initTokenClient({
-    client_id: GCAL_CID,
-    scope: 'https://www.googleapis.com/auth/calendar.readonly',
-    callback: (r) => {
-      if (r.error) return;
-      gcalTok = r;
-      localStorage.setItem('gcal_token', JSON.stringify(r));
-      updateGcalBtns();
-      fetchWk();
-    },
-  }).requestAccessToken();
-}
-
-export function gcalSignOut() {
-  if (gcalTok && typeof google !== 'undefined') google.accounts.oauth2.revoke(gcalTok.access_token, () => {});
-  gcalTok = null;
-  localStorage.removeItem('gcal_token');
-  updateGcalBtns();
-  buildCalendarGrid(); 
-  toast('נותקת מיומן גוגל', 'info');
-}
+// ── Google Calendar Fetching (Via Apps Script API) ───────────────────────
 
 export async function fetchWk() {
-  if (!gcalTok) return;
+  if (!GAS_URL || GAS_URL === 'הדבק_כאן_את_הכתובת_שלך') return;
   const { sun, sat } = wkRange(wkOffset);
   
   try {
-    const r = await fetch(
-      'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=' +
-      encodeURIComponent(sun.toISOString()) + '&timeMax=' + encodeURIComponent(sat.toISOString()) +
-      '&singleEvents=true&orderBy=startTime&maxResults=100',
-      { headers: { Authorization: 'Bearer ' + gcalTok.access_token } }
-    );
-    if (r.status === 401) { gcalSignOut(); return; }
+    // קורא למיני-שרת שבנינו
+    const url = `${GAS_URL}?timeMin=${encodeURIComponent(sun.toISOString())}&timeMax=${encodeURIComponent(sat.toISOString())}`;
+    const r = await fetch(url);
     const d = await r.json();
-    renderWkGridGCal(d.items || []);
+    
+    if (d.items) {
+       renderWkGridGCal(d.items);
+    }
   } catch (e) {
     console.error("GCal fetch error", e);
   }
 }
 
 function renderWkGridGCal(evs) {
+    // קודם מוחק אירועי גוגל ישנים מהמסך כדי לא לשכפל
+    document.querySelectorAll('.gcal-event').forEach(el => el.remove());
+
     evs.forEach(ev => {
         let start = ev.start.dateTime || ev.start.date;
         if(!start) return;
@@ -319,7 +284,9 @@ function renderWkGridGCal(evs) {
         let cell = document.querySelector(`.cal-dropzone[data-date="${dateStr}"][data-time="${timeStr}"]`);
         if (cell) {
             const div = document.createElement('div');
-            div.className = 'cal-task gcal-event'; // מקבל עיצוב ירוק מ-CSS קיים
+            div.className = 'cal-task gcal-event';
+            // צבע ירוק ייחודי לפגישות גוגל
+            div.style.background = 'linear-gradient(to bottom, #059669, #047857)'; 
             div.innerHTML = `<div style="font-size:10px;font-weight:700">🗓️ ${displayTime}</div>
                              <div style="font-weight:600;font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ev.summary || 'ללא כותרת'}</div>`;
             div.title = "אירוע מ-Google Calendar: " + ev.summary;
@@ -328,22 +295,11 @@ function renderWkGridGCal(evs) {
     });
 }
 
-export function wkPrev()  { wkOffset--; buildCalendarGrid(); }
-export function wkNext()  { wkOffset++; buildCalendarGrid(); }
-export function wkToday() { wkOffset = 0; buildCalendarGrid(); }
+export function wkPrev()  { wkOffset--; buildCalendarGrid(); fetchWk(); }
+export function wkNext()  { wkOffset++; buildCalendarGrid(); fetchWk(); }
+export function wkToday() { wkOffset = 0; buildCalendarGrid(); fetchWk(); }
 
-export function gcalFault(id) {
-  const f = window.faults.find(x => x.id === id);
-  if (!f || !f.date) return;
-  const c  = window.custs.find(x => x.id === f.custId);
-  const st = f.date.replace(/-/g, '') + 'T' + (f.time || '09:00').replace(':', '') + '00';
-  const hr = f.time ? String(parseInt(f.time.split(':')[0]) + 1).padStart(2, '0') + f.time.split(':')[1] : '1000';
-  const en = f.date.replace(/-/g, '') + 'T' + hr + '00';
-  const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
-    + '&text=' + encodeURIComponent(({ fault: 'משימה', service: 'שירות', installation: 'התקנה', other: 'ביקור' }[f.type || 'fault'] || 'ביקור') + ': ' + (c ? c.name : 'לקוח'))
-    + '&dates=' + st + '/' + en
-    + '&details=' + encodeURIComponent((f.desc || '') + (c && c.phone ? '\nטלפון: ' + c.phone : '') + (c && c.address ? '\nכתובת: ' + c.address : ''))
-    + '&location=' + encodeURIComponent(c && c.address ? c.address : '')
-    + (window.cfg.gcal ? '&authuser=' + encodeURIComponent(window.cfg.gcal) : '');
-  window.open(url, '_blank');
-}
+// פונקציות ריקות כדי למנוע שגיאות בקבצים ישנים
+export function gcalSignIn() {}
+export function gcalSignOut() {}
+export function gcalFault(id) {}
