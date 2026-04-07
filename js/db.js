@@ -9,14 +9,7 @@ import { FIREBASE_CONFIG, USERS, VAPID_KEY } from './config.js';
 import { loader, hideLoader, toast } from './utils.js';
 import { gcalInit } from './gcal.js';
 
-import { renderDash }      from './dashboard.js';
-import { renderCusts }     from './customers.js';
-import { renderWarr }      from './warranties.js';
-import { renderDebts }     from './debts.js';
-import { renderFaults }    from './faults.js';
-import { renderNotes }     from './notes.js';
-import { renderArchive }   from './archive.js';
-import { renderLog }       from './log.js';
+// ❌ הורדתי מכאן את ה-imports ל-dashboard ול-faults כדי למנוע את הקריסה של הדפדפן ומסך הכניסה!
 
 export const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
@@ -137,7 +130,7 @@ export async function loadAll() {
   const timeout = setTimeout(() => {
     hideLoader();
     window.custs = []; window.faults = [];
-    renderDash();
+    if (window.renderDash) window.renderDash();
     setTimeout(gcalInit, 400);
     toast('עובד ללא חיבור לענן', 'warn');
   }, 7000);
@@ -172,7 +165,7 @@ export async function loadAll() {
     window.fcmTokens  = ts.docs.map(d => ({ id: d.id, ...d.data() }));
 
     hideLoader();
-    renderDash();
+    if (window.renderDash) window.renderDash();
     setTimeout(gcalInit, 400);
 
     // ── Listeners ──
@@ -180,30 +173,33 @@ export async function loadAll() {
       const del = window._deletingIds || new Set();
       window.custs = snap.docs.map(d => d.data()).filter(c => !del.has('customers:' + c.id));
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
-      if (on('customers')) renderCusts();
-      if (on('warranties')) renderWarr();
-      if (on('debts')) renderDebts();
-      renderDash();
+      if (on('customers') && window.renderCusts) window.renderCusts();
+      if (on('warranties') && window.renderWarr) window.renderWarr();
+      if (on('debts') && window.renderDebts) window.renderDebts();
+      if (window.renderDash) window.renderDash();
     });
 
     onSnapshot(collection(db, 'faults'), snap => {
       const del = window._deletingIds || new Set();
       window.faults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
-      if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
-      if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
-      renderDash();
+      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
+      if (on('faults') && window.renderFaults) window.renderFaults();
+      if (on('archive') && window.renderArchive) window.renderArchive();
+      if (window.renderDash) window.renderDash();
     });
 
     onSnapshot(collection(db, 'notes'), snap => {
       const del = window._deletingIds || new Set();
       window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
-      if (document.getElementById('pg-notes')?.classList.contains('on')) renderNotes();
-      renderDash();
+      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
+      if (on('notes') && window.renderNotes) window.renderNotes();
+      if (window.renderDash) window.renderDash();
     });
 
     onSnapshot(collection(db, 'log'), snap => {
       window.logEntries = snap.docs.map(d => d.data());
-      if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
+      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
+      if (on('log') && window.renderLog) window.renderLog();
     });
 
     // האזנה בזמן אמת לטוקנים
@@ -215,7 +211,7 @@ export async function loadAll() {
     clearTimeout(timeout);
     hideLoader();
     console.error('Firebase error:', e);
-    renderDash();
+    if (window.renderDash) window.renderDash();
     toast('עובד במצב לא מקוון', 'warn');
   }
 }
