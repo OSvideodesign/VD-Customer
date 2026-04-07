@@ -225,11 +225,14 @@ document.head.appendChild(_link);
     </div>
 
     <div class="tw" style="margin-top:16px;">
-      <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #111;">
+      <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #111; flex-wrap: wrap; gap: 10px;">
         <div style="font-size:16px; display:flex; align-items:center; gap:8px;">
           <span>📅</span> <span>יומן עבודה ושיבוץ משימות</span>
         </div>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+           <button class="btn bs btn-sm" id="gcal-login-btn" onclick="gcalSignIn()" style="border-color:#4285F4; color:#4285F4; display:none;">🔗 חבר גוגל יומן</button>
+           <button class="btn bs btn-sm" id="gcal-logout-btn" onclick="gcalSignOut()" style="border-color:#ef4444; color:#ef4444; display:none;">🔌 נתק גוגל יומן</button>
+           <span style="width:1px; height:16px; background:var(--brd); margin:0 4px;"></span>
            <button class="btn bs btn-sm" id="cal-btn-prev">&#8249; קודם</button>
            <button class="btn bs btn-sm" id="cal-btn-today">היום</button>
            <button class="btn bs btn-sm" id="cal-btn-next">הבא &#8250;</button>
