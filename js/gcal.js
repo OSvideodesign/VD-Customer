@@ -8,7 +8,6 @@ let gcalTok  = null;
 let wkOffset = 0;
 
 export function gcalInit() {
-  // חיבור כפתורי הניווט של היומן
   const btnPrev = document.getElementById('cal-btn-prev');
   const btnNext = document.getElementById('cal-btn-next');
   const btnToday = document.getElementById('cal-btn-today');
@@ -17,15 +16,13 @@ export function gcalInit() {
   if (btnNext) btnNext.onclick = wkNext;
   if (btnToday) btnToday.onclick = wkToday;
 
-  // בנה את התשתית של היומן הפנימי
   buildCalendarGrid();
 
-  // נסה לשחזר חיבור לגוגל יומן (אם חובר בעבר)
   const saved = localStorage.getItem('gcal_token');
   if (saved) {
     try { 
       gcalTok = JSON.parse(saved); 
-      fetchWk(); // מושך אירועים מגוגל ומצייר אותם
+      fetchWk(); 
     } catch (e) {}
   }
 }
@@ -43,6 +40,17 @@ function wkRange(off) {
   return { sun, sat };
 }
 
+// מחזיר צבע גרדיאנט לפי רמת דחיפות
+function getPriColor(pri) {
+    switch(pri) {
+        case 'low': return 'linear-gradient(to bottom, #10b981, #059669)'; // ירוק
+        case 'high': return 'linear-gradient(to bottom, #ef4444, #dc2626)'; // אדום
+        case 'urgent': return 'linear-gradient(to bottom, #b91c1c, #991b1b)'; // אדום כהה
+        case 'medium':
+        default: return 'linear-gradient(to bottom, #f59e0b, #d97706)'; // כתום
+    }
+}
+
 export function buildCalendarGrid() {
   const wrapper = document.getElementById('cal-grid-wrapper');
   if (!wrapper) return;
@@ -55,7 +63,6 @@ export function buildCalendarGrid() {
   }
 
   let html = '';
-  // שורת כותרות (ימים)
   html += '<div class="cal-header-cell" style="border-top:none;">שעה</div>';
   
   const days = [];
@@ -75,7 +82,6 @@ export function buildCalendarGrid() {
     html += `<div class="cal-header-cell" style="color:${color}; background:${bg};">יום ${dh[i]} <br><span style="font-size:18px">${d.getDate()}</span></div>`;
   }
 
-  // שורות שעות (08:00 עד 18:00)
   for (let h = 8; h <= 18; h++) {
     const timeStr = String(h).padStart(2, '0') + ':00';
     html += `<div class="cal-time-cell">${timeStr}</div>`;
@@ -94,20 +100,17 @@ export function buildCalendarGrid() {
 
   wrapper.innerHTML = html;
   
-  // רינדור המשימות לתוך הגריד והתפריט
   renderUnscheduledTasks();
   renderScheduledTasks();
   
-  if (gcalTok) fetchWk(); // אם מחובר לגוגל, תמשוך ותוסיף אירועים
+  if (gcalTok) fetchWk(); 
 }
 
-// שאיבת משימות שלא שובצו והצגתן בסרגל הצד
 export function renderUnscheduledTasks() {
     const list = document.getElementById('cal-unscheduled-list');
     if (!list) return;
     
     const faults = window.faults || [];
-    // מסנן: משימות פתוחות שאין להן תאריך, או סטטוס פתוח
     const unscheduled = faults.filter(f => f.status !== 'done' && (!f.date || f.status === 'open'));
     
     if (!unscheduled.length) {
@@ -120,37 +123,37 @@ export function renderUnscheduledTasks() {
         const name = cust ? cust.name : (f.guestName || 'לקוח מזדמן');
         const typeIcon = { fault: '🔧', service: '🛠️', installation: '📦', other: '📋' }[f.type || 'fault'] || '🔧';
         const city = cust && cust.city ? `📍 ${cust.city}` : '';
+        const amountHtml = (f.amount && Number(f.amount) > 0) ? `<span style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">💰 ${f.amount} ₪</span>` : '';
         
-        return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${f.id}')">
-            <div style="font-weight:700; margin-bottom:4px; font-size:13px;">${typeIcon} ${name}</div>
+        return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${f.id}')" style="background: ${getPriColor(f.pri)};">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+               <div style="font-weight:700; margin-bottom:4px; font-size:13px;">${typeIcon} ${name}</div>
+               ${amountHtml}
+            </div>
             <div style="font-size:11px; opacity:0.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.desc || 'ללא תיאור'}</div>
             <div style="font-size:10px; margin-top:4px; opacity:0.7;">${city}</div>
         </div>`;
     }).join('');
 }
 
-// ציור משימות מהמערכת שכבר שובצו לתאריך ושעה ביומן הפנימי
 export function renderScheduledTasks() {
    const faults = window.faults || [];
    const { sun, sat } = wkRange(wkOffset);
    const minD = sun.toISOString().split('T')[0];
    const maxD = sat.toISOString().split('T')[0];
 
-   // מסנן: משימות שלא סוימו, שיש להן תאריך, והן בתוך השבוע הנוכחי המוצג
    const scheduled = faults.filter(f => f.status !== 'done' && f.date && f.date >= minD && f.date <= maxD);
    
    scheduled.forEach(f => {
        let timeStr = f.time || '09:00';
        let hour = timeStr.split(':')[0];
        
-       // מעגל לשעות הפעילות של הגריד
        if (parseInt(hour) < 8) hour = '08';
        if (parseInt(hour) > 18) hour = '18';
        
        let targetTime = hour + ':00';
        let cell = document.querySelector(`.cal-dropzone[data-date="${f.date}"][data-time="${targetTime}"]`);
        
-       // אם במקרה לא נמצא תא, נסה לדחוף לשעה 8 בבוקר של אותו יום
        if (!cell) {
            cell = document.querySelector(`.cal-dropzone[data-date="${f.date}"][data-time="08:00"]`);
        }
@@ -158,24 +161,29 @@ export function renderScheduledTasks() {
        if (cell) {
            const cust = (window.custs || []).find(c => c.id === f.custId);
            const name = cust ? cust.name : (f.guestName || 'לקוח מזדמן');
+           const amountHtml = (f.amount && Number(f.amount) > 0) ? `<div style="font-size:10px; background:rgba(0,0,0,0.3); display:inline-block; padding:2px 6px; border-radius:4px; margin-top:4px; font-weight:700;">💰 ${f.amount} ₪</div>` : '';
+           
            const div = document.createElement('div');
            div.className = 'cal-task';
-           div.style.background = 'linear-gradient(to bottom, #f59e0b, #d97706)'; // כתום למשימות מערכת
-           div.style.cursor = 'pointer';
-           div.title = "לחץ לעריכת המשימה";
+           div.style.background = getPriColor(f.pri);
+           div.style.cursor = 'grab';
+           div.title = "לחץ לעריכה, או גרור לשינוי/ביטול";
            
-           // לחיצה על המשימה תפתח את מסך העריכה שלה
+           // הפיכת המשימה ביומן לגרירה (כדי להזיז שעות או לבטל)
+           div.draggable = true;
+           div.ondragstart = (e) => { e.dataTransfer.setData('text/plain', f.id); };
            div.onclick = () => { if(window.editFaultById) window.editFaultById(f.id); };
            
            div.innerHTML = `<div style="font-size:10px;font-weight:700">⏱️ ${timeStr}</div>
                             <div style="font-weight:600;font-size:12px;">${name}</div>
-                            <div style="font-size:10px; opacity:0.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.desc||''}</div>`;
+                            <div style="font-size:10px; opacity:0.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.desc||''}</div>
+                            ${amountHtml}`;
            cell.appendChild(div);
        }
    });
 }
 
-// פונקציה גלובלית שנקראת בעת עזיבת המשימה בגרירה (Drop)
+// גרירה לתוך היומן (שיבוץ או הזזה)
 window._dropTask = async function(e, cell) {
     e.preventDefault();
     cell.classList.remove('drag-over');
@@ -189,21 +197,41 @@ window._dropTask = async function(e, cell) {
     const fault = (window.faults || []).find(f => f.id === faultId);
     if (!fault) return;
 
-    // עדכון הנתונים של המשימה בהתאם למשבצת שבה היא נחתה
+    const isReschedule = fault.date ? true : false;
+
     fault.date = date;
     fault.time = time;
     fault.status = 'scheduled';
 
-    // שמירה ב-Firebase
     if (window._dbSaveFaults) {
         await window._dbSaveFaults([fault]);
-        try { addLog('fault', 'שיבוץ משימה', `משימה שובצה ל-${fmtD(date)} בשעה ${time}`); } catch(err){}
-        toast('המשימה שובצה בהצלחה! ✅', 'success');
-        
-        // ציור מחדש של הלוח כדי שהמשימה תעבור צד
+        try { addLog('fault', isReschedule ? 'עדכון שיבוץ' : 'שיבוץ משימה', `משימה שובצה ל-${fmtD(date)} בשעה ${time}`); } catch(err){}
+        toast(isReschedule ? 'השיבוץ עודכן בהצלחה! 🔄' : 'המשימה שובצה בהצלחה! ✅', 'success');
         buildCalendarGrid(); 
-        
-        // רענון הלוח הראשי למעלה
+        if(window.renderDash) window.renderDash();
+    }
+};
+
+// גרירה החוצה מהיומן חזרה לרשימה (ביטול שיבוץ)
+window._unScheduleTask = async function(e, listEl) {
+    e.preventDefault();
+    listEl.style.background = 'transparent';
+    
+    const faultId = e.dataTransfer.getData('text/plain');
+    if (!faultId) return;
+
+    const fault = (window.faults || []).find(f => f.id === faultId);
+    if (!fault || !fault.date) return; // לא עושים כלום אם היא כבר פתוחה
+
+    fault.date = '';
+    fault.time = '';
+    fault.status = 'open';
+
+    if (window._dbSaveFaults) {
+        await window._dbSaveFaults([fault]);
+        try { addLog('fault', 'ביטול שיבוץ', `בוטל שיבוץ למשימה`); } catch(err){}
+        toast('השיבוץ בוטל - המשימה הוחזרה לרשימה 📥', 'info');
+        buildCalendarGrid(); 
         if(window.renderDash) window.renderDash();
     }
 };
@@ -228,7 +256,7 @@ export function gcalSignOut() {
   if (gcalTok && typeof google !== 'undefined') google.accounts.oauth2.revoke(gcalTok.access_token, () => {});
   gcalTok = null;
   localStorage.removeItem('gcal_token');
-  buildCalendarGrid(); // מנקה את האירועים של גוגל מהמסך ומשאיר רק את של המערכת
+  buildCalendarGrid(); 
   toast('נותקת מיומן גוגל', 'info');
 }
 
