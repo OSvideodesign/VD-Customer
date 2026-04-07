@@ -1,7 +1,7 @@
 // ══ db.js — Firebase init, data loading, real-time listeners, _db* helpers ══
 
 import { initializeApp }         from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, query, orderBy, limit }
+import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot }
   from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
 
 import { FIREBASE_CONFIG, USERS } from './config.js';
@@ -120,8 +120,7 @@ export async function loadAll() {
       getDocs(collection(db, 'faults')),
       getDocs(collection(db, 'notes')),
       getDocs(collection(db, 'whatsapp')),
-      // שונה! מושך רק את 50 הלוגים האחרונים לייעול
-      getDocs(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50))),
+      getDocs(collection(db, 'log')),
       getDocs(collection(db, 'settings')),
     ]);
     clearTimeout(timeout);
@@ -146,6 +145,22 @@ export async function loadAll() {
 
     hideLoader();
 
+    // ── data-integrity patches ──
+    setTimeout(() => {
+      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
+      if (warNeedsFix.length > 0) {
+        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
+        window._dbSaveCusts(window.custs).catch(() => {});
+      }
+      cs.docs.forEach(d => {
+        const raw = d.data().debt;
+        if (typeof raw === 'string' && raw !== '' && raw !== '0') {
+          const val = Math.max(0, Number(raw) || 0);
+          setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
+        }
+      });
+    }, 5000); 
+
     renderDash();
     setTimeout(gcalInit, 400);
 
@@ -167,9 +182,11 @@ export async function loadAll() {
       const del = window._deletingIds || new Set();
       const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
       
+      // מזהה אם נוספה משימה חדשה על ידי משתמש אחר
       if (!_firstLoadFaults && window.faults) {
         const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
         newFaults.forEach(nf => {
+          // בודק שהמשימה לא נוצרה על ידי מי שמחובר עכשיו לטלפון (כדי למנוע התראה כפולה למי שייצר אותה)
           if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
             _triggerRemoteNotification(nf);
           }
@@ -177,7 +194,7 @@ export async function loadAll() {
       }
 
       window.faults = currentFaults;
-      _firstLoadFaults = false; 
+      _firstLoadFaults = false; // מכבה את הדגל אחרי הטעינה הראשונה כדי שההתראות יעבדו מעכשיו
 
       if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
       if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
@@ -202,8 +219,7 @@ export async function loadAll() {
       renderDash();
     });
 
-    // שונה! מאזין רק ל-50 לוגים אחרונים בזמן אמת
-    onSnapshot(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50)), snap => {
+    onSnapshot(collection(db, 'log'), snap => {
       window.logEntries = snap.docs.map(d => d.data());
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
     });
