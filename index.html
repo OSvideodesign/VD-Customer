@@ -62,9 +62,9 @@ document.head.appendChild(_link);
 <div id="mnav">
   <div class="mns">
     <button class="mnb" onclick="nav('dashboard')"><span style="font-size:20px">📊</span>לוח בקרה</button>
+    <button class="mnb" onclick="nav('calendar')"><span style="font-size:20px">📅</span>יומן</button>
     <button class="mnb" onclick="nav('customers')"><span style="font-size:20px">👥</span>לקוחות</button>
     <button class="mnb" onclick="nav('faults')"><span style="font-size:20px">🔧</span>משימות</button>
-    <button class="mnb" onclick="nav('notes')"><span style="font-size:20px">📝</span>הערות</button>
     <button class="mnb" onclick="openDrawer()"><span style="font-size:20px">☰</span>עוד</button>
   </div>
 </div>
@@ -81,6 +81,7 @@ document.head.appendChild(_link);
 
     <div class="m-drawer-sec">ניהול</div>
     <button class="m-drawer-btn" onclick="navD('dashboard')">📊 לוח בקרה</button>
+    <button class="m-drawer-btn" onclick="navD('calendar')">📅 יומן עבודה</button>
     <button class="m-drawer-btn" onclick="navD('customers')">👥 לקוחות</button>
     <button class="m-drawer-btn" onclick="navD('faults')">🔧 משימות</button>
     <button class="m-drawer-btn" onclick="navD('archive')">✅ ארכיון</button>
@@ -132,6 +133,7 @@ document.head.appendChild(_link);
     </div>
     <div class="nav-sec">ניהול</div>
     <button class="nav-btn on" id="nb-dashboard"  onclick="nav('dashboard')">📊 לוח בקרה</button>
+    <button class="nav-btn"    id="nb-calendar"   onclick="nav('calendar')">📅 יומן עבודה</button>
     <button class="nav-btn"    id="nb-customers"  onclick="nav('customers')">👥 לקוחות</button>
     <button class="nav-btn"    id="nb-faults"     onclick="nav('faults')">🔧 משימות</button>
     <button class="nav-btn"    id="nb-archive"    onclick="nav('archive')">✅ ארכיון</button>
@@ -221,26 +223,37 @@ document.head.appendChild(_link);
         <div class="panel-body" id="pan-notes-reminder"></div>
       </div>
     </div>
-    <div class="tw" style="margin-top:16px">
-      <div class="gcal-header">
-        <div class="gcal-title">📅 יומן שבועי — Google Calendar</div>
-        <div class="gcal-nav">
-          <button class="btn bs btn-sm" onclick="wkPrev()">&#8249; קודם</button>
-          <button class="btn bs btn-sm" onclick="wkToday()">היום</button>
-          <button class="btn bs btn-sm" onclick="wkNext()">הבא &#8250;</button>
-          <span id="wk-label"></span>
+  </div>
+
+  <div class="pg" id="pg-calendar">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">📅</div>
+        <div><div class="pt">יומן עבודה</div><div class="ps">ניהול לו"ז ומשימות</div></div>
+      </div>
+      <div style="display:flex; gap:8px;">
+         <button class="btn bs btn-sm" id="cal-btn-prev">&#8249; קודם</button>
+         <button class="btn bs btn-sm" id="cal-btn-today">היום</button>
+         <button class="btn bs btn-sm" id="cal-btn-next">הבא &#8250;</button>
+      </div>
+    </div>
+    
+    <div class="cal-layout">
+      <div class="tw cal-sidebar">
+        <div class="panel-title" style="border-bottom: 2px solid var(--ora)">🔧 משימות לשיבוץ</div>
+        <div class="panel-body" id="cal-unscheduled-list" style="padding:10px; display:flex; flex-direction:column; gap:8px; min-height:300px;">
+           <div style="text-align:center; color:var(--tx3); font-size:13px; margin-top:30px;">טוען משימות...</div>
         </div>
       </div>
-      <div id="gcal-signin">
-        <div class="gcal-signin-text">התחבר עם Google כדי לראות את היומן</div>
-        <button onclick="gcalSignIn()" class="gcal-signin-btn">
-          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.2l6.6-6.6C35.4 2.4 30.1 0 24 0 14.8 0 6.9 5.4 3 13.3l7.7 6C12.5 13.2 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-16.9z"/><path fill="#FBBC05" d="M10.7 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7L2.6 13.3A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.6 10.6l8.1-5.9z"/><path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.4l-7.4-5.7c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.3-9.8l-7.7 6C6.9 42.6 14.8 48 24 48z"/></svg>
-          כניסה עם Google
-        </button>
-      </div>
-      <div id="gcal-grid"></div>
-      <div id="gcal-out">
-        <button onclick="gcalSignOut()" class="gcal-signout-btn">התנתק מ-Google</button>
+      
+      <div class="tw cal-main">
+        <div class="panel-title" id="cal-date-range" style="text-align:center; font-size:16px;">
+          טוען יומן...
+        </div>
+        <div class="cal-grid-container">
+          <div class="cal-grid" id="cal-grid-wrapper">
+             </div>
+        </div>
       </div>
     </div>
   </div>
