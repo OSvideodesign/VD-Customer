@@ -40,10 +40,11 @@ export async function downloadLogCSV() {
   try {
       toast('מכין קובץ, אנא המתן...', 'info');
       
-      const { collection, getDocs, orderBy, query } = await import('https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js');
+      const { collection, getDocs, orderBy, query, limit } = await import('https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js');
       const { db } = await import('./db.js');
       
-      const q = query(collection(db, 'log'), orderBy('ts', 'desc'));
+      // הגבלה ל-100 שורות אחרונות כפי שביקשת
+      const q = query(collection(db, 'log'), orderBy('ts', 'desc'), limit(100));
       const snap = await getDocs(q);
       
       if (snap.empty) {
@@ -74,7 +75,7 @@ export async function downloadLogCSV() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast('קובץ לוג ירד בהצלחה 📥');
+      toast('קובץ לוג (100 שורות אחרונות) ירד בהצלחה 📥');
   } catch (err) {
       console.error(err);
       toast('שגיאה בייצוא הלוג', 'err');
