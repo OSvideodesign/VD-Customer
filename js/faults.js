@@ -6,6 +6,7 @@ import { openM, closeM } from './nav.js';
 import { addLog } from './log.js';
 import { renderDash } from './dashboard.js';
 import { renderArchive } from './archive.js';
+import { buildCalendarGrid } from './gcal.js'; // הוספנו ייבוא כדי לרענן את היומן מיד לאחר עריכה
 
 let _eFault      = null;
 let _selectMode  = false;
@@ -77,6 +78,7 @@ export function openNewFault(preCustId) {
   document.getElementById('mf-type').value    = 'fault';
   document.getElementById('mf-desc').value    = '';
   document.getElementById('mf-pri').value     = 'medium';
+  document.getElementById('mf-color').value   = ''; // ניקוי שדה הצבע הידני
   document.getElementById('mf-status').value  = 'open';
   document.getElementById('mf-date').value    = '';
   document.getElementById('mf-time').value    = '';
@@ -100,6 +102,7 @@ export function editFaultById(id) {
   document.getElementById('mf-type').value    = f.type     || 'fault';
   document.getElementById('mf-desc').value    = f.desc     || '';
   document.getElementById('mf-pri').value     = f.priority || 'medium';
+  document.getElementById('mf-color').value   = f.color    || ''; // טעינת צבע ידני אם קיים
   document.getElementById('mf-status').value  = f.status   || 'open';
   document.getElementById('mf-date').value    = f.date     || '';
   document.getElementById('mf-time').value    = f.time     || '';
@@ -148,6 +151,7 @@ export function saveFault() {
     desc,
     type:        document.getElementById('mf-type').value,
     priority:    document.getElementById('mf-pri').value,
+    color:       document.getElementById('mf-color').value, // שמירת הצבע המותאם אישית
     status:      document.getElementById('mf-status').value,
     date:        document.getElementById('mf-date').value,
     time:        document.getElementById('mf-time').value,
@@ -171,14 +175,15 @@ export function saveFault() {
   closeM('M-fault');
   if (f.status === 'done') {
     renderFaults(); renderArchive(); renderDash();
+    buildCalendarGrid(); // רענון היומן במקרה שמשימה נסגרה משם
     toast('משימה הועברה לארכיון ✅');
   } else {
     renderFaults(); renderDash();
+    buildCalendarGrid(); // חובה לרענן את היומן אם משימה שונתה
     toast(_eFault ? 'משימה עודכנה ✅' : 'משימה נוספה ✅');
     if (!_eFault) _sendFaultNotification(f);
-    if (f.date && f.status === 'scheduled') {
-      setTimeout(() => { if (confirm('לפתוח Google Calendar?')) window._gcalFault(f.id); }, 400);
-    }
+    
+    // בוטל הפופאפ המציק של פתיחת יומן גוגל בטאב חדש מכיוון שיש לנו יומן פנימי עכשיו
   }
 }
 
@@ -196,7 +201,7 @@ export async function delFault() {
   }
   window.faults = window.faults.filter(x => x.id !== id);
   addLog('fault', 'מחיקת משימה', fName + ' — ' + (faultToDelete?.desc || '').slice(0, 40));
-  renderFaults(); renderDash();
+  renderFaults(); renderDash(); buildCalendarGrid();
   toast('משימה נמחקה ✅');
 }
 
@@ -239,12 +244,11 @@ export async function deleteSelected() {
   window.faults = window.faults.filter(f => !ids.includes(f.id));
   addLog('fault', 'מחיקה קבוצתית', ids.length + ' משימות נמחקו');
   toggleSelectMode(false);
-  renderFaults(); renderDash();
+  renderFaults(); renderDash(); buildCalendarGrid();
   toast(ids.length + ' משימות נמחקו ✅');
 }
 
 // ── notifications ──────────────────────────────────────────────────────────
-// כאן נעשה השינוי החשוב: התראות נשלחות דרך ה-Service Worker שמאושר ע"י אפל וגוגל למובייל
 function _sendFaultNotification(f) {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
   const c    = f.custId ? window.custs.find(x => x.id === f.custId) : null;
