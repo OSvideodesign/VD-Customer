@@ -91,7 +91,6 @@ document.head.appendChild(_link);
     <button class="m-drawer-btn" id="m-drawer-reports" onclick="navD('reports')">📈 דוחות</button>
     <div class="m-drawer-sec">מערכת</div>
     <button class="m-drawer-btn" onclick="navD('settings')">⚙️ הגדרות</button>
-    <button class="m-drawer-btn" id="m-drawer-log" style="display:none" onclick="navD('log')">📋 לוג שינויים</button>
     <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer()">🔍 חיפוש גלובלי</button>
     <button class="m-drawer-btn m-drawer-logout" onclick="logout()">🚪 התנתק</button>
     
@@ -143,7 +142,6 @@ document.head.appendChild(_link);
     <button class="nav-btn"    id="nb-reports"    onclick="nav('reports')">📈 דוחות</button>
     <div class="nav-sec">מערכת</div>
     <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
-    <button class="nav-btn"    id="nb-log"        onclick="nav('log')" style="display:none">📋 לוג שינויים</button>
     <button class="nav-btn nav-btn-logout"         onclick="logout()">🚪 התנתק</button>
     
     <div style="text-align:center; margin-top:20px; padding-bottom: 20px;">
@@ -347,30 +345,6 @@ document.head.appendChild(_link);
     <div id="list-archive" class="fg-grid"></div>
   </div>
   
-  <div class="pg" id="pg-log">
-    <div class="ph">
-      <div style="display:flex; align-items:center; gap:14px;">
-        <div style="font-size:32px; line-height:1;">📋</div>
-        <div><div class="pt">לוג שינויים</div><div class="ps" id="cnt-log"></div></div>
-      </div>
-      <button class="btn bd btn-sm" onclick="if(confirm('למחוק את כל הלוג?'))clearLog()">🗑️ נקה לוג</button>
-    </div>
-    <div class="toolbar">
-      <div class="sw"><input type="text" id="q-log" placeholder="חפש..." oninput="renderLog()"><span class="si">🔍</span></div>
-      <select class="fsel" id="f-log-user" onchange="renderLog()">
-        <option value="">כל המשתמשים</option>
-      </select>
-      <select class="fsel" id="f-log-type" onchange="renderLog()">
-        <option value="">כל הפעולות</option>
-        <option value="customer">לקוח</option><option value="fault">משימה</option><option value="note">הערה</option>
-      </select>
-    </div>
-    <div class="tw"><div class="tscroll"><table>
-      <thead><tr><th>תאריך ושעה</th><th>משתמש</th><th>פעולה</th><th>פרטים</th></tr></thead>
-      <tbody id="tb-log"></tbody>
-    </table></div></div>
-  </div>
-  
   <div class="pg" id="pg-reports">
     <div class="ph">
       <div style="display:flex; align-items:center; gap:14px;">
@@ -416,6 +390,10 @@ document.head.appendChild(_link);
         
         <div class="stit" style="margin-top:30px">🔔 התראות</div>
         <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
+        
+        <div class="stit" style="margin-top:30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top:12px;">📋 לוג מערכת</div>
+        <button class="btn bs" style="width:100%; margin-bottom:10px" onclick="downloadLogCSV()">📥 ייצוא לוג שינויים (CSV)</button>
+        <button class="btn bd" style="width:100%" onclick="if(confirm('למחוק את כל הלוג? פעולה זו אינה הפיכה!')) clearLog()">🗑️ נקה לוג מערכת</button>
       </div>
 
       <div class="tw settings-panel" id="s-users-panel" style="display:none;">
