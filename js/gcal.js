@@ -17,14 +17,26 @@ export function gcalInit() {
   if (btnToday) btnToday.onclick = wkToday;
 
   buildCalendarGrid();
+  updateGcalBtns();
 
   const saved = localStorage.getItem('gcal_token');
   if (saved) {
     try { 
       gcalTok = JSON.parse(saved); 
+      updateGcalBtns();
       fetchWk(); 
     } catch (e) {}
   }
+}
+
+// מעדכן את תצוגת הכפתורים של גוגל ביומן
+function updateGcalBtns() {
+    const loginBtn = document.getElementById('gcal-login-btn');
+    const logoutBtn = document.getElementById('gcal-logout-btn');
+    if (loginBtn && logoutBtn) {
+        loginBtn.style.display = gcalTok ? 'none' : 'inline-flex';
+        logoutBtn.style.display = gcalTok ? 'inline-flex' : 'none';
+    }
 }
 
 function wkRange(off) {
@@ -42,7 +54,6 @@ function wkRange(off) {
 
 // מחזיר צבע למשימה ביומן (לפי צבע ידני או לפי דחיפות)
 function getTaskColor(f) {
-    // אם נבחר צבע ידני בהגדרות המשימה
     if (f.color === 'blue') return 'linear-gradient(to bottom, #3b82f6, #1d4ed8)';
     if (f.color === 'green') return 'linear-gradient(to bottom, #10b981, #059669)';
     if (f.color === 'orange') return 'linear-gradient(to bottom, #f59e0b, #d97706)';
@@ -51,13 +62,12 @@ function getTaskColor(f) {
     if (f.color === 'pink') return 'linear-gradient(to bottom, #ec4899, #be185d)';
     if (f.color === 'black') return 'linear-gradient(to bottom, #374151, #111827)';
     
-    // אם אין צבע ידני, השתמש בדחיפות כברירת מחדל
     switch(f.priority) {
-        case 'low': return 'linear-gradient(to bottom, #10b981, #059669)'; // ירוק
-        case 'high': return 'linear-gradient(to bottom, #ef4444, #dc2626)'; // אדום
-        case 'urgent': return 'linear-gradient(to bottom, #b91c1c, #991b1b)'; // אדום כהה
+        case 'low': return 'linear-gradient(to bottom, #10b981, #059669)'; 
+        case 'high': return 'linear-gradient(to bottom, #ef4444, #dc2626)'; 
+        case 'urgent': return 'linear-gradient(to bottom, #b91c1c, #991b1b)'; 
         case 'medium':
-        default: return 'linear-gradient(to bottom, #f59e0b, #d97706)'; // כתום
+        default: return 'linear-gradient(to bottom, #f59e0b, #d97706)'; 
     }
 }
 
@@ -135,7 +145,6 @@ export function renderUnscheduledTasks() {
         const city = cust && cust.city ? `📍 ${cust.city}` : '';
         const amountHtml = (f.amount && Number(f.amount) > 0) ? `<span style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">💰 ${f.amount} ₪</span>` : '';
         
-        // כאן ברשימה ההמתנה - תמיד כחול
         return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${f.id}')" style="background: linear-gradient(to bottom, #3b82f6, #1d4ed8);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                <div style="font-weight:700; margin-bottom:4px; font-size:13px;">${typeIcon} ${name}</div>
@@ -176,7 +185,7 @@ export function renderScheduledTasks() {
            
            const div = document.createElement('div');
            div.className = 'cal-task';
-           div.style.background = getTaskColor(f); // שימוש בפונקציית הצבע החדשה
+           div.style.background = getTaskColor(f);
            div.style.cursor = 'grab';
            div.title = "לחץ לעריכה, או גרור לשינוי/ביטול";
            
@@ -255,6 +264,7 @@ export function gcalSignIn() {
       if (r.error) return;
       gcalTok = r;
       localStorage.setItem('gcal_token', JSON.stringify(r));
+      updateGcalBtns();
       fetchWk();
     },
   }).requestAccessToken();
@@ -264,6 +274,7 @@ export function gcalSignOut() {
   if (gcalTok && typeof google !== 'undefined') google.accounts.oauth2.revoke(gcalTok.access_token, () => {});
   gcalTok = null;
   localStorage.removeItem('gcal_token');
+  updateGcalBtns();
   buildCalendarGrid(); 
   toast('נותקת מיומן גוגל', 'info');
 }
@@ -308,10 +319,10 @@ function renderWkGridGCal(evs) {
         let cell = document.querySelector(`.cal-dropzone[data-date="${dateStr}"][data-time="${timeStr}"]`);
         if (cell) {
             const div = document.createElement('div');
-            div.className = 'cal-task gcal-event';
+            div.className = 'cal-task gcal-event'; // מקבל עיצוב ירוק מ-CSS קיים
             div.innerHTML = `<div style="font-size:10px;font-weight:700">🗓️ ${displayTime}</div>
                              <div style="font-weight:600;font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ev.summary || 'ללא כותרת'}</div>`;
-            div.title = ev.summary;
+            div.title = "אירוע מ-Google Calendar: " + ev.summary;
             cell.appendChild(div);
         }
     });
