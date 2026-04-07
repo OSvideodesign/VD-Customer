@@ -21,8 +21,7 @@ function toggleAppView(show) {
     const s = sessionStorage.getItem('crm_user');
     if (s) {
       const u = JSON.parse(s);
-      // תוקן התנאי כדי לאפשר גם למשתמשים ללא סיסמה להתחבר בצורה תקינה
-      if (!u || !u.name) sessionStorage.removeItem('crm_user');
+      if (!u || !u.name || u.pass === undefined) sessionStorage.removeItem('crm_user');
     }
   } catch (e) { sessionStorage.removeItem('crm_user'); }
 })();
@@ -46,10 +45,7 @@ export function initLogin() {
   if (saved) {
     try {
       const u = JSON.parse(saved);
-      const found = USERS.find(x => x.name === u.name);
-      
-      // אימות: אם המשתמש קיים והסיסמה זהה (או שלשניהם אין סיסמה)
-      if (found && ((found.pass === u.pass) || (!found.pass && !u.pass))) {
+      if (u && u.name && u.pass !== undefined && USERS.find(x => x.name === u.name && x.pass === u.pass)) {
         applyUser(u);
         return;
       } else {
