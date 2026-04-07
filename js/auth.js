@@ -21,8 +21,7 @@ function toggleAppView(show) {
     const s = sessionStorage.getItem('crm_user');
     if (s) {
       const u = JSON.parse(s);
-      // תוקן התנאי כדי לאפשר גם למשתמשים ללא סיסמה להתחבר בצורה תקינה
-      if (!u || !u.name) sessionStorage.removeItem('crm_user');
+      if (!u || !u.name || u.pass === undefined) sessionStorage.removeItem('crm_user');
     }
   } catch (e) { sessionStorage.removeItem('crm_user'); }
 })();
@@ -46,10 +45,7 @@ export function initLogin() {
   if (saved) {
     try {
       const u = JSON.parse(saved);
-      const found = USERS.find(x => x.name === u.name);
-      
-      // אימות: אם המשתמש קיים והסיסמה זהה (או שלשניהם אין סיסמה)
-      if (found && ((found.pass === u.pass) || (!found.pass && !u.pass))) {
+      if (u && u.name && u.pass !== undefined && USERS.find(x => x.name === u.name && x.pass === u.pass)) {
         applyUser(u);
         return;
       } else {
@@ -60,7 +56,6 @@ export function initLogin() {
 
   const btns = document.getElementById('user-btns');
   btns.innerHTML = USERS.map(u => {
-    // הוספת 40 להקסאדצימלי של הצבע יוצרת שקיפות של בערך 25% עבור ההילה
     const glowColor = u.color + '40';
     return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
        <div class="login-user-icon">${u.name[0]}</div>
@@ -120,10 +115,16 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  // הזרקת שם המשתמש לפאנל החדש שבתחתית התפריט
+  // הזרקת שם המשתמש לפאנל החדש שבתחתית התפריט מחשב
   const badgeDisplay = document.getElementById('user-badge-display');
   if (badgeDisplay) {
     badgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:16px;">👤</span> מחובר כ: ${u.name}`;
+  }
+
+  // הזרקת שם המשתמש גם לתפריט המובייל (מגירה)
+  const mBadgeDisplay = document.getElementById('m-user-badge-display');
+  if (mBadgeDisplay) {
+    mBadgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:15px; margin-left:6px;">👤</span> שלום, <strong style="color:${u.color}">${u.name}</strong>`;
   }
 
   const perms = getPerms(u);
