@@ -238,9 +238,12 @@ document.head.appendChild(_link);
       
       <div style="padding:16px;">
         <div class="cal-layout" style="margin-top:0;">
-          <div class="tw cal-sidebar" style="border: 1px solid var(--brd);">
-            <div class="panel-title" style="border-bottom: 2px solid var(--ora)">🔧 משימות לשיבוץ</div>
-            <div id="cal-unscheduled-list" style="padding:10px; display:flex; flex-direction:column; gap:8px; min-height:300px; max-height:500px; overflow-y:auto;">
+          <div class="tw cal-sidebar" style="border: 1px solid var(--brd); display:flex; flex-direction:column; max-height:80vh;">
+            <div class="panel-title" style="border-bottom: 2px solid var(--ora); flex-shrink:0;">🔧 משימות לשיבוץ</div>
+            <div id="cal-unscheduled-list" style="padding:10px; display:flex; flex-direction:column; gap:8px; flex:1; min-height:400px; overflow-y:auto; transition:background 0.2s;"
+                 ondragover="event.preventDefault(); this.style.background='rgba(59, 130, 246, 0.1)';"
+                 ondragleave="this.style.background='transparent';"
+                 ondrop="this.style.background='transparent'; window._unScheduleTask(event, this)">
                <div style="text-align:center; color:var(--tx3); font-size:13px; margin-top:30px;">טוען משימות...</div>
             </div>
           </div>
