@@ -1,29 +1,60 @@
-// ══ db.js — Firebase init, data loading, real-time listeners, _db* helpers ══
+// ══ db.js — Firebase init, data loading, real-time listeners ══
 
 import { initializeApp }         from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot }
   from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
+import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js';
 
-import { FIREBASE_CONFIG, USERS } from './config.js';
+import { FIREBASE_CONFIG, USERS, VAPID_KEY } from './config.js';
 import { loader, hideLoader, toast } from './utils.js';
 import { gcalInit } from './gcal.js';
 
-import { renderDash }      from './dashboard.js';
-import { renderCusts }     from './customers.js';
-import { renderWarr }      from './warranties.js';
-import { renderDebts }     from './debts.js';
-import { renderFaults }    from './faults.js';
-import { renderNotes }     from './notes.js';
-import { renderArchive }   from './archive.js';
-import { renderLog }       from './log.js';
-
-const app = initializeApp(FIREBASE_CONFIG);
+// ייצוא ה-app וה-db לשימוש שאר הקבצים
+export const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
 
-// משתנה שמונע הקפצת התראות על כל המשימות בפעם הראשונה שהאפליקציה עולה
-let _firstLoadFaults = true;
+// ── לוגיקת TOKEN (מופעל מהגדרות) ──
+window._handlePushPermission = async () => {
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) { 
+        toast('הדפדפן לא תומך בהתראות', 'err'); 
+        return; 
+    }
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+        try {
+            const messaging = getMessaging(app);
+            const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+            if (token) {
+                const area = document.getElementById('token-display-area');
+                const inp = document.getElementById('device-token');
+                if (area && inp) { area.style.display = 'block'; inp.value = token; }
+                
+                if (window._currentUser) {
+                    await setDoc(doc(db, 'fcm_tokens', window._currentUser), {
+                        token: token,
+                        updated: new Date().toISOString(),
+                        platform: navigator.platform
+                    });
+                }
+                toast('התראות הופעלו בהצלחה! ✅');
+            }
+        } catch (err) { console.error('FCM Error:', err); toast('שגיאה בהנפקת Token', 'err'); }
+    } else {
+        toast('התראות נחסמו ע"י המערכת', 'err');
+    }
+};
 
-// ── _db* helpers exposed on window ────────────────────────────────────────
+// ── _db* helpers ─────────────────────────────────────────────────────────
+
+window._dbSaveToken = async (user, token) => {
+  if (!user || !token) return;
+  try {
+    await setDoc(doc(db, 'fcm_tokens', user), {
+      token: token,
+      updated: new Date().toISOString()
+    });
+  } catch (e) { console.error(e); }
+};
 
 window._dbSaveCusts = async (items) => {
   try {
@@ -45,13 +76,7 @@ window._dbSaveNotes = async (items) => {
 window._dbLogAdd = async (entry) => {
   try { await setDoc(doc(db, 'log', entry.id), entry); }
   catch (e) { console.error('logAdd:', e); }
-};
-
-window._dbSaveCfg = async (cfg) => {
-  try { await setDoc(doc(db, 'settings', 'main'), cfg); }
-  catch (e) { console.error('saveCfg:', e); }
-  localStorage.setItem('crm_cfg', JSON.stringify(cfg));
-};
+}
 
 window._dbDel = async (col, id) => {
   try {
@@ -59,185 +84,61 @@ window._dbDel = async (col, id) => {
     window._deletingIds.add(col + ':' + id);
     await deleteDoc(doc(db, col, id));
     return true;
-  } catch (e) {
-    console.error('Delete error:', e);
-    window._deletingIds && window._deletingIds.delete(col + ':' + id);
-    return false;
-  }
+  } catch (e) { return false; }
 };
-
-window._dbDelMulti = async (col, ids) => {
-  try {
-    window._deletingIds = window._deletingIds || new Set();
-    ids.forEach(id => window._deletingIds.add(col + ':' + id));
-    await Promise.all(ids.map(id => deleteDoc(doc(db, col, id))));
-    return true;
-  } catch (e) {
-    console.error('DeleteMulti error:', e);
-    ids.forEach(id => window._deletingIds && window._deletingIds.delete(col + ':' + id));
-    return false;
-  }
-};
-
-// ── פונקציה להקפצת התראה ממכשיר אחר (בזמן אמת) ──
-function _triggerRemoteNotification(f) {
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
-  if (Notification.permission === 'granted') {
-    const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-    const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-    const body = `נוסף ע"י ${f.updatedBy || 'מערכת'}: ${name} — ${(f.desc || '').slice(0, 50)}`;
-
-    navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification('🔧 משימה חדשה!', {
-        body: body,
-        icon: 'app-icon-192.jpg',
-        badge: 'app-icon-192.jpg',
-        vibrate: [200, 100, 200, 100, 200],
-        dir: 'rtl',
-        lang: 'he',
-        tag: 'remote-fault-' + f.id
-      });
-    });
-  }
-}
 
 // ── loadAll — initial bulk load + start listeners ─────────────────────────
 export async function loadAll() {
   loader('מתחבר לענן...');
-
-  const timeout = setTimeout(() => {
-    hideLoader();
-    window.custs = [];
-    window.faults = [];
-    renderDash();
-    setTimeout(gcalInit, 400);
-    toast('עובד ללא חיבור לענן', 'warn');
-  }, 7000);
-
   try {
-    const [cs, fs, ns, ws, ls, ss] = await Promise.all([
+    const [cs, fs, ns, ws, ls, ss, ts] = await Promise.all([
       getDocs(collection(db, 'customers')),
       getDocs(collection(db, 'faults')),
       getDocs(collection(db, 'notes')),
       getDocs(collection(db, 'whatsapp')),
       getDocs(collection(db, 'log')),
       getDocs(collection(db, 'settings')),
+      getDocs(collection(db, 'fcm_tokens')).catch(() => ({ docs: [] })) // טעינת הטוקנים של כל המשתמשים לאדמין
     ]);
-    clearTimeout(timeout);
-
-    // settings / users
-    const cfgDoc = ss.docs.find(d => d.id === 'main');
-    if (cfgDoc) {
-      Object.assign(window.cfg, cfgDoc.data());
-      localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
-      if (window.cfg.users && window.cfg.users.length) {
-        USERS.length = 0;
-        window.cfg.users.forEach(u => USERS.push(u));
-      }
-    }
-
-    // populate global state
-    window.custs      = cs.docs.map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; });
+    
+    window.custs      = cs.docs.map(d => ({ ...d.data(), debt: Math.max(0, Number(d.data().debt) || 0) }));
     window.faults     = fs.docs.map(d => d.data());
     window.notes      = ns.docs.map(d => d.data());
     window.waMessages = ws.docs.map(d => d.data());
     window.logEntries = ls.docs.map(d => d.data());
+    window.fcmTokens  = ts.docs.map(d => ({ id: d.id, ...d.data() }));
 
     hideLoader();
-
-    // ── data-integrity patches ──
-    setTimeout(() => {
-      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
-      if (warNeedsFix.length > 0) {
-        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
-        window._dbSaveCusts(window.custs).catch(() => {});
-      }
-      cs.docs.forEach(d => {
-        const raw = d.data().debt;
-        if (typeof raw === 'string' && raw !== '' && raw !== '0') {
-          const val = Math.max(0, Number(raw) || 0);
-          setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
-        }
-      });
-    }, 5000); 
-
-    renderDash();
+    if (window.renderDash) window.renderDash();
     setTimeout(gcalInit, 400);
 
-    // ── real-time listeners ─────────────────────────────────────────────
-    
+    // מאזינים בזמן אמת - קוראים לפונקציות דרך window כדי למנוע לולאת Import
     onSnapshot(collection(db, 'customers'), snap => {
-      const del = window._deletingIds || new Set();
-      window.custs = snap.docs
-        .map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; })
-        .filter(c => !del.has('customers:' + c.id));
-      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
-      if (on('customers'))  renderCusts();
-      if (on('warranties')) renderWarr();
-      if (on('debts'))      renderDebts();
-      renderDash();
+      window.custs = snap.docs.map(d => d.data());
+      if (window.renderCusts) window.renderCusts();
+      if (window.renderDash) window.renderDash();
     });
 
     onSnapshot(collection(db, 'faults'), snap => {
-      const del = window._deletingIds || new Set();
-      const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
-      
-      // מזהה אם נוספה משימה חדשה על ידי משתמש אחר
-      if (!_firstLoadFaults && window.faults) {
-        const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
-        newFaults.forEach(nf => {
-          // בודק שהמשימה לא נוצרה על ידי מי שמחובר עכשיו לטלפון (כדי למנוע התראה כפולה למי שייצר אותה)
-          if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
-            _triggerRemoteNotification(nf);
-          }
-        });
-      }
-
-      window.faults = currentFaults;
-      _firstLoadFaults = false; // מכבה את הדגל אחרי הטעינה הראשונה כדי שההתראות יעבדו מעכשיו
-
-      if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
-      if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
-      renderDash();
-    });
-
-    onSnapshot(collection(db, 'whatsapp'), snap => {
-      window.waMessages = snap.docs.map(d => d.data());
-      window.waMessages.forEach(m => {
-        if (!m.custId) {
-          const phone = (m.from || '').replace(/\D/g, '');
-          const matched = window.custs.find(c => c.phone && c.phone.replace(/\D/g, '').includes(phone.slice(-9)));
-          if (matched) m.custId = matched.id;
-        }
-      });
+      window.faults = snap.docs.map(d => d.data());
+      if (window.renderFaults) window.renderFaults();
+      if (window.renderDash) window.renderDash();
     });
 
     onSnapshot(collection(db, 'notes'), snap => {
-      const del = window._deletingIds || new Set();
-      window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
-      if (document.getElementById('pg-notes')?.classList.contains('on')) renderNotes();
-      renderDash();
+      window.notes = snap.docs.map(d => d.data());
+      if (window.renderNotes) window.renderNotes();
+      if (window.renderDash) window.renderDash();
     });
 
-    onSnapshot(collection(db, 'log'), snap => {
-      window.logEntries = snap.docs.map(d => d.data());
-      if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
-    });
-
-    onSnapshot(doc(db, 'settings', 'main'), snap => {
-      if (snap.exists()) {
-        Object.assign(window.cfg, snap.data());
-        localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
-      }
+    // האזנה בזמן אמת לטוקנים
+    onSnapshot(collection(db, 'fcm_tokens'), snap => {
+      window.fcmTokens = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     });
 
   } catch (e) {
-    clearTimeout(timeout);
     hideLoader();
     console.error('Firebase error:', e);
-    window.custs = []; window.faults = [];
-    renderDash();
-    setTimeout(gcalInit, 400);
-    toast('עובד במצב לא מקוון', 'warn');
+    if (window.renderDash) window.renderDash();
   }
 }
