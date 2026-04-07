@@ -206,12 +206,21 @@ textarea.finp    { resize: vertical; min-height: 80px; }
 }
 #toast.show { opacity: 1; }
 
-/* Responsive modal */
+/* Responsive modal & UX Mobile Improvements */
 @media (max-width: 768px) {
   .sc      { padding: 12px; }
   .sc-val  { font-size: calc(26px * var(--fz-scale, 1)); }
   .modal   { align-items: flex-end; padding: 0; }
   .mbox    { max-width: 100%; max-height: 93vh; border-radius: 18px 18px 0 0; }
   .fgrid   { grid-template-columns: 1fr; }
-  .finp, .sw input, .fsel { font-size: calc(16px * var(--fz-scale, 1)); }
+  
+  /* שדות קלט מרווחים יותר */
+  .finp, .sw input, .fsel { font-size: calc(16px * var(--fz-scale, 1)); padding: 12px; } 
+  
+  /* שיפור נוחות (UX) טבלאות וכפתורים לטכנאים בשטח */
+  th, td { padding: 14px 12px; font-size: calc(15px * var(--fz-scale, 1)); } 
+  .btn { padding: 12px 18px; } 
+  .btn-sm { padding: 10px 14px; font-size: calc(14px * var(--fz-scale, 1)); } 
+  td .btn, td .btn-sm { margin: 2px; } 
+  .tscroll { padding-bottom: 10px; } 
 }
