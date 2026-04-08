@@ -498,12 +498,15 @@ document.head.appendChild(_link);
 
 <div class="modal" id="M-fault">
   <div class="mbox">
-    <div class="mhd"><h2 id="M-fault-title">משימה חדשה</h2><button class="btn bs btn-sm" onclick="closeM('M-fault')">✕</button></div>
+    <div class="mhd"><h2 id="M-fault-title">רשומה חדשה (משימה/פגישה)</h2><button class="btn bs btn-sm" onclick="closeM('M-fault')">✕</button></div>
     <div class="mbody"><div class="fgrid">
-      <div class="fg1"><label class="flbl">סוג קריאה *</label>
+      <div class="fg1"><label class="flbl">סוג *</label>
         <select class="finp" id="mf-type">
-          <option value="fault">🔧 משימה</option><option value="service">🛠️ שירות</option>
-          <option value="installation">📦 המשך התקנה</option><option value="other">📋 אחר</option>
+          <option value="fault">🔧 משימה</option>
+          <option value="meeting">🤝 פגישה</option>
+          <option value="service">🛠️ שירות</option>
+          <option value="installation">📦 המשך התקנה</option>
+          <option value="other">📋 אחר</option>
         </select>
       </div>
       <div class="fg1"><label class="flbl">לקוח</label>
@@ -668,6 +671,51 @@ document.head.appendChild(_link);
     <div class="mft">
       <button class="btn bs" onclick="closeM('M-gcal')">ביטול</button>
       <button class="btn bp" onclick="window._saveGcalColor()">💾 שמור צבע</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-cal-add">
+  <div class="mbox" style="max-width:350px">
+    <div class="mhd">
+      <h2 style="font-size:16px;">📅 פעולה מהירה ביומן</h2>
+      <button onclick="closeM('M-cal-add')" class="modal-close-btn">✕</button>
+    </div>
+    <div class="mbody" style="display:flex; flex-direction:column; gap:10px;">
+      <input type="hidden" id="mca-date">
+      <input type="hidden" id="mca-time">
+      
+      <button class="btn bp" onclick="window._addNewCrmTask('meeting')" style="width:100%; justify-content:center;">🤝 הוסף פגישה חדשה</button>
+      <button class="btn bp" onclick="window._addNewCrmTask('fault')" style="width:100%; justify-content:center; background:linear-gradient(to bottom, #f59e0b, #d97706); border-color:#d97706;">🔧 הוסף משימה חדשה</button>
+      <button class="btn bs" onclick="window._addQuickGcal()" style="width:100%; justify-content:center;">📝 אירוע פשוט (יומן גוגל בלבד)</button>
+      
+      <div style="margin-top:10px; border-top:1px solid var(--brd); padding-top:10px;">
+         <label class="flbl">או בחר משימה מתוך ההמתנה:</label>
+         <select class="finp" id="mca-unscheduled">
+            <option value="">-- בחר משימה --</option>
+         </select>
+         <button class="btn bp btn-sm" onclick="window._scheduleFromDropdown()" style="width:100%; margin-top:8px;">שיבוץ משימה נבחרת</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-gcal-new">
+  <div class="mbox" style="max-width:350px">
+    <div class="mhd">
+      <h2 style="font-size:16px;">📝 אירוע גוגל חדש</h2>
+      <button onclick="closeM('M-gcal-new')" class="modal-close-btn">✕</button>
+    </div>
+    <div class="mbody">
+      <div><label class="flbl">כותרת האירוע</label><input class="finp" id="mgn-title" placeholder="למשל: תור לרופא"></div>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+         <div style="flex:1"><label class="flbl">תאריך</label><input class="finp" id="mgn-date" type="date" disabled style="opacity:0.6"></div>
+         <div style="flex:1"><label class="flbl">שעה</label><input class="finp" id="mgn-time" type="time" disabled style="opacity:0.6"></div>
+      </div>
+    </div>
+    <div class="mft">
+       <button class="btn bs" onclick="closeM('M-gcal-new')">ביטול</button>
+       <button class="btn bp" onclick="window._saveQuickGcal()">💾 שמור ביומן</button>
     </div>
   </div>
 </div>
