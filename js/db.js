@@ -1,7 +1,7 @@
 // ══ db.js — Firebase init, data loading, real-time listeners, _db* helpers ══
 
 import { initializeApp }         from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot }
+import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, query, orderBy, limit, enableIndexedDbPersistence }
   from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
 
 import { FIREBASE_CONFIG, USERS } from './config.js';
@@ -20,7 +20,15 @@ import { renderLog }       from './log.js';
 const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
 
-// משתנה שמונע הקפצת התראות על כל המשימות בפעם הראשונה שהאפליקציה עולה
+// 💡 הפעלת מנגנון Offline (שמירת נתונים מקומית על המכשיר)
+enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code == 'failed-precondition') {
+        console.warn('לא ניתן להפעיל אופליין בכמה חלונות במקביל');
+    } else if (err.code == 'unimplemented') {
+        console.warn('הדפדפן הזה לא תומך בשמירת נתונים ללא אינטרנט');
+    }
+});
+
 let _firstLoadFaults = true;
 
 // ── _db* helpers exposed on window ────────────────────────────────────────
@@ -79,7 +87,6 @@ window._dbDelMulti = async (col, ids) => {
   }
 };
 
-// ── פונקציה להקפצת התראה ממכשיר אחר (בזמן אמת) ──
 function _triggerRemoteNotification(f) {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
   if (Notification.permission === 'granted') {
@@ -107,12 +114,11 @@ export async function loadAll() {
 
   const timeout = setTimeout(() => {
     hideLoader();
-    window.custs = [];
-    window.faults = [];
+    // בעת ניתוק מאינטרנט (אופליין) לא מאפסים את הנתונים, נשענים על מה שיש בזיכרון!
     renderDash();
     setTimeout(gcalInit, 400);
-    toast('עובד ללא חיבור לענן', 'warn');
-  }, 7000);
+    toast('עובד במצב אופליין - הנתונים נטענו מהמכשיר', 'warn');
+  }, 4000); // קוצר ל-4 שניות כדי שלא תמתין סתם כשיש חוסר קליטה
 
   try {
     const [cs, fs, ns, ws, ls, ss] = await Promise.all([
@@ -120,12 +126,11 @@ export async function loadAll() {
       getDocs(collection(db, 'faults')),
       getDocs(collection(db, 'notes')),
       getDocs(collection(db, 'whatsapp')),
-      getDocs(collection(db, 'log')),
+      getDocs(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50))), // הוחזר הייעול ל-50
       getDocs(collection(db, 'settings')),
     ]);
     clearTimeout(timeout);
 
-    // settings / users
     const cfgDoc = ss.docs.find(d => d.id === 'main');
     if (cfgDoc) {
       Object.assign(window.cfg, cfgDoc.data());
@@ -136,7 +141,6 @@ export async function loadAll() {
       }
     }
 
-    // populate global state
     window.custs      = cs.docs.map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; });
     window.faults     = fs.docs.map(d => d.data());
     window.notes      = ns.docs.map(d => d.data());
@@ -145,7 +149,6 @@ export async function loadAll() {
 
     hideLoader();
 
-    // ── data-integrity patches ──
     setTimeout(() => {
       const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
       if (warNeedsFix.length > 0) {
@@ -182,11 +185,9 @@ export async function loadAll() {
       const del = window._deletingIds || new Set();
       const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
       
-      // מזהה אם נוספה משימה חדשה על ידי משתמש אחר
       if (!_firstLoadFaults && window.faults) {
         const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
         newFaults.forEach(nf => {
-          // בודק שהמשימה לא נוצרה על ידי מי שמחובר עכשיו לטלפון (כדי למנוע התראה כפולה למי שייצר אותה)
           if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
             _triggerRemoteNotification(nf);
           }
@@ -194,7 +195,7 @@ export async function loadAll() {
       }
 
       window.faults = currentFaults;
-      _firstLoadFaults = false; // מכבה את הדגל אחרי הטעינה הראשונה כדי שההתראות יעבדו מעכשיו
+      _firstLoadFaults = false; 
 
       if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
       if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
@@ -219,7 +220,7 @@ export async function loadAll() {
       renderDash();
     });
 
-    onSnapshot(collection(db, 'log'), snap => {
+    onSnapshot(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50)), snap => {
       window.logEntries = snap.docs.map(d => d.data());
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
     });
@@ -235,9 +236,8 @@ export async function loadAll() {
     clearTimeout(timeout);
     hideLoader();
     console.error('Firebase error:', e);
-    window.custs = []; window.faults = [];
     renderDash();
     setTimeout(gcalInit, 400);
-    toast('עובד במצב לא מקוון', 'warn');
+    toast('עובד במצב לא מקוון (אין קליטה)', 'warn');
   }
 }
