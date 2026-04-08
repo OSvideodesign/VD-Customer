@@ -6,7 +6,7 @@ import { openM, closeM } from './nav.js';
 import { addLog } from './log.js';
 import { renderDash } from './dashboard.js';
 import { renderArchive } from './archive.js';
-import { buildCalendarGrid } from './gcal.js'; // הוספנו ייבוא כדי לרענן את היומן מיד לאחר עריכה
+import { buildCalendarGrid } from './gcal.js'; 
 
 let _eFault      = null;
 let _selectMode  = false;
@@ -17,7 +17,8 @@ export function renderFaults() {
   const q  = (document.getElementById('q-faults')?.value || '').toLowerCase();
   const sf = document.getElementById('f-fstatus')?.value || '';
 
-  const TMAP = { fault: '🔧 משימה', service: '🛠️ שירות', installation: '📦 המשך התקנה', other: '📋 אחר' };
+  // הוספנו פה את המיפוי של הפגישה
+  const TMAP = { fault: '🔧 משימה', meeting: '🤝 פגישה', service: '🛠️ שירות', installation: '📦 המשך התקנה', other: '📋 אחר' };
   const PMAP = { urgent: '🚨 דחוף', high: '🔴 גבוהה', medium: '🟡 בינונית', low: '🟢 נמוכה' };
   const SMAP = { open: 'br', scheduled: 'bb', done: 'bg' };
   const SLBL = { open: '🔴 פתוחה', scheduled: '📅 נקבע תאריך', done: '✅ טופלה' };
@@ -30,10 +31,10 @@ export function renderFaults() {
     return true;
   }).sort((a, b) => ({ urgent: 0, high: 1, medium: 2, low: 3 }[a.priority || 'medium'] - { urgent: 0, high: 1, medium: 2, low: 3 }[b.priority || 'medium']));
 
-  document.getElementById('cnt-faults').textContent = list.length + ' משימות';
+  document.getElementById('cnt-faults').textContent = list.length + ' משימות/פגישות';
   const el = document.getElementById('list-faults');
   if (!list.length) {
-    el.innerHTML = '<div style="text-align:center;padding:50px;color:var(--tx3)">🔧<br><br>אין משימות</div>';
+    el.innerHTML = '<div style="text-align:center;padding:50px;color:var(--tx3)">🔧<br><br>אין משימות או פגישות פתוחות</div>';
     return;
   }
 
@@ -50,7 +51,6 @@ export function renderFaults() {
         ${c && c.phone ? `<div style="font-size:11px;color:var(--tx3)">${c.phone}</div>` : f.guestPhone ? `<div style="font-size:11px;color:var(--tx3)">${f.guestPhone}</div>` : ''}</div></div>
         <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
           <span class="badge ${SMAP[f.status || 'open']}">${SLBL[f.status || 'open']}</span>
-          ${f.date ? `<button class="btn bs btn-sm" onclick="event.stopPropagation();window._gcalFault('${f.id}')">📅</button>` : ''}
         </div>
       </div>
       <div style="font-size:11px;color:var(--tx3);margin-bottom:4px">${TMAP[f.type || 'fault'] || '🔧 משימה'}
@@ -66,10 +66,9 @@ export function renderFaults() {
   }).join('') + '</div>';
 }
 
-// ── open/edit modals ───────────────────────────────────────────────────────
 export function openNewFault(preCustId) {
   _eFault = null;
-  document.getElementById('M-fault-title').textContent = 'משימה חדשה';
+  document.getElementById('M-fault-title').textContent = 'רשומה חדשה (משימה/פגישה)';
   document.getElementById('mf-del').style.display = 'none';
   _fillCustSelect(preCustId || '');
   document.getElementById('mf-guest-fields').style.display = 'none';
@@ -78,7 +77,7 @@ export function openNewFault(preCustId) {
   document.getElementById('mf-type').value    = 'fault';
   document.getElementById('mf-desc').value    = '';
   document.getElementById('mf-pri').value     = 'medium';
-  document.getElementById('mf-color').value   = ''; // ניקוי שדה הצבע הידני
+  document.getElementById('mf-color').value   = ''; 
   document.getElementById('mf-status').value  = 'open';
   document.getElementById('mf-date').value    = '';
   document.getElementById('mf-time').value    = '';
@@ -92,7 +91,7 @@ export function openNewFault(preCustId) {
 export function editFaultById(id) {
   const f = window.faults.find(x => x.id === id); if (!f) return;
   _eFault = id;
-  document.getElementById('M-fault-title').textContent = 'עריכת משימה';
+  document.getElementById('M-fault-title').textContent = 'עריכת רשומה';
   document.getElementById('mf-del').style.display = '';
   const isGuest = !f.custId && f.guestName;
   _fillCustSelect(isGuest ? '__guest__' : (f.custId || ''));
@@ -102,7 +101,7 @@ export function editFaultById(id) {
   document.getElementById('mf-type').value    = f.type     || 'fault';
   document.getElementById('mf-desc').value    = f.desc     || '';
   document.getElementById('mf-pri').value     = f.priority || 'medium';
-  document.getElementById('mf-color').value   = f.color    || ''; // טעינת צבע ידני אם קיים
+  document.getElementById('mf-color').value   = f.color    || ''; 
   document.getElementById('mf-status').value  = f.status   || 'open';
   document.getElementById('mf-date').value    = f.date     || '';
   document.getElementById('mf-time').value    = f.time     || '';
@@ -136,7 +135,7 @@ export function saveFault() {
   const desc     = document.getElementById('mf-desc').value.trim();
   const guestName  = isGuest ? document.getElementById('mf-guest-name').value.trim()  : '';
   const guestPhone = isGuest ? document.getElementById('mf-guest-phone').value.trim() : '';
-  if ((!custVal && !isGuest) || !desc) { toast('בחר לקוח ותאר את הבעיה', 'err'); return; }
+  if ((!custVal && !isGuest) || !desc) { toast('בחר לקוח ותאר את הבעיה/פגישה', 'err'); return; }
   if (isGuest && !guestName) { toast('הכנס שם לקוח מזדמן', 'err'); return; }
 
   const baseAmount = parseFloat(document.getElementById('mf-amount').value) || 0;
@@ -151,7 +150,7 @@ export function saveFault() {
     desc,
     type:        document.getElementById('mf-type').value,
     priority:    document.getElementById('mf-pri').value,
-    color:       document.getElementById('mf-color').value, // שמירת הצבע המותאם אישית
+    color:       document.getElementById('mf-color').value, 
     status:      document.getElementById('mf-status').value,
     date:        document.getElementById('mf-date').value,
     time:        document.getElementById('mf-time').value,
@@ -175,20 +174,18 @@ export function saveFault() {
   closeM('M-fault');
   if (f.status === 'done') {
     renderFaults(); renderArchive(); renderDash();
-    buildCalendarGrid(); // רענון היומן במקרה שמשימה נסגרה משם
-    toast('משימה הועברה לארכיון ✅');
+    buildCalendarGrid(); 
+    toast('הועבר לארכיון ✅');
   } else {
     renderFaults(); renderDash();
-    buildCalendarGrid(); // חובה לרענן את היומן אם משימה שונתה
-    toast(_eFault ? 'משימה עודכנה ✅' : 'משימה נוספה ✅');
+    buildCalendarGrid(); 
+    toast(_eFault ? 'רשומה עודכנה ✅' : 'רשומה נוספה ✅');
     if (!_eFault) _sendFaultNotification(f);
-    
-    // בוטל הפופאפ המציק של פתיחת יומן גוגל בטאב חדש מכיוון שיש לנו יומן פנימי עכשיו
   }
 }
 
 export async function delFault() {
-  if (!confirm('למחוק משימה זו?')) return;
+  if (!confirm('למחוק רשומה זו?')) return;
   const id = _eFault;
   const faultToDelete = window.faults.find(x => x.id === id);
   const fCust = faultToDelete?.custId ? window.custs.find(x => x.id === faultToDelete.custId) : null;
@@ -200,12 +197,11 @@ export async function delFault() {
     if (!ok) { toast('שגיאה במחיקה', 'err'); return; }
   }
   window.faults = window.faults.filter(x => x.id !== id);
-  addLog('fault', 'מחיקת משימה', fName + ' — ' + (faultToDelete?.desc || '').slice(0, 40));
+  addLog('fault', 'מחיקת רשומה', fName + ' — ' + (faultToDelete?.desc || '').slice(0, 40));
   renderFaults(); renderDash(); buildCalendarGrid();
-  toast('משימה נמחקה ✅');
+  toast('נמחק בהצלחה ✅');
 }
 
-// ── bulk select ────────────────────────────────────────────────────────────
 export function toggleSelectMode(on) {
   _selectMode = on;
   _selectedIds.clear();
@@ -236,19 +232,18 @@ export function toggleSelect(id, el) {
 
 export async function deleteSelected() {
   if (_selectedIds.size === 0) return;
-  if (!confirm('למחוק ' + _selectedIds.size + ' תקלות?')) return;
+  if (!confirm('למחוק ' + _selectedIds.size + ' רשומות?')) return;
   const ids = [..._selectedIds];
-  toast('מוחק ' + ids.length + ' משימות...');
+  toast('מוחק ' + ids.length + ' רשומות...');
   const ok = window._dbDelMulti ? await window._dbDelMulti('faults', ids) : true;
   if (!ok) { toast('שגיאה במחיקה', 'err'); return; }
   window.faults = window.faults.filter(f => !ids.includes(f.id));
-  addLog('fault', 'מחיקה קבוצתית', ids.length + ' משימות נמחקו');
+  addLog('fault', 'מחיקה קבוצתית', ids.length + ' רשומות נמחקו');
   toggleSelectMode(false);
   renderFaults(); renderDash(); buildCalendarGrid();
-  toast(ids.length + ' משימות נמחקו ✅');
+  toast(ids.length + ' נמחקו ✅');
 }
 
-// ── notifications ──────────────────────────────────────────────────────────
 function _sendFaultNotification(f) {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
   const c    = f.custId ? window.custs.find(x => x.id === f.custId) : null;
@@ -257,7 +252,7 @@ function _sendFaultNotification(f) {
   
   if (Notification.permission === 'granted') {
     navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification('🔧 משימה חדשה נוספה', { 
+      reg.showNotification('🔧 רשומה חדשה נוספה', { 
         body, 
         icon: 'app-icon-192.jpg',
         badge: 'app-icon-192.jpg',
@@ -265,21 +260,6 @@ function _sendFaultNotification(f) {
         dir: 'rtl', 
         lang: 'he' 
       });
-    });
-  } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(p => {
-      if (p === 'granted') {
-        navigator.serviceWorker.ready.then(reg => {
-          reg.showNotification('🔧 משימה חדשה נוספה', { 
-            body, 
-            icon: 'app-icon-192.jpg',
-            badge: 'app-icon-192.jpg',
-            vibrate: [200, 100, 200],
-            dir: 'rtl', 
-            lang: 'he' 
-          });
-        });
-      }
     });
   }
 }
@@ -289,7 +269,6 @@ export function requestNotificationPermission() {
     toast('הדפדפן לא תומך בהתראות', 'err'); 
     return; 
   }
-  
   Notification.requestPermission().then(p => {
     if (p === 'granted') {
       toast('שולח התראת בדיקה... ✅');
