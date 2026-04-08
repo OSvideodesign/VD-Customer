@@ -206,6 +206,9 @@ window._dropTask = async function(e, cell) {
 
     const date = cell.getAttribute('data-date');
     const time = cell.getAttribute('data-time');
+    
+    // התיקון שמוסיף את השניות (00:) לתאריך בשביל גוגל!
+    const isoDateTime = date + 'T' + time + ':00';
 
     if (data.type === 'crm') {
         const fault = window.faults.find(f => f.id === data.id);
@@ -218,10 +221,12 @@ window._dropTask = async function(e, cell) {
             try { addLog('fault', isReschedule ? 'עדכון שיבוץ' : 'שיבוץ משימה', `משימה שובצה ל-${fmtD(date)} בשעה ${time}`); } catch(err){}
             toast(isReschedule ? 'השיבוץ עודכן בהצלחה! 🔄' : 'המשימה שובצה בהצלחה! ✅', 'success');
             
-            // בונוס: משדר גם לגוגל יומן כדי לסנכרן!
+            // בונה את השם בצורה בטוחה כדי שלא יקרוס אם חסר תיאור או לקוח
             const c = window.custs.find(x => x.id === fault.custId);
-            const title = (c ? c.name : (fault.guestName || 'לקוח')) + ' - ' + fault.desc;
-            fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(title)}&start=${encodeURIComponent(date + 'T' + time)}`).catch(()=>{});
+            const titleName = c ? c.name : (fault.guestName || 'לקוח');
+            const title = titleName + ' - ' + (fault.desc || 'ללא תיאור');
+            
+            fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(title)}&start=${encodeURIComponent(isoDateTime)}`).catch(()=>{});
             
             buildCalendarGrid(); 
             if(window.renderDash) window.renderDash();
@@ -230,7 +235,7 @@ window._dropTask = async function(e, cell) {
         // המשתמש מזיז אירוע של גוגל למשבצת חדשה
         toast('מעדכן את יומן גוגל... ⏳', 'info');
         try {
-            await fetch(`${GAS_URL}?action=move&eventId=${encodeURIComponent(data.id)}&start=${encodeURIComponent(date + 'T' + time)}`);
+            await fetch(`${GAS_URL}?action=move&eventId=${encodeURIComponent(data.id)}&start=${encodeURIComponent(isoDateTime)}`);
             toast('אירוע גוגל עודכן בהצלחה! 🔄', 'success');
             fetchWk(); // מרענן את התצוגה מגוגל
         } catch(err) {
