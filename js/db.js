@@ -21,13 +21,15 @@ const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
 
 // 💡 הפעלת מנגנון Offline (שמירת נתונים מקומית על המכשיר)
-enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code == 'failed-precondition') {
-        console.warn('לא ניתן להפעיל אופליין בכמה חלונות במקביל');
-    } else if (err.code == 'unimplemented') {
-        console.warn('הדפדפן הזה לא תומך בשמירת נתונים ללא אינטרנט');
-    }
-});
+try {
+    enableIndexedDbPersistence(db).catch((err) => {
+        if (err.code == 'failed-precondition') {
+            console.warn('לא ניתן להפעיל אופליין בכמה חלונות במקביל');
+        } else if (err.code == 'unimplemented') {
+            console.warn('הדפדפן הזה לא תומך בשמירת נתונים ללא אינטרנט');
+        }
+    });
+} catch(e) {}
 
 let _firstLoadFaults = true;
 
@@ -110,82 +112,52 @@ function _triggerRemoteNotification(f) {
 
 // ── loadAll — initial bulk load + start listeners ─────────────────────────
 export async function loadAll() {
-  loader('מתחבר לענן...');
+  loader('טוען נתונים...');
 
-  const timeout = setTimeout(() => {
-    hideLoader();
-    // בעת ניתוק מאינטרנט (אופליין) לא מאפסים את הנתונים, נשענים על מה שיש בזיכרון!
-    renderDash();
-    setTimeout(gcalInit, 400);
-    toast('עובד במצב אופליין - הנתונים נטענו מהמכשיר', 'warn');
-  }, 4000); // קוצר ל-4 שניות כדי שלא תמתין סתם כשיש חוסר קליטה
+  // אתחול מערכים למניעת קריסה אם הנתונים טרם נטענו
+  window.custs = window.custs || [];
+  window.faults = window.faults || [];
+  window.notes = window.notes || [];
+  window.waMessages = window.waMessages || [];
+  window.logEntries = window.logEntries || [];
+
+  if (!navigator.onLine) {
+      toast('המערכת פועלת כרגע ללא אינטרנט (אופליין) ✈️', 'warn');
+  }
 
   try {
-    const [cs, fs, ns, ws, ls, ss] = await Promise.all([
-      getDocs(collection(db, 'customers')),
-      getDocs(collection(db, 'faults')),
-      getDocs(collection(db, 'notes')),
-      getDocs(collection(db, 'whatsapp')),
-      getDocs(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50))), // הוחזר הייעול ל-50
-      getDocs(collection(db, 'settings')),
-    ]);
-    clearTimeout(timeout);
-
-    const cfgDoc = ss.docs.find(d => d.id === 'main');
-    if (cfgDoc) {
-      Object.assign(window.cfg, cfgDoc.data());
-      localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
-      if (window.cfg.users && window.cfg.users.length) {
-        USERS.length = 0;
-        window.cfg.users.forEach(u => USERS.push(u));
-      }
-    }
-
-    window.custs      = cs.docs.map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; });
-    window.faults     = fs.docs.map(d => d.data());
-    window.notes      = ns.docs.map(d => d.data());
-    window.waMessages = ws.docs.map(d => d.data());
-    window.logEntries = ls.docs.map(d => d.data());
-
-    hideLoader();
-
-    setTimeout(() => {
-      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
-      if (warNeedsFix.length > 0) {
-        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
-        window._dbSaveCusts(window.custs).catch(() => {});
-      }
-      cs.docs.forEach(d => {
-        const raw = d.data().debt;
-        if (typeof raw === 'string' && raw !== '' && raw !== '0') {
-          const val = Math.max(0, Number(raw) || 0);
-          setDoc(doc(db, 'customers', d.id), { ...d.data(), debt: val }).catch(() => {});
+    // 1. הגדרות מערכת (משתמשים) - קריטי להתחברות
+    onSnapshot(doc(db, 'settings', 'main'), snap => {
+      if (snap.exists()) {
+        Object.assign(window.cfg, snap.data());
+        localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
+        if (window.cfg.users && window.cfg.users.length) {
+          USERS.length = 0;
+          window.cfg.users.forEach(u => USERS.push(u));
         }
-      });
-    }, 5000); 
+      }
+    });
 
-    renderDash();
-    setTimeout(gcalInit, 400);
-
-    // ── real-time listeners ─────────────────────────────────────────────
-    
+    // 2. לקוחות
     onSnapshot(collection(db, 'customers'), snap => {
       const del = window._deletingIds || new Set();
       window.custs = snap.docs
         .map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; })
         .filter(c => !del.has('customers:' + c.id));
+      
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('customers'))  renderCusts();
       if (on('warranties')) renderWarr();
       if (on('debts'))      renderDebts();
-      renderDash();
+      if (on('dashboard'))  renderDash();
     });
 
+    // 3. משימות
     onSnapshot(collection(db, 'faults'), snap => {
       const del = window._deletingIds || new Set();
       const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
       
-      if (!_firstLoadFaults && window.faults) {
+      if (!_firstLoadFaults && window.faults && window.faults.length > 0) {
         const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
         newFaults.forEach(nf => {
           if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
@@ -197,11 +169,13 @@ export async function loadAll() {
       window.faults = currentFaults;
       _firstLoadFaults = false; 
 
-      if (document.getElementById('pg-faults')?.classList.contains('on')) renderFaults();
-      if (document.getElementById('pg-archive')?.classList.contains('on')) renderArchive();
-      renderDash();
+      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
+      if (on('faults')) renderFaults();
+      if (on('archive')) renderArchive();
+      if (on('dashboard')) renderDash();
     });
 
+    // 4. וואטסאפ (אם בשימוש)
     onSnapshot(collection(db, 'whatsapp'), snap => {
       window.waMessages = snap.docs.map(d => d.data());
       window.waMessages.forEach(m => {
@@ -213,31 +187,55 @@ export async function loadAll() {
       });
     });
 
+    // 5. הערות
     onSnapshot(collection(db, 'notes'), snap => {
       const del = window._deletingIds || new Set();
       window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
-      if (document.getElementById('pg-notes')?.classList.contains('on')) renderNotes();
-      renderDash();
+      
+      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
+      if (on('notes')) renderNotes();
+      if (on('dashboard')) renderDash();
     });
 
+    // 6. לוגים
     onSnapshot(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50)), snap => {
       window.logEntries = snap.docs.map(d => d.data());
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
     });
 
-    onSnapshot(doc(db, 'settings', 'main'), snap => {
-      if (snap.exists()) {
-        Object.assign(window.cfg, snap.data());
-        localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
+    // מסיר את מגן הטעינה לאחר שהמאזינים נרשמו והתחילו למשוך מהזיכרון המקומי
+    setTimeout(() => {
+        hideLoader();
+        renderDash();
+        setTimeout(gcalInit, 400);
+    }, 800);
+
+    // ── תיקוני דאטה היסטוריים (מופעל לאחר כמה שניות כדי לא לעכב את האפליקציה) ──
+    setTimeout(() => {
+      if(!window.custs || window.custs.length === 0) return;
+      
+      // תיקון אחריות ישנה
+      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
+      if (warNeedsFix.length > 0) {
+        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
+        window._dbSaveCusts(warNeedsFix).catch(() => {});
       }
-    });
+      
+      // תיקון חובות שהם במבנה טקסט במקום מספר
+      const debtNeedsFix = window.custs.filter(c => typeof c.debt === 'string' && c.debt !== '' && c.debt !== '0');
+      if (debtNeedsFix.length > 0) {
+          debtNeedsFix.forEach(c => {
+             c.debt = Math.max(0, Number(c.debt) || 0);
+          });
+          window._dbSaveCusts(debtNeedsFix).catch(() => {});
+      }
+    }, 5000); 
 
   } catch (e) {
-    clearTimeout(timeout);
     hideLoader();
-    console.error('Firebase error:', e);
+    console.error('Offline setup error:', e);
+    toast('שגיאה בטעינת נתונים', 'err');
     renderDash();
     setTimeout(gcalInit, 400);
-    toast('עובד במצב לא מקוון (אין קליטה)', 'warn');
   }
 }
