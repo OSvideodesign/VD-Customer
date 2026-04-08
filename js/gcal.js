@@ -1,4 +1,4 @@
-// ══ gcal.js — Google Calendar (via Apps Script) & Internal Calendar ══
+// ══ gcal.js — Advanced Bidirectional Sync & Enhanced Colors ══
 
 import { toast, fmtD } from './utils.js';
 import { addLog } from './log.js';
@@ -40,21 +40,30 @@ function wkRange(off) {
   return { sun, sat };
 }
 
+// מיפוי צבעים מורחב למערכת
 function getTaskColor(f) {
-    if (f.color === 'blue') return 'linear-gradient(to bottom, #3b82f6, #1d4ed8)';
-    if (f.color === 'green') return 'linear-gradient(to bottom, #10b981, #059669)';
-    if (f.color === 'orange') return 'linear-gradient(to bottom, #f59e0b, #d97706)';
-    if (f.color === 'red') return 'linear-gradient(to bottom, #ef4444, #dc2626)';
-    if (f.color === 'purple') return 'linear-gradient(to bottom, #8b5cf6, #6d28d9)';
-    if (f.color === 'pink') return 'linear-gradient(to bottom, #ec4899, #be185d)';
-    if (f.color === 'black') return 'linear-gradient(to bottom, #374151, #111827)';
+    const palette = {
+        blue:   'linear-gradient(to bottom, #3b82f6, #1d4ed8)',
+        green:  'linear-gradient(to bottom, #10b981, #059669)',
+        yellow: 'linear-gradient(to bottom, #facc15, #ca8a04)',
+        orange: 'linear-gradient(to bottom, #f59e0b, #d97706)',
+        red:    'linear-gradient(to bottom, #ef4444, #dc2626)',
+        purple: 'linear-gradient(to bottom, #8b5cf6, #6d28d9)',
+        pink:   'linear-gradient(to bottom, #ec4899, #be185d)',
+        cyan:   'linear-gradient(to bottom, #06b6d4, #0891b2)',
+        indigo: 'linear-gradient(to bottom, #6366f1, #4338ca)',
+        black:  'linear-gradient(to bottom, #374151, #111827)',
+        gray:   'linear-gradient(to bottom, #9ca3af, #4b5563)'
+    };
+    
+    if (f.color && palette[f.color]) return palette[f.color];
     
     switch(f.priority) {
-        case 'low': return 'linear-gradient(to bottom, #10b981, #059669)'; 
-        case 'high': return 'linear-gradient(to bottom, #ef4444, #dc2626)'; 
-        case 'urgent': return 'linear-gradient(to bottom, #b91c1c, #991b1b)'; 
+        case 'low': return palette.green;
+        case 'high': return palette.red;
+        case 'urgent': return 'linear-gradient(to bottom, #b91c1c, #991b1b)';
         case 'medium':
-        default: return 'linear-gradient(to bottom, #f59e0b, #d97706)'; 
+        default: return palette.orange;
     }
 }
 
@@ -130,7 +139,7 @@ export function renderUnscheduledTasks() {
         const city = cust && cust.city ? `📍 ${cust.city}` : '';
         const amountHtml = (f.amount && Number(f.amount) > 0) ? `<span style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">💰 ${f.amount} ₪</span>` : '';
         
-        return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${f.id}')" style="background: linear-gradient(to bottom, #3b82f6, #1d4ed8);">
+        return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('taskData', JSON.stringify({id:'${f.id}', type:'crm'}))" style="background: linear-gradient(to bottom, #3b82f6, #1d4ed8);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                <div style="font-weight:700; margin-bottom:4px; font-size:13px;">${typeIcon} ${name}</div>
                ${amountHtml}
@@ -175,7 +184,7 @@ export function renderScheduledTasks() {
            div.title = "לחץ לעריכה, או גרור לשינוי/ביטול";
            
            div.draggable = true;
-           div.ondragstart = (e) => { e.dataTransfer.setData('text/plain', f.id); };
+           div.ondragstart = (e) => { e.dataTransfer.setData('taskData', JSON.stringify({id:f.id, type:'crm'})); };
            div.onclick = () => { if(window.editFaultById) window.editFaultById(f.id); };
            
            div.innerHTML = `<div style="font-size:10px;font-weight:700">⏱️ ${timeStr}</div>
@@ -191,28 +200,42 @@ window._dropTask = async function(e, cell) {
     e.preventDefault();
     cell.classList.remove('drag-over');
     
-    const faultId = e.dataTransfer.getData('text/plain');
-    if (!faultId) return;
+    const rawData = e.dataTransfer.getData('taskData');
+    if (!rawData) return;
+    const data = JSON.parse(rawData);
 
     const date = cell.getAttribute('data-date');
     const time = cell.getAttribute('data-time');
 
-    const fault = (window.faults || []).find(f => f.id === faultId);
-    if (!fault) return;
+    if (data.type === 'crm') {
+        const fault = window.faults.find(f => f.id === data.id);
+        if (!fault) return;
+        const isReschedule = fault.date ? true : false;
+        fault.date = date; fault.time = time; fault.status = 'scheduled';
 
-    const isReschedule = fault.date ? true : false;
-
-    fault.date = date;
-    fault.time = time;
-    fault.status = 'scheduled';
-
-    if (window._dbSaveFaults) {
-        await window._dbSaveFaults([fault]);
-        try { addLog('fault', isReschedule ? 'עדכון שיבוץ' : 'שיבוץ משימה', `משימה שובצה ל-${fmtD(date)} בשעה ${time}`); } catch(err){}
-        toast(isReschedule ? 'השיבוץ עודכן בהצלחה! 🔄' : 'המשימה שובצה בהצלחה! ✅', 'success');
-        buildCalendarGrid(); 
-        fetchWk(); // מרענן את אירועי גוגל גם
-        if(window.renderDash) window.renderDash();
+        if (window._dbSaveFaults) {
+            await window._dbSaveFaults([fault]);
+            try { addLog('fault', isReschedule ? 'עדכון שיבוץ' : 'שיבוץ משימה', `משימה שובצה ל-${fmtD(date)} בשעה ${time}`); } catch(err){}
+            toast(isReschedule ? 'השיבוץ עודכן בהצלחה! 🔄' : 'המשימה שובצה בהצלחה! ✅', 'success');
+            
+            // בונוס: משדר גם לגוגל יומן כדי לסנכרן!
+            const c = window.custs.find(x => x.id === fault.custId);
+            const title = (c ? c.name : (fault.guestName || 'לקוח')) + ' - ' + fault.desc;
+            fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(title)}&start=${encodeURIComponent(date + 'T' + time)}`).catch(()=>{});
+            
+            buildCalendarGrid(); 
+            if(window.renderDash) window.renderDash();
+        }
+    } else if (data.type === 'google') {
+        // המשתמש מזיז אירוע של גוגל למשבצת חדשה
+        toast('מעדכן את יומן גוגל... ⏳', 'info');
+        try {
+            await fetch(`${GAS_URL}?action=move&eventId=${encodeURIComponent(data.id)}&start=${encodeURIComponent(date + 'T' + time)}`);
+            toast('אירוע גוגל עודכן בהצלחה! 🔄', 'success');
+            fetchWk(); // מרענן את התצוגה מגוגל
+        } catch(err) {
+            toast('שגיאה בעדכון גוגל', 'err');
+        }
     }
 };
 
@@ -220,10 +243,12 @@ window._unScheduleTask = async function(e, listEl) {
     e.preventDefault();
     listEl.style.background = 'transparent';
     
-    const faultId = e.dataTransfer.getData('text/plain');
-    if (!faultId) return;
+    const rawData = e.dataTransfer.getData('taskData');
+    if (!rawData) return;
+    const data = JSON.parse(rawData);
+    if (data.type !== 'crm') return; // לא מאפשרים למחוק אירועי גוגל ככה
 
-    const fault = (window.faults || []).find(f => f.id === faultId);
+    const fault = (window.faults || []).find(f => f.id === data.id);
     if (!fault || !fault.date) return; 
 
     fault.date = '';
@@ -235,7 +260,6 @@ window._unScheduleTask = async function(e, listEl) {
         try { addLog('fault', 'ביטול שיבוץ', `בוטל שיבוץ למשימה`); } catch(err){}
         toast('השיבוץ בוטל - המשימה הוחזרה לרשימה 📥', 'info');
         buildCalendarGrid();
-        fetchWk(); 
         if(window.renderDash) window.renderDash();
     }
 };
@@ -243,12 +267,11 @@ window._unScheduleTask = async function(e, listEl) {
 // ── Google Calendar Fetching (Via Apps Script API) ───────────────────────
 
 export async function fetchWk() {
-  if (!GAS_URL || GAS_URL === 'הדבק_כאן_את_הכתובת_שלך') return;
+  if (!GAS_URL) return;
   const { sun, sat } = wkRange(wkOffset);
   
   try {
-    // קורא למיני-שרת שבנינו
-    const url = `${GAS_URL}?timeMin=${encodeURIComponent(sun.toISOString())}&timeMax=${encodeURIComponent(sat.toISOString())}`;
+    const url = `${GAS_URL}?action=fetch&timeMin=${encodeURIComponent(sun.toISOString())}&timeMax=${encodeURIComponent(sat.toISOString())}`;
     const r = await fetch(url);
     const d = await r.json();
     
@@ -261,7 +284,6 @@ export async function fetchWk() {
 }
 
 function renderWkGridGCal(evs) {
-    // קודם מוחק אירועי גוגל ישנים מהמסך כדי לא לשכפל
     document.querySelectorAll('.gcal-event').forEach(el => el.remove());
 
     evs.forEach(ev => {
@@ -285,11 +307,15 @@ function renderWkGridGCal(evs) {
         if (cell) {
             const div = document.createElement('div');
             div.className = 'cal-task gcal-event';
-            // צבע ירוק ייחודי לפגישות גוגל
-            div.style.background = 'linear-gradient(to bottom, #059669, #047857)'; 
-            div.innerHTML = `<div style="font-size:10px;font-weight:700">🗓️ ${displayTime}</div>
+            
+            // צבע ירוק כהה לזיהוי אירועי גוגל כברירת מחדל
+            div.style.background = 'linear-gradient(to bottom, #065f46, #064e3b)'; 
+            div.draggable = true;
+            div.ondragstart = (e) => { e.dataTransfer.setData('taskData', JSON.stringify({id:ev.id, type:'google'})); };
+            
+            div.innerHTML = `<div style="font-size:10px;font-weight:700;color:#6ee7b7;">🗓️ Google</div>
                              <div style="font-weight:600;font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ev.summary || 'ללא כותרת'}</div>`;
-            div.title = "אירוע מ-Google Calendar: " + ev.summary;
+            div.title = "גרור כדי לשנות שעה: " + ev.summary;
             cell.appendChild(div);
         }
     });
@@ -299,7 +325,7 @@ export function wkPrev()  { wkOffset--; buildCalendarGrid(); fetchWk(); }
 export function wkNext()  { wkOffset++; buildCalendarGrid(); fetchWk(); }
 export function wkToday() { wkOffset = 0; buildCalendarGrid(); fetchWk(); }
 
-// פונקציות ריקות כדי למנוע שגיאות בקבצים ישנים
+// פונקציות ריקות למניעת שגיאות אם נשארו קריאות מהעבר
 export function gcalSignIn() {}
 export function gcalSignOut() {}
 export function gcalFault(id) {}
