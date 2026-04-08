@@ -1,16 +1,14 @@
-// ══ gcal.js — Advanced Bidirectional Sync, Milliseconds Timezone Fix & Colors ══
+// ══ gcal.js — Advanced Bidirectional Sync, Milliseconds Timezone Fix, Colors & Delete ══
 
 import { toast, fmtD } from './utils.js';
 import { addLog } from './log.js';
 import { openM, closeM } from './nav.js';
 
-// הכתובת הייחודית שלך:
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyEHAp35jPUm_ZxcsD68CcGHXnImPRTPNzbBOKUsIWjILsJ1jqC_vcY62dgruXUxTn4fg/exec'; 
 
 let wkOffset = 0;
 let _editGcalId = null;
 
-// ממיר תאריך של מחשב למחרוזת תאריך בדיוק לפי ישראל 
 function toLocalYMD(dateObj) {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -233,14 +231,11 @@ window._addQuickGcal = function() {
     openM('M-gcal-new');
 };
 
-// יצירת אירוע חדש עם מילי-שניות מוחלטות
 window._saveQuickGcal = async function() {
     const title = document.getElementById('mgn-title').value.trim();
     if(!title) { toast('חובה להזין כותרת', 'err'); return; }
     const date = document.getElementById('mgn-date').value;
     const time = document.getElementById('mgn-time').value;
-    
-    // מומר לתאריך אמיתי, לוקח את המילי-שניות בשעון המקומי שלך ושולח לגוגל!
     const startMs = new Date(`${date}T${time}:00`).getTime();
     
     closeM('M-gcal-new');
@@ -290,8 +285,6 @@ window._dropTask = async function(e, cell) {
 
     const date = cell.getAttribute('data-date');
     const time = cell.getAttribute('data-time');
-    
-    // שוב, שולחים לגוגל את הזמן המוחלט במילי-שניות במקום טקסט!
     const startMs = new Date(`${date}T${time}:00`).getTime();
 
     if (data.type === 'crm') {
@@ -371,6 +364,26 @@ window._saveGcalColor = async function() {
     }
 };
 
+// הפונקציה החדשה למחיקה!
+window._deleteGcalEvent = async function() {
+    if (!_editGcalId) return;
+    if (!confirm('האם אתה בטוח שברצונך למחוק אירוע זה מיומן גוגל?')) return;
+    
+    closeM('M-gcal');
+    toast('מוחק מיומן גוגל... ⏳', 'info');
+    try {
+        const res = await fetch(`${GAS_URL}?action=delete&eventId=${encodeURIComponent(_editGcalId)}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error); 
+        
+        toast('האירוע נמחק בהצלחה! 🗑️', 'success');
+        fetchWk();
+    } catch(e) {
+        console.error(e);
+        toast('שגיאה במחיקה: ' + (e.message || 'נסה שוב'), 'err');
+    }
+};
+
 export async function fetchWk() {
   if (!GAS_URL) return;
   const { sun, sat } = wkRange(wkOffset);
@@ -389,7 +402,6 @@ function renderWkGridGCal(evs) {
     evs.forEach(ev => {
         if(!ev.startMs) return;
         
-        // כאן משתמשים בזמן המדויק מהמילי-שניות
         const localDateObj = new Date(ev.startMs);
         const dateStr = toLocalYMD(localDateObj);
         
@@ -423,7 +435,7 @@ function renderWkGridGCal(evs) {
             
             div.innerHTML = `<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);">🗓️ Google: ${displayTime}</div>
                              <div style="font-weight:600;font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ev.summary || 'ללא כותרת'}</div>`;
-            div.title = "לחץ לעריכת צבע, או גרור להזזת שעה";
+            div.title = "לחץ לעריכת צבע/מחיקה, או גרור להזזת שעה";
             cell.appendChild(div);
         }
     });
