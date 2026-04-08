@@ -684,5 +684,17 @@ document.head.appendChild(_link);
 
 <script type="module" src="js/main.js"></script>
 
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('Service Worker רשום ופעיל!', reg.scope);
+      }).catch(err => {
+        console.error('שגיאה ברישום Service Worker:', err);
+      });
+    });
+  }
+</script>
+
 </body>
 </html>
