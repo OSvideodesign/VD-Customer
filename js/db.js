@@ -20,7 +20,6 @@ import { renderLog }       from './log.js';
 const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
 
-// 💡 הפעלת מנגנון Offline (שמירת נתונים מקומית על המכשיר)
 try {
     enableIndexedDbPersistence(db).catch((err) => {
         if (err.code == 'failed-precondition') {
@@ -31,9 +30,10 @@ try {
     });
 } catch(e) {}
 
+// משתנים שעוקבים האם זו הטעינה הראשונה (כדי שלא נקפיץ התראות על כל מה שכבר קיים כשפותחים את האפליקציה)
 let _firstLoadFaults = true;
-
-// ── _db* helpers exposed on window ────────────────────────────────────────
+let _firstLoadCusts = true;
+let _firstLoadNotes = true;
 
 window._dbSaveCusts = async (items) => {
   try {
@@ -89,32 +89,48 @@ window._dbDelMulti = async (col, ids) => {
   }
 };
 
-function _triggerRemoteNotification(f) {
+// ── פונקציית התראות פוש חכמה ──
+function _triggerRemoteNotification(item, type) {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
   if (Notification.permission === 'granted') {
-    const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-    const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
-    const body = `נוסף ע"י ${f.updatedBy || 'מערכת'}: ${name} — ${(f.desc || '').slice(0, 50)}`;
+    
+    let title = 'עדכון במערכת';
+    let body = '';
+    const author = item.updatedBy || 'מערכת';
+
+    // בודק מה סוג הפעולה ומתאים את ההתראה
+    if (type === 'fault') {
+        const c = item.custId ? window.custs.find(x => x.id === item.custId) : null;
+        const name = c ? c.name : (item.guestName || 'לקוח מזדמן');
+        title = '🔧 משימה/פגישה חדשה!';
+        body = `נוסף ע"י ${author}: ${name} — ${(item.desc || '').slice(0, 50)}`;
+    } 
+    else if (type === 'cust') {
+        title = '👥 לקוח חדש!';
+        body = `נוסף ע"י ${author}: ${item.name}`;
+    } 
+    else if (type === 'note') {
+        title = '📝 הערה חדשה!';
+        body = `נוסף ע"י ${author}: ${(item.text || '').slice(0, 50)}`;
+    }
 
     navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification('🔧 משימה חדשה!', {
+      reg.showNotification(title, {
         body: body,
         icon: 'app-icon-192.jpg',
         badge: 'app-icon-192.jpg',
         vibrate: [200, 100, 200, 100, 200],
         dir: 'rtl',
         lang: 'he',
-        tag: 'remote-fault-' + f.id
+        tag: 'remote-update-' + item.id
       });
     });
   }
 }
 
-// ── loadAll — initial bulk load + start listeners ─────────────────────────
 export async function loadAll() {
   loader('טוען נתונים...');
 
-  // אתחול מערכים למניעת קריסה אם הנתונים טרם נטענו
   window.custs = window.custs || [];
   window.faults = window.faults || [];
   window.notes = window.notes || [];
@@ -126,7 +142,6 @@ export async function loadAll() {
   }
 
   try {
-    // 1. הגדרות מערכת (משתמשים) - קריטי להתחברות
     onSnapshot(doc(db, 'settings', 'main'), snap => {
       if (snap.exists()) {
         Object.assign(window.cfg, snap.data());
@@ -138,12 +153,26 @@ export async function loadAll() {
       }
     });
 
-    // 2. לקוחות
+    // ── האזנה ללקוחות חדשים ──
     onSnapshot(collection(db, 'customers'), snap => {
       const del = window._deletingIds || new Set();
-      window.custs = snap.docs
+      const currentCusts = snap.docs
         .map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; })
         .filter(c => !del.has('customers:' + c.id));
+      
+      // אם זו לא פתיחה ראשונה ויש לקוח חדש שלא היה קודם
+      if (!_firstLoadCusts && window.custs && window.custs.length > 0) {
+        const newCusts = currentCusts.filter(cc => !window.custs.some(wc => wc.id === cc.id));
+        newCusts.forEach(nc => {
+          // מונע מהתראה לקפוץ למי שבעצמו יצר את הלקוח
+          if (nc.updatedBy && nc.updatedBy !== window._currentUser) {
+            _triggerRemoteNotification(nc, 'cust');
+          }
+        });
+      }
+
+      window.custs = currentCusts;
+      _firstLoadCusts = false;
       
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('customers'))  renderCusts();
@@ -152,7 +181,7 @@ export async function loadAll() {
       if (on('dashboard'))  renderDash();
     });
 
-    // 3. משימות
+    // ── האזנה למשימות חדשות ──
     onSnapshot(collection(db, 'faults'), snap => {
       const del = window._deletingIds || new Set();
       const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
@@ -161,7 +190,7 @@ export async function loadAll() {
         const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
         newFaults.forEach(nf => {
           if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
-            _triggerRemoteNotification(nf);
+            _triggerRemoteNotification(nf, 'fault');
           }
         });
       }
@@ -175,7 +204,6 @@ export async function loadAll() {
       if (on('dashboard')) renderDash();
     });
 
-    // 4. וואטסאפ (אם בשימוש)
     onSnapshot(collection(db, 'whatsapp'), snap => {
       window.waMessages = snap.docs.map(d => d.data());
       window.waMessages.forEach(m => {
@@ -187,49 +215,38 @@ export async function loadAll() {
       });
     });
 
-    // 5. הערות
+    // ── האזנה להערות חדשות ──
     onSnapshot(collection(db, 'notes'), snap => {
       const del = window._deletingIds || new Set();
-      window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
+      const currentNotes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
       
+      if (!_firstLoadNotes && window.notes && window.notes.length > 0) {
+        const newNotes = currentNotes.filter(cn => !window.notes.some(wn => wn.id === cn.id));
+        newNotes.forEach(nn => {
+          if (nn.updatedBy && nn.updatedBy !== window._currentUser) {
+            _triggerRemoteNotification(nn, 'note');
+          }
+        });
+      }
+
+      window.notes = currentNotes;
+      _firstLoadNotes = false;
+
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('notes')) renderNotes();
       if (on('dashboard')) renderDash();
     });
 
-    // 6. לוגים
     onSnapshot(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50)), snap => {
       window.logEntries = snap.docs.map(d => d.data());
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
     });
 
-    // מסיר את מגן הטעינה לאחר שהמאזינים נרשמו והתחילו למשוך מהזיכרון המקומי
     setTimeout(() => {
         hideLoader();
         renderDash();
         setTimeout(gcalInit, 400);
     }, 800);
-
-    // ── תיקוני דאטה היסטוריים (מופעל לאחר כמה שניות כדי לא לעכב את האפליקציה) ──
-    setTimeout(() => {
-      if(!window.custs || window.custs.length === 0) return;
-      
-      // תיקון אחריות ישנה
-      const warNeedsFix = window.custs.filter(c => c.warrantyYears === '2' || c.warrantyYears === 2);
-      if (warNeedsFix.length > 0) {
-        warNeedsFix.forEach(c => { c.warrantyYears = '0'; });
-        window._dbSaveCusts(warNeedsFix).catch(() => {});
-      }
-      
-      // תיקון חובות שהם במבנה טקסט במקום מספר
-      const debtNeedsFix = window.custs.filter(c => typeof c.debt === 'string' && c.debt !== '' && c.debt !== '0');
-      if (debtNeedsFix.length > 0) {
-          debtNeedsFix.forEach(c => {
-             c.debt = Math.max(0, Number(c.debt) || 0);
-          });
-          window._dbSaveCusts(debtNeedsFix).catch(() => {});
-      }
-    }, 5000); 
 
   } catch (e) {
     hideLoader();
