@@ -1,4 +1,4 @@
-// ══ gcal.js — Advanced Bidirectional Sync & Google Event Editing ══
+// ══ gcal.js — Advanced Bidirectional Sync & Enhanced Colors ══
 
 import { toast, fmtD } from './utils.js';
 import { addLog } from './log.js';
@@ -125,8 +125,8 @@ export function renderUnscheduledTasks() {
     if (!unscheduled.length) { list.innerHTML = '<div style="text-align:center; color:var(--tx3); font-size:13px; margin-top:30px;">אין משימות להמתנה 🎉</div>'; return; }
 
     list.innerHTML = unscheduled.map(f => {
-        const c = (window.custs || []).find(x => x.id === f.custId);
-        const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
+        const cust = (window.custs || []).find(c => c.id === f.custId);
+        const name = cust ? cust.name : (f.guestName || 'לקוח מזדמן');
         const typeIcon = { fault: '🔧', service: '🛠️', installation: '📦', other: '📋' }[f.type || 'fault'] || '🔧';
         return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('taskData', JSON.stringify({id:'${f.id}', type:'crm'}))" style="background: linear-gradient(to bottom, #3b82f6, #1d4ed8);">
             <div style="font-weight:700; font-size:13px; margin-bottom:4px;">${typeIcon} ${name}</div>
@@ -207,11 +207,15 @@ window._dropTask = async function(e, cell) {
     } else if (data.type === 'google') {
         toast('מעדכן את יומן גוגל... ⏳', 'info');
         try {
-            await fetch(`${GAS_URL}?action=move&eventId=${encodeURIComponent(data.id)}&start=${encodeURIComponent(isoDateTime)}`);
+            const res = await fetch(`${GAS_URL}?action=move&eventId=${encodeURIComponent(data.id)}&start=${encodeURIComponent(isoDateTime)}`);
+            const responseData = await res.json();
+            if (responseData.error) throw new Error(responseData.error);
+            
             toast('אירוע גוגל עודכן בהצלחה! 🔄', 'success');
             fetchWk(); 
         } catch(err) {
-            toast('שגיאה בעדכון גוגל', 'err');
+            console.error(err);
+            toast('שגיאה: ' + (err.message || 'הפעולה נכשלה'), 'err');
         }
     }
 };
@@ -244,18 +248,23 @@ window._openGcalEdit = function(id, title, colorId) {
     openM('M-gcal');
 };
 
-// שמירת צבע חדש לאירוע גוגל
+// שמירת צבע חדש לאירוע גוגל (עם בדיקת שגיאות אמיתית)
 window._saveGcalColor = async function() {
     if (!_editGcalId) return;
     const colorId = document.getElementById('mgc-color').value;
     closeM('M-gcal');
     toast('מעדכן צבע בגוגל... ⏳', 'info');
     try {
-        await fetch(`${GAS_URL}?action=color&eventId=${encodeURIComponent(_editGcalId)}&colorId=${colorId}`);
+        const res = await fetch(`${GAS_URL}?action=color&eventId=${encodeURIComponent(_editGcalId)}&colorId=${colorId}`);
+        const data = await res.json();
+        
+        if (data.error) throw new Error(data.error); // תופס את השגיאה מגוגל!
+        
         toast('הצבע עודכן בהצלחה! 🎨', 'success');
         fetchWk();
     } catch(e) {
-        toast('שגיאה בעדכון הצבע', 'err');
+        console.error(e);
+        toast('שגיאה: ' + (e.message || 'נסה שוב'), 'err');
     }
 };
 
@@ -288,12 +297,10 @@ function renderWkGridGCal(evs) {
             const div = document.createElement('div');
             div.className = 'cal-task gcal-event';
             
-            // צביעה לפי המזהה המקורי של גוגל
             div.style.background = GCAL_COLORS[ev.colorId] || GCAL_COLORS["0"]; 
             div.draggable = true;
             div.ondragstart = (e) => { e.dataTransfer.setData('taskData', JSON.stringify({id:ev.id, type:'google'})); };
             
-            // לחיצה תפתח את חלונית שינוי הצבע
             div.onclick = () => window._openGcalEdit(ev.id, ev.summary, ev.colorId);
             
             div.innerHTML = `<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);">🗓️ Google</div>
