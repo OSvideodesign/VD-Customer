@@ -641,6 +641,37 @@ document.head.appendChild(_link);
   </div>
 </div>
 
+<div class="modal" id="M-gcal">
+  <div class="mbox" style="max-width:350px">
+    <div class="mhd">
+      <h2 style="font-size:16px;">🎨 עריכת אירוע גוגל</h2>
+      <button onclick="closeM('M-gcal')" class="modal-close-btn">✕</button>
+    </div>
+    <div class="mbody">
+      <div style="font-weight:700; margin-bottom:14px; text-align:center; color:var(--acc);" id="M-gcal-title-text">שם האירוע</div>
+      <label class="flbl">בחר צבע ביומן גוגל:</label>
+      <select class="finp" id="mgc-color">
+        <option value="0">ברירת מחדל (ירוק כהה)</option>
+        <option value="1">🪻 לבנדר (סגול בהיר)</option>
+        <option value="2">🌿 מרווה (ירוק בהיר)</option>
+        <option value="3">🍇 ענב (סגול)</option>
+        <option value="4">🦩 פלמינגו (ורוד)</option>
+        <option value="5">🍌 בננה (צהוב)</option>
+        <option value="6">🍊 מנדרינה (כתום)</option>
+        <option value="7">🦚 טווס (תכלת)</option>
+        <option value="8">🪨 גרפיט (אפור)</option>
+        <option value="9">🫐 אוכמניה (כחול)</option>
+        <option value="10">🍃 בזיליקום (ירוק)</option>
+        <option value="11">🍅 עגבניה (אדום)</option>
+      </select>
+    </div>
+    <div class="mft">
+      <button class="btn bs" onclick="closeM('M-gcal')">ביטול</button>
+      <button class="btn bp" onclick="window._saveGcalColor()">💾 שמור צבע</button>
+    </div>
+  </div>
+</div>
+
 <script>
   let currentFontLevel = 0;
   function changeFontScale(delta) {
