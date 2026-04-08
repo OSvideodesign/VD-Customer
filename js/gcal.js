@@ -1,4 +1,4 @@
-// ══ gcal.js — Advanced Bidirectional Sync & Enhanced Colors ══
+// ══ gcal.js — Advanced Bidirectional Sync, Local Timezone Fix & Colors ══
 
 import { toast, fmtD } from './utils.js';
 import { addLog } from './log.js';
@@ -9,6 +9,14 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbyEHAp35jPUm_ZxcsD68CcG
 
 let wkOffset = 0;
 let _editGcalId = null;
+
+// פונקציית עזר חדשה לחישוב תאריך אמיתי (מונע באג של אזורי זמן שמזיז את הימים אחורה)
+function toLocalYMD(dateObj) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
 
 export function gcalInit() {
   const btnPrev = document.getElementById('cal-btn-prev');
@@ -39,7 +47,6 @@ function wkRange(off) {
   return { sun, sat };
 }
 
-// צבעי משימות המערכת (CRM)
 function getTaskColor(f) {
     const palette = {
         blue:   'linear-gradient(to bottom, #3b82f6, #1d4ed8)',
@@ -63,20 +70,19 @@ function getTaskColor(f) {
     }
 }
 
-// פלטת הצבעים הרשמית של אירועי Google Calendar
 const GCAL_COLORS = {
-    "1": "linear-gradient(to bottom, #a78bfa, #8b5cf6)", // Lavender
-    "2": "linear-gradient(to bottom, #34d399, #10b981)", // Sage
-    "3": "linear-gradient(to bottom, #c084fc, #9333ea)", // Grape
-    "4": "linear-gradient(to bottom, #f472b6, #db2777)", // Flamingo
-    "5": "linear-gradient(to bottom, #fde047, #eab308)", // Banana
-    "6": "linear-gradient(to bottom, #fb923c, #ea580c)", // Tangerine
-    "7": "linear-gradient(to bottom, #38bdf8, #0891b2)", // Peacock
-    "8": "linear-gradient(to bottom, #9ca3af, #4b5563)", // Graphite
-    "9": "linear-gradient(to bottom, #60a5fa, #2563eb)", // Blueberry
-    "10": "linear-gradient(to bottom, #4ade80, #059669)",// Basil
-    "11": "linear-gradient(to bottom, #f87171, #dc2626)",// Tomato
-    "0": "linear-gradient(to bottom, #065f46, #064e3b)"  // Default Dark Green
+    "1": "linear-gradient(to bottom, #a78bfa, #8b5cf6)", 
+    "2": "linear-gradient(to bottom, #34d399, #10b981)", 
+    "3": "linear-gradient(to bottom, #c084fc, #9333ea)", 
+    "4": "linear-gradient(to bottom, #f472b6, #db2777)", 
+    "5": "linear-gradient(to bottom, #fde047, #eab308)", 
+    "6": "linear-gradient(to bottom, #fb923c, #ea580c)", 
+    "7": "linear-gradient(to bottom, #38bdf8, #0891b2)", 
+    "8": "linear-gradient(to bottom, #9ca3af, #4b5563)", 
+    "9": "linear-gradient(to bottom, #60a5fa, #2563eb)", 
+    "10": "linear-gradient(to bottom, #4ade80, #059669)",
+    "11": "linear-gradient(to bottom, #f87171, #dc2626)",
+    "0": "linear-gradient(to bottom, #065f46, #064e3b)"  
 };
 
 export function buildCalendarGrid() {
@@ -89,13 +95,16 @@ export function buildCalendarGrid() {
   if (rangeLbl) rangeLbl.textContent = sun.toLocaleDateString('he-IL', opts) + ' — ' + sat.toLocaleDateString('he-IL', opts);
 
   let html = '<div class="cal-header-cell" style="border-top:none;">שעה</div>';
-  const days = [];
   const dh = ['א','ב','ג','ד','ה','ו','ש'];
-  const todayStr = new Date().toISOString().split('T')[0];
+  
+  // התיקון: שימוש בפונקציה המקומית שלנו 
+  const todayStr = toLocalYMD(new Date());
 
+  const days = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(sun); d.setDate(sun.getDate() + i); days.push(d);
-    const isToday = (d.toISOString().split('T')[0] === todayStr);
+    const dateStr = toLocalYMD(d);
+    const isToday = (dateStr === todayStr);
     html += `<div class="cal-header-cell" style="${isToday ? 'color:var(--acc); background:rgba(59,130,246,0.1)' : ''}">יום ${dh[i]} <br><span style="font-size:18px">${d.getDate()}</span></div>`;
   }
 
@@ -103,7 +112,7 @@ export function buildCalendarGrid() {
     const timeStr = String(h).padStart(2, '0') + ':00';
     html += `<div class="cal-time-cell">${timeStr}</div>`;
     for (let i = 0; i < 7; i++) {
-      const dateStr = days[i].toISOString().split('T')[0];
+      const dateStr = toLocalYMD(days[i]);
       const isToday = (dateStr === todayStr);
       html += `<div class="cal-cell cal-dropzone" style="background:${isToday ? 'rgba(59,130,246,0.03)' : ''}" data-date="${dateStr}" data-time="${timeStr}" 
                  ondragover="event.preventDefault(); this.classList.add('drag-over')" 
@@ -128,9 +137,16 @@ export function renderUnscheduledTasks() {
         const cust = (window.custs || []).find(c => c.id === f.custId);
         const name = cust ? cust.name : (f.guestName || 'לקוח מזדמן');
         const typeIcon = { fault: '🔧', service: '🛠️', installation: '📦', other: '📋' }[f.type || 'fault'] || '🔧';
+        const city = cust && cust.city ? `📍 ${cust.city}` : '';
+        const amountHtml = (f.amount && Number(f.amount) > 0) ? `<span style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">💰 ${f.amount} ₪</span>` : '';
+        
         return `<div class="cal-task" draggable="true" ondragstart="event.dataTransfer.setData('taskData', JSON.stringify({id:'${f.id}', type:'crm'}))" style="background: linear-gradient(to bottom, #3b82f6, #1d4ed8);">
-            <div style="font-weight:700; font-size:13px; margin-bottom:4px;">${typeIcon} ${name}</div>
-            <div style="font-size:11px; opacity:0.9;">${f.desc || 'ללא תיאור'}</div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+               <div style="font-weight:700; margin-bottom:4px; font-size:13px;">${typeIcon} ${name}</div>
+               ${amountHtml}
+            </div>
+            <div style="font-size:11px; opacity:0.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.desc || 'ללא תיאור'}</div>
+            <div style="font-size:10px; margin-top:4px; opacity:0.7;">${city}</div>
         </div>`;
     }).join('');
 }
@@ -138,8 +154,9 @@ export function renderUnscheduledTasks() {
 export function renderScheduledTasks() {
    const faults = window.faults || [];
    const { sun, sat } = wkRange(wkOffset);
-   const minD = sun.toISOString().split('T')[0];
-   const maxD = sat.toISOString().split('T')[0];
+   const minD = toLocalYMD(sun);
+   const maxD = toLocalYMD(sat);
+   
    const scheduled = faults.filter(f => f.status !== 'done' && f.date && f.date >= minD && f.date <= maxD);
    
    scheduled.forEach(f => {
@@ -240,7 +257,6 @@ window._unScheduleTask = async function(e, listEl) {
     }
 };
 
-// פתיחת חלון העריכה לאירוע גוגל
 window._openGcalEdit = function(id, title, colorId) {
     _editGcalId = id;
     document.getElementById('M-gcal-title-text').textContent = title;
@@ -248,7 +264,6 @@ window._openGcalEdit = function(id, title, colorId) {
     openM('M-gcal');
 };
 
-// שמירת צבע חדש לאירוע גוגל (עם בדיקת שגיאות אמיתית)
 window._saveGcalColor = async function() {
     if (!_editGcalId) return;
     const colorId = document.getElementById('mgc-color').value;
@@ -258,7 +273,7 @@ window._saveGcalColor = async function() {
         const res = await fetch(`${GAS_URL}?action=color&eventId=${encodeURIComponent(_editGcalId)}&colorId=${colorId}`);
         const data = await res.json();
         
-        if (data.error) throw new Error(data.error); // תופס את השגיאה מגוגל!
+        if (data.error) throw new Error(data.error); 
         
         toast('הצבע עודכן בהצלחה! 🎨', 'success');
         fetchWk();
@@ -285,6 +300,8 @@ function renderWkGridGCal(evs) {
     evs.forEach(ev => {
         let start = ev.start.dateTime || ev.start.date;
         if(!start) return;
+        
+        // כאן משתמשים בתאריך שחזר מגוגל (הוא כבר בפורמט הנכון)
         const dateStr = start.split('T')[0];
         let hour = new Date(start).getHours();
         if(hour < 8) hour = 8;
