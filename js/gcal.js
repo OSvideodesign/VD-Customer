@@ -1,15 +1,16 @@
-// ══ gcal.js — Advanced Bidirectional Sync, Local Timezone Fix & Colors ══
+// ══ gcal.js — Advanced Bidirectional Sync, Milliseconds Timezone Fix & Colors ══
 
 import { toast, fmtD } from './utils.js';
 import { addLog } from './log.js';
 import { openM, closeM } from './nav.js';
 
-// הכתובת הייחודית שלך לגשר של גוגל:
+// הכתובת הייחודית שלך:
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyEHAp35jPUm_ZxcsD68CcGHXnImPRTPNzbBOKUsIWjILsJ1jqC_vcY62dgruXUxTn4fg/exec'; 
 
 let wkOffset = 0;
 let _editGcalId = null;
 
+// ממיר תאריך של מחשב למחרוזת תאריך בדיוק לפי ישראל 
 function toLocalYMD(dateObj) {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -111,7 +112,6 @@ export function buildCalendarGrid() {
     for (let i = 0; i < 7; i++) {
       const dateStr = toLocalYMD(days[i]);
       const isToday = (dateStr === todayStr);
-      // הוספנו פה אירוע onclick ללחיצה על קוביית זמן!
       html += `<div class="cal-cell cal-dropzone" style="background:${isToday ? 'rgba(59,130,246,0.03)' : ''}; cursor:pointer;" 
                  data-date="${dateStr}" data-time="${timeStr}" 
                  ondragover="event.preventDefault(); this.classList.add('drag-over')" 
@@ -136,7 +136,6 @@ export function renderUnscheduledTasks() {
     list.innerHTML = unscheduled.map(f => {
         const cust = (window.custs || []).find(c => c.id === f.custId);
         const name = cust ? cust.name : (f.guestName || 'לקוח מזדמן');
-        // הוספנו תמיכה באייקון של פגישה
         const typeIcon = { fault: '🔧', meeting: '🤝', service: '🛠️', installation: '📦', other: '📋' }[f.type || 'fault'] || '🔧';
         const city = cust && cust.city ? `📍 ${cust.city}` : '';
         const amountHtml = (f.amount && Number(f.amount) > 0) ? `<span style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">💰 ${f.amount} ₪</span>` : '';
@@ -181,7 +180,6 @@ export function renderScheduledTasks() {
            div.title = "לחץ לעריכה, או גרור לשינוי/ביטול";
            div.draggable = true;
            div.ondragstart = (e) => { e.dataTransfer.setData('taskData', JSON.stringify({id:f.id, type:'crm'})); };
-           // מונע מלחיצה על משימה להפעיל את הלחיצה של המשבצת הריקה
            div.onclick = (e) => { e.stopPropagation(); if(window.editFaultById) window.editFaultById(f.id); };
            
            div.innerHTML = `<div style="font-size:10px;font-weight:700">⏱️ ${timeStr}</div>
@@ -193,7 +191,6 @@ export function renderScheduledTasks() {
    });
 }
 
-// ── חדש: לחיצה על משבצת ביומן פותחת תפריט ──
 window._calSlotClick = function(date, time) {
     document.getElementById('mca-date').value = date;
     document.getElementById('mca-time').value = time;
@@ -211,7 +208,6 @@ window._calSlotClick = function(date, time) {
     openM('M-cal-add');
 };
 
-// ── חדש: פונקציות להוספה מהירה ──
 window._addNewCrmTask = function(type) {
     const date = document.getElementById('mca-date').value;
     const time = document.getElementById('mca-time').value;
@@ -237,17 +233,20 @@ window._addQuickGcal = function() {
     openM('M-gcal-new');
 };
 
+// יצירת אירוע חדש עם מילי-שניות מוחלטות
 window._saveQuickGcal = async function() {
     const title = document.getElementById('mgn-title').value.trim();
     if(!title) { toast('חובה להזין כותרת', 'err'); return; }
     const date = document.getElementById('mgn-date').value;
     const time = document.getElementById('mgn-time').value;
-    const isoDateTime = date + 'T' + time + ':00';
+    
+    // מומר לתאריך אמיתי, לוקח את המילי-שניות בשעון המקומי שלך ושולח לגוגל!
+    const startMs = new Date(`${date}T${time}:00`).getTime();
     
     closeM('M-gcal-new');
     toast('שומר ביומן גוגל... ⏳', 'info');
     try {
-        await fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(title)}&start=${encodeURIComponent(isoDateTime)}&colorId=8`);
+        await fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(title)}&startMs=${startMs}&colorId=8`);
         toast('האירוע נשמר בהצלחה! ✅', 'success');
         fetchWk();
     } catch(e) {
@@ -263,7 +262,7 @@ window._scheduleFromDropdown = async function() {
     
     const date = document.getElementById('mca-date').value;
     const time = document.getElementById('mca-time').value;
-    const isoDateTime = date + 'T' + time + ':00';
+    const startMs = new Date(`${date}T${time}:00`).getTime();
     
     closeM('M-cal-add');
     fault.date = date; fault.time = time; fault.status = 'scheduled';
@@ -274,14 +273,13 @@ window._scheduleFromDropdown = async function() {
         
         const c = window.custs.find(x => x.id === fault.custId);
         const titleName = c ? c.name : (fault.guestName || 'לקוח');
-        fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(titleName + ' - ' + (fault.desc || ''))}&start=${encodeURIComponent(isoDateTime)}`).catch(()=>{});
+        fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(titleName + ' - ' + (fault.desc || ''))}&startMs=${startMs}`).catch(()=>{});
         
         buildCalendarGrid();
         if(window.renderDash) window.renderDash();
     }
 };
 
-// גרירת משימות והזזות
 window._dropTask = async function(e, cell) {
     e.preventDefault();
     cell.classList.remove('drag-over');
@@ -292,7 +290,9 @@ window._dropTask = async function(e, cell) {
 
     const date = cell.getAttribute('data-date');
     const time = cell.getAttribute('data-time');
-    const isoDateTime = date + 'T' + time + ':00';
+    
+    // שוב, שולחים לגוגל את הזמן המוחלט במילי-שניות במקום טקסט!
+    const startMs = new Date(`${date}T${time}:00`).getTime();
 
     if (data.type === 'crm') {
         const fault = window.faults.find(f => f.id === data.id);
@@ -307,7 +307,7 @@ window._dropTask = async function(e, cell) {
             
             const c = window.custs.find(x => x.id === fault.custId);
             const titleName = c ? c.name : (fault.guestName || 'לקוח');
-            fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(titleName + ' - ' + (fault.desc || ''))}&start=${encodeURIComponent(isoDateTime)}`).catch(()=>{});
+            fetch(`${GAS_URL}?action=add&title=${encodeURIComponent(titleName + ' - ' + (fault.desc || ''))}&startMs=${startMs}`).catch(()=>{});
             
             buildCalendarGrid(); 
             if(window.renderDash) window.renderDash();
@@ -315,12 +315,13 @@ window._dropTask = async function(e, cell) {
     } else if (data.type === 'google') {
         toast('מעדכן את יומן גוגל... ⏳', 'info');
         try {
-            const res = await fetch(`${GAS_URL}?action=move&eventId=${encodeURIComponent(data.id)}&start=${encodeURIComponent(isoDateTime)}`);
+            const res = await fetch(`${GAS_URL}?action=move&eventId=${encodeURIComponent(data.id)}&startMs=${startMs}`);
             const responseData = await res.json();
             if (responseData.error) throw new Error(responseData.error);
             toast('אירוע גוגל עודכן בהצלחה! 🔄', 'success');
             fetchWk(); 
         } catch(err) {
+            console.error(err);
             toast('שגיאה: ' + (err.message || 'הפעולה נכשלה'), 'err');
         }
     }
@@ -365,6 +366,7 @@ window._saveGcalColor = async function() {
         toast('הצבע עודכן בהצלחה! 🎨', 'success');
         fetchWk();
     } catch(e) {
+        console.error(e);
         toast('שגיאה: ' + (e.message || 'נסה שוב'), 'err');
     }
 };
@@ -382,33 +384,31 @@ export async function fetchWk() {
 
 function renderWkGridGCal(evs) {
     document.querySelectorAll('.gcal-event').forEach(el => el.remove());
-
-    // חילוץ המשימות שכבר משובצות במערכת (כדי למנוע כפילויות)
     const scheduledFaults = (window.faults || []).filter(f => f.status === 'scheduled' || f.status === 'done');
 
     evs.forEach(ev => {
-        let start = ev.start.dateTime || ev.start.date;
-        if(!start) return;
+        if(!ev.startMs) return;
         
-        const dateStr = start.split('T')[0];
-        let hour = new Date(start).getHours();
+        // כאן משתמשים בזמן המדויק מהמילי-שניות
+        const localDateObj = new Date(ev.startMs);
+        const dateStr = toLocalYMD(localDateObj);
+        
+        let hour = localDateObj.getHours();
         if(hour < 8) hour = 8;
         if(hour > 18) hour = 18;
+        
         let timeStr = String(hour).padStart(2, '0') + ':00';
-        let displayTime = ev.start.dateTime ? new Date(start).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : 'כל היום';
+        let displayTime = localDateObj.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
 
-        // ── התיקון לכפילויות (Deduplication) ──
-        // אם מצאנו במערכת משימה באותו תאריך, והשם של הלקוח שלה נמצא בכותרת של אירוע גוגל - אנחנו מסתירים את אירוע הגוגל!
         const isDuplicate = scheduledFaults.some(f => {
-            if (f.date !== dateStr) return false; // לא באותו תאריך
+            if (f.date !== dateStr) return false;
             const c = (window.custs || []).find(x => x.id === f.custId);
             const name = c ? c.name : (f.guestName || '');
-            // אם יש ללקוח שם, והשם מופיע בכותרת של גוגל
             if (name && ev.summary && ev.summary.includes(name)) return true;
             return false;
         });
 
-        if (isDuplicate) return; // מדלג על האירוע של גוגל (לא מצייר אותו)
+        if (isDuplicate) return; 
 
         let cell = document.querySelector(`.cal-dropzone[data-date="${dateStr}"][data-time="${timeStr}"]`);
         if (cell) {
@@ -421,7 +421,7 @@ function renderWkGridGCal(evs) {
             
             div.onclick = (e) => { e.stopPropagation(); window._openGcalEdit(ev.id, ev.summary, ev.colorId); };
             
-            div.innerHTML = `<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);">🗓️ Google</div>
+            div.innerHTML = `<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);">🗓️ Google: ${displayTime}</div>
                              <div style="font-weight:600;font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ev.summary || 'ללא כותרת'}</div>`;
             div.title = "לחץ לעריכת צבע, או גרור להזזת שעה";
             cell.appendChild(div);
