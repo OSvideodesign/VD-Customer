@@ -408,10 +408,7 @@ document.head.appendChild(_link);
         <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
         <button class="btn bp" style="width:100%" onclick="saveSettings()">💾 שמור הגדרות</button>
         
-        <div class="stit" style="margin-top:30px">🔔 התראות</div>
-        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
-        
-        <div class="stit" style="margin-top:30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top:12px;">📋 לוג מערכת</div>
+        <div class="stit" style="margin-top:30px">📋 לוג מערכת</div>
         <button class="btn bs" style="width:100%; margin-bottom:10px" onclick="downloadLogCSV()">📥 ייצוא לוג שינויים (CSV)</button>
         <button class="btn bd" style="width:100%" onclick="if(confirm('למחוק את כל הלוג? פעולה זו אינה הפיכה!')) clearLog()">🗑️ נקה לוג מערכת</button>
       </div>
@@ -721,6 +718,20 @@ document.head.appendChild(_link);
   </div>
 </div>
 
+<div class="modal" id="M-missed">
+  <div class="mbox" style="max-width:400px">
+    <div class="mhd">
+      <h2 style="font-size:18px;">🔔 עדכונים בזמן שלא היית פה</h2>
+      <button onclick="document.getElementById('M-missed').style.display='none'" class="modal-close-btn">✕</button>
+    </div>
+    <div class="mbody" id="missed-body" style="max-height:350px; overflow-y:auto; font-size:13px; margin-top:10px;">
+       </div>
+    <div class="mft">
+      <button class="btn bp" style="width:100%; justify-content:center;" onclick="document.getElementById('M-missed').style.display='none'">הבנתי, תודה!</button>
+    </div>
+  </div>
+</div>
+
 <script>
   let currentFontLevel = 0;
   function changeFontScale(delta) {
@@ -771,7 +782,8 @@ document.head.appendChild(_link);
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').then(reg => {
+      // התיקון פה: שינינו ל- ./sw.js כדי למנוע את השגיאה מהתמונה
+      navigator.serviceWorker.register('./sw.js').then(reg => {
         console.log('Service Worker רשום ופעיל!', reg.scope);
       }).catch(err => {
         console.error('שגיאה ברישום Service Worker:', err);
