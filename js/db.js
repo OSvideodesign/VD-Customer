@@ -1,4 +1,4 @@
-// ══ db.js — Firebase init, data loading, real-time listeners, _db* helpers ══
+// ══ db.js — Firebase init, real-time listeners, In-App Notifications ══
 
 import { initializeApp }         from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, query, orderBy, limit, enableIndexedDbPersistence }
@@ -22,18 +22,11 @@ export const db = getFirestore(app);
 
 try {
     enableIndexedDbPersistence(db).catch((err) => {
-        if (err.code == 'failed-precondition') {
-            console.warn('לא ניתן להפעיל אופליין בכמה חלונות במקביל');
-        } else if (err.code == 'unimplemented') {
-            console.warn('הדפדפן הזה לא תומך בשמירת נתונים ללא אינטרנט');
-        }
+        if (err.code == 'failed-precondition') console.warn('לא ניתן להפעיל אופליין בכמה חלונות במקביל');
     });
 } catch(e) {}
 
-// משתנים שעוקבים האם זו הטעינה הראשונה (כדי שלא נקפיץ התראות על כל מה שכבר קיים כשפותחים את האפליקציה)
-let _firstLoadFaults = true;
-let _firstLoadCusts = true;
-let _firstLoadNotes = true;
+let _firstLoadLogs = true;
 
 window._dbSaveCusts = async (items) => {
   try {
@@ -70,7 +63,6 @@ window._dbDel = async (col, id) => {
     await deleteDoc(doc(db, col, id));
     return true;
   } catch (e) {
-    console.error('Delete error:', e);
     window._deletingIds && window._deletingIds.delete(col + ':' + id);
     return false;
   }
@@ -83,50 +75,10 @@ window._dbDelMulti = async (col, ids) => {
     await Promise.all(ids.map(id => deleteDoc(doc(db, col, id))));
     return true;
   } catch (e) {
-    console.error('DeleteMulti error:', e);
     ids.forEach(id => window._deletingIds && window._deletingIds.delete(col + ':' + id));
     return false;
   }
 };
-
-// ── פונקציית התראות פוש חכמה ──
-function _triggerRemoteNotification(item, type) {
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
-  if (Notification.permission === 'granted') {
-    
-    let title = 'עדכון במערכת';
-    let body = '';
-    const author = item.updatedBy || 'מערכת';
-
-    // בודק מה סוג הפעולה ומתאים את ההתראה
-    if (type === 'fault') {
-        const c = item.custId ? window.custs.find(x => x.id === item.custId) : null;
-        const name = c ? c.name : (item.guestName || 'לקוח מזדמן');
-        title = '🔧 משימה/פגישה חדשה!';
-        body = `נוסף ע"י ${author}: ${name} — ${(item.desc || '').slice(0, 50)}`;
-    } 
-    else if (type === 'cust') {
-        title = '👥 לקוח חדש!';
-        body = `נוסף ע"י ${author}: ${item.name}`;
-    } 
-    else if (type === 'note') {
-        title = '📝 הערה חדשה!';
-        body = `נוסף ע"י ${author}: ${(item.text || '').slice(0, 50)}`;
-    }
-
-    navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification(title, {
-        body: body,
-        icon: 'app-icon-192.jpg',
-        badge: 'app-icon-192.jpg',
-        vibrate: [200, 100, 200, 100, 200],
-        dir: 'rtl',
-        lang: 'he',
-        tag: 'remote-update-' + item.id
-      });
-    });
-  }
-}
 
 export async function loadAll() {
   loader('טוען נתונים...');
@@ -138,7 +90,7 @@ export async function loadAll() {
   window.logEntries = window.logEntries || [];
 
   if (!navigator.onLine) {
-      toast('המערכת פועלת כרגע ללא אינטרנט (אופליין) ✈️', 'warn');
+      toast('המערכת פועלת באופליין ✈️', 'warn');
   }
 
   try {
@@ -153,26 +105,11 @@ export async function loadAll() {
       }
     });
 
-    // ── האזנה ללקוחות חדשים ──
     onSnapshot(collection(db, 'customers'), snap => {
       const del = window._deletingIds || new Set();
-      const currentCusts = snap.docs
+      window.custs = snap.docs
         .map(d => { const data = d.data(); return { ...data, debt: Math.max(0, Number(data.debt) || 0) }; })
         .filter(c => !del.has('customers:' + c.id));
-      
-      // אם זו לא פתיחה ראשונה ויש לקוח חדש שלא היה קודם
-      if (!_firstLoadCusts && window.custs && window.custs.length > 0) {
-        const newCusts = currentCusts.filter(cc => !window.custs.some(wc => wc.id === cc.id));
-        newCusts.forEach(nc => {
-          // מונע מהתראה לקפוץ למי שבעצמו יצר את הלקוח
-          if (nc.updatedBy && nc.updatedBy !== window._currentUser) {
-            _triggerRemoteNotification(nc, 'cust');
-          }
-        });
-      }
-
-      window.custs = currentCusts;
-      _firstLoadCusts = false;
       
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('customers'))  renderCusts();
@@ -181,23 +118,10 @@ export async function loadAll() {
       if (on('dashboard'))  renderDash();
     });
 
-    // ── האזנה למשימות חדשות ──
     onSnapshot(collection(db, 'faults'), snap => {
       const del = window._deletingIds || new Set();
-      const currentFaults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
+      window.faults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
       
-      if (!_firstLoadFaults && window.faults && window.faults.length > 0) {
-        const newFaults = currentFaults.filter(cf => !window.faults.some(wf => wf.id === cf.id));
-        newFaults.forEach(nf => {
-          if (nf.updatedBy && nf.updatedBy !== window._currentUser) {
-            _triggerRemoteNotification(nf, 'fault');
-          }
-        });
-      }
-
-      window.faults = currentFaults;
-      _firstLoadFaults = false; 
-
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('faults')) renderFaults();
       if (on('archive')) renderArchive();
@@ -215,37 +139,66 @@ export async function loadAll() {
       });
     });
 
-    // ── האזנה להערות חדשות ──
     onSnapshot(collection(db, 'notes'), snap => {
       const del = window._deletingIds || new Set();
-      const currentNotes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
+      window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
       
-      if (!_firstLoadNotes && window.notes && window.notes.length > 0) {
-        const newNotes = currentNotes.filter(cn => !window.notes.some(wn => wn.id === cn.id));
-        newNotes.forEach(nn => {
-          if (nn.updatedBy && nn.updatedBy !== window._currentUser) {
-            _triggerRemoteNotification(nn, 'note');
-          }
-        });
-      }
-
-      window.notes = currentNotes;
-      _firstLoadNotes = false;
-
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('notes')) renderNotes();
       if (on('dashboard')) renderDash();
     });
 
+    // המוח של ההתראות והלוגים!
     onSnapshot(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50)), snap => {
-      window.logEntries = snap.docs.map(d => d.data());
+      const newLogs = snap.docs.map(d => d.data());
+      const oldLogs = window.logEntries || [];
+      window.logEntries = newLogs;
+
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
+
+      // 1. התראות בזמן אמת כשהאפליקציה פתוחה
+      if (!_firstLoadLogs && oldLogs.length > 0) {
+         const added = newLogs.filter(n => !oldLogs.some(o => o.id === n.id) && n.user !== window._currentUser);
+         added.forEach(log => {
+             // מקפיץ טוסט ירוק ובולט על פעולות של עובדים אחרים
+             toast(`🔔 ${log.user}: ${log.action}`, 'success'); 
+         });
+      }
+      _firstLoadLogs = false;
     });
 
     setTimeout(() => {
         hideLoader();
         renderDash();
         setTimeout(gcalInit, 400);
+
+        // 2. מסך "מה פספסת?" (מופעל שניה אחרי שהכל נטען)
+        const lastLogin = parseInt(localStorage.getItem('vd_last_login') || '0');
+        const now = Date.now();
+        localStorage.setItem('vd_last_login', now.toString()); // מתעדכן לפעם הבאה
+
+        if (lastLogin > 0 && window.logEntries.length > 0) {
+            // מחפש פעולות של עובדים אחרים שקרו מאז ההתחברות האחרונה שלך
+            const missed = window.logEntries.filter(l => l.ts > lastLogin && l.user !== window._currentUser);
+            
+            if (missed.length > 0) {
+                let html = missed.map(l => `
+                    <div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); margin-bottom:8px; background:rgba(0,0,0,0.2); border-radius:6px;">
+                        <div style="font-weight:700; color:var(--acc); display:flex; justify-content:space-between;">
+                            <span>👤 ${l.user}</span>
+                            <span style="color:var(--tx3); font-size:11px;">${new Date(l.ts).toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <div style="font-weight:600; font-size:14px; margin-top:2px;">${l.action}</div>
+                        <div style="opacity:0.8; font-size:12px; margin-top:2px;">${l.desc}</div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('missed-body').innerHTML = html;
+                const missedModal = document.getElementById('M-missed');
+                if (missedModal) missedModal.style.display = 'flex';
+            }
+        }
+
     }, 800);
 
   } catch (e) {
