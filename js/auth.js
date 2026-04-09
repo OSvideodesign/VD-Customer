@@ -1,7 +1,7 @@
 // ══ auth.js — login, logout, session, permissions ══
 
 import { USERS, DEFAULT_PERMS } from './config.js';
-import { toast } from './utils.js';
+import { toast, ini } from './utils.js';
 import { addLog } from './log.js';
 
 let _loginTarget = null;
@@ -69,25 +69,60 @@ export function initLogin() {
 export function selectUser(name) {
   _loginTarget = USERS.find(u => u.name === name);
   if (!_loginTarget) return;
-  if (!_loginTarget.pass || _loginTarget.pass === '') {
+  
+  if (_loginTarget.pass === 'NOPASS') {
     sessionStorage.setItem('crm_user', JSON.stringify(_loginTarget));
     applyUser(_loginTarget);
     return;
   }
+  
   document.getElementById('pass-label').textContent = 'שלום ' + name + ', הכנס סיסמה:';
   document.getElementById('pass-area').style.display = 'block';
   document.getElementById('user-btns').style.display = 'none';
   document.getElementById('pass-err').style.display = 'none';
-  document.getElementById('pass-inp').value = '';
-  setTimeout(() => document.getElementById('pass-inp').focus(), 100);
+  
+  const inp = document.getElementById('pass-inp');
+  inp.value = '';
+  
+  const fMsg = document.getElementById('first-time-msg');
+  if (!_loginTarget.pass || _loginTarget.pass === '') {
+      fMsg.style.display = 'block'; 
+      inp.placeholder = 'הקלד סיסמה חדשה...';
+  } else {
+      fMsg.style.display = 'none';
+      inp.placeholder = 'סיסמה';
+  }
+  
+  setTimeout(() => inp.focus(), 100);
 }
 
 export function doLogin() {
   const inp = document.getElementById('pass-inp').value;
-  if (!_loginTarget || inp !== _loginTarget.pass) {
-    document.getElementById('pass-err').style.display = 'block';
+  const err = document.getElementById('pass-err');
+  
+  if (!_loginTarget) return;
+  
+  // אם למשתמש עדיין אין סיסמה מוגדרת
+  if (!_loginTarget.pass || _loginTarget.pass === '') {
+      if (inp.length < 3) {
+          err.textContent = 'הסיסמה חייבת להכיל לפחות 3 תווים';
+          err.style.display = 'block'; return;
+      }
+      _loginTarget.pass = inp; 
+      if (window.cfg) {
+          const cfgU = window.cfg.users.find(x => x.name === _loginTarget.name);
+          if(cfgU) cfgU.pass = inp;
+          if (window._dbSaveCfg) window._dbSaveCfg(window.cfg); 
+      }
+      toast('הסיסמה האישית נשמרה בהצלחה!', 'success');
+  } 
+  // אם יש לו סיסמה מוגדרת ואנחנו בודקים אם היא נכונה
+  else if (inp !== _loginTarget.pass) {
+    err.textContent = 'סיסמה שגויה ❌';
+    err.style.display = 'block';
     return;
   }
+  
   sessionStorage.setItem('crm_user', JSON.stringify(_loginTarget));
   applyUser(_loginTarget);
 }
@@ -115,27 +150,33 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  // הזרקת שם המשתמש לפאנל החדש שבתחתית התפריט מחשב
   const badgeDisplay = document.getElementById('user-badge-display');
   if (badgeDisplay) {
     badgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:16px;">👤</span> מחובר כ: ${u.name}`;
   }
 
-  // הזרקת שם המשתמש גם לתפריט המובייל (מגירה)
   const mBadgeDisplay = document.getElementById('m-user-badge-display');
   if (mBadgeDisplay) {
     mBadgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:15px; margin-left:6px;">👤</span> שלום, <strong style="color:${u.color}">${u.name}</strong>`;
   }
 
+  // מסתיר כפתורי תפריט למי שההרשאה שלו למסך היא 0
   const perms = getPerms(u);
-  const moduleToNav = {
-    customers: 'nb-customers', faults: 'nb-faults', archive: 'nb-archive',
-    notes: 'nb-notes', warranties: 'nb-warranties', debts: 'nb-debts', reports: 'nb-reports',
+  const checkPerm = (btns, key) => {
+      if(perms[key] === 0) {
+          btns.forEach(b => { const el = document.getElementById(b); if(el) el.style.display = 'none'; });
+      } else {
+          btns.forEach(b => { const el = document.getElementById(b); if(el) el.style.display = ''; });
+      }
   };
-  Object.entries(moduleToNav).forEach(([mod, nbId]) => {
-    const el = document.getElementById(nbId);
-    if (el) el.style.display = (perms[mod] || 0) >= 1 ? '' : 'none';
-  });
+
+  checkPerm(['nb-customers', 'mn-cust', 'md-customers'], 'customers');
+  checkPerm(['nb-faults', 'mn-fault', 'md-faults'], 'faults');
+  checkPerm(['nb-notes', 'mn-note', 'md-notes'], 'notes');
+  checkPerm(['nb-archive', 'md-archive'], 'archive');
+  checkPerm(['nb-warranties', 'md-warranties'], 'warranties');
+  checkPerm(['nb-debts', 'md-debts'], 'debts');
+  checkPerm(['nb-reports', 'md-reports'], 'reports');
 
   const canSeeLog = ['רז', 'אופיר'].includes(u.name) || ['owner', 'admin'].includes(u.role);
   ['nb-log', 'm-drawer-log'].forEach(id => {
