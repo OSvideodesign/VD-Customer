@@ -98,19 +98,30 @@ export function doLogin() {
   
   if (!_loginTarget) return;
   
+  // אם למשתמש עדיין אין סיסמה מוגדרת
   if (!_loginTarget.pass || _loginTarget.pass === '') {
       if (inp.length < 3) {
           err.textContent = 'הסיסמה חייבת להכיל לפחות 3 תווים';
           err.style.display = 'block'; return;
       }
       _loginTarget.pass = inp; 
+      
+      // ── התיקון הקריטי למניעת הקריסה ──
       if (window.cfg) {
+          window.cfg.users = window.cfg.users || [...USERS]; // מוודא שרשימת המשתמשים קיימת בענן לפני ששומר!
           const cfgU = window.cfg.users.find(x => x.name === _loginTarget.name);
-          if(cfgU) cfgU.pass = inp;
+          if (cfgU) {
+              cfgU.pass = inp;
+          } else {
+              window.cfg.users.push(_loginTarget);
+          }
           if (window._dbSaveCfg) window._dbSaveCfg(window.cfg); 
       }
+      // ────────────────────────────────
+      
       toast('הסיסמה האישית נשמרה בהצלחה!', 'success');
   } 
+  // אם יש לו סיסמה מוגדרת ואנחנו בודקים אם היא נכונה
   else if (inp !== _loginTarget.pass) {
     err.textContent = 'סיסמה שגויה ❌';
     err.style.display = 'block';
@@ -143,7 +154,6 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  // ── מלביש על המערכת את העיצוב האישי של המשתמש! ──
   if (window.applyUserDesign) window.applyUserDesign(u);
 
   const badgeDisplay = document.getElementById('user-badge-display');
