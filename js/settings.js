@@ -100,13 +100,12 @@ window.clearCustomBg = function() {
     }
 };
 
-// תיקון חשוב: שיניתי בחזרה את השם ל-renderSettings כדי שהנתונים שלך יחזרו להופיע!
 export function renderSettings() {
   document.getElementById('s-company').value = window.cfg.company || '';
   document.getElementById('s-phone').value   = window.cfg.phone   || '';
   document.getElementById('s-email').value   = window.cfg.email   || '';
 
-  const canManageUsers = ['owner', 'admin'].includes(window._currentRole);
+  const canManageUsers = ['owner', 'admin'].includes(window._currentRole) || window._currentUser === 'רז';
   const panel = document.getElementById('s-users-panel');
   if (panel) panel.style.display = canManageUsers ? '' : 'none';
   if (canManageUsers) renderUsersList();
@@ -149,7 +148,7 @@ export function openAddUser() {
   openM('M-user');
 }
 
-export function openEditUser(name) {
+window._openEditUser = function(name) {
   const u = USERS.find(x => x.name === name); if (!u) return;
   _editUserName = name;
   document.getElementById('M-user-title').textContent = 'עריכת ' + name;
@@ -160,13 +159,12 @@ export function openEditUser(name) {
   const nopass = (u.pass === 'NOPASS');
   document.getElementById('u-nopass').checked  = nopass;
   
-  // מציג את הסיסמה הקיימת כטקסט גלוי
   document.getElementById('u-pass').value = nopass ? '' : (u.pass || '');
   document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
 
   renderPermsGrid(getPerms(u));
   openM('M-user');
-}
+};
 
 export function renderPermsGrid(p) {
   const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
