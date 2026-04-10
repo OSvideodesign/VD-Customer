@@ -53,7 +53,7 @@ window.uploadCustomBg = function(input) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_SIZE = 1024; 
+            const MAX_SIZE = 1920; 
             let width = img.width;
             let height = img.height;
             
@@ -74,7 +74,7 @@ window.uploadCustomBg = function(input) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
 
             const u = window.cfg.users.find(x => x.name === window._currentUser);
             if (u) {
@@ -112,29 +112,28 @@ window._resetUserPassword = function() {
     }
 };
 
-// ── כאן התיקון הקריטי: הפונקציות המדויקות ש-main.js מחפש (Export) ──
 
 export function loadSettings() {
-  document.getElementById('s-company').value = window.cfg.company || '';
-  document.getElementById('s-phone').value   = window.cfg.phone   || '';
-  document.getElementById('s-email').value   = window.cfg.email   || '';
+  // ── התיקון: בדיקה שהתיבות קיימות לפני שמכניסים אליהן ערך ──
+  if (document.getElementById('s-company')) document.getElementById('s-company').value = window.cfg.company || '';
+  if (document.getElementById('s-phone'))   document.getElementById('s-phone').value   = window.cfg.phone   || '';
+  if (document.getElementById('s-email'))   document.getElementById('s-email').value   = window.cfg.email   || '';
 
   const canManageUsers = ['owner', 'admin'].includes(window._currentRole) || window._currentUser === 'רז';
   const panel = document.getElementById('s-users-panel');
   if (panel) panel.style.display = canManageUsers ? '' : 'none';
   if (canManageUsers) renderUsersList();
 }
-window.loadSettings = loadSettings;
 
 export function saveSettings() {
-  window.cfg.company = document.getElementById('s-company').value.trim();
-  window.cfg.phone   = document.getElementById('s-phone').value.trim();
-  window.cfg.email   = document.getElementById('s-email').value.trim();
+  if (document.getElementById('s-company')) window.cfg.company = document.getElementById('s-company').value.trim();
+  if (document.getElementById('s-phone'))   window.cfg.phone   = document.getElementById('s-phone').value.trim();
+  if (document.getElementById('s-email'))   window.cfg.email   = document.getElementById('s-email').value.trim();
+  
   if (window._dbSaveCfg) window._dbSaveCfg(window.cfg);
   localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
   toast('הגדרות נשמרו ✅');
 }
-window.saveSettings = saveSettings;
 
 export function renderUsersList() {
   const el = document.getElementById('s-users-list');
@@ -159,14 +158,12 @@ export function openAddUser() {
   document.getElementById('u-nopass').checked = false;
   document.getElementById('u-color').value  = '#3b82f6';
   document.getElementById('u-del-btn').style.display = 'none';
-  document.getElementById('u-reset-pass-btn').style.display = 'none';
   
   renderPermsGrid({});
   openM('M-user');
 }
-window.openAddUser = openAddUser;
 
-export function openEditUser(name) {
+window._openEditUser = function(name) {
   const u = USERS.find(x => x.name === name); if (!u) return;
   _editUserName = name;
   document.getElementById('M-user-title').textContent = 'עריכת ' + name;
@@ -179,17 +176,10 @@ export function openEditUser(name) {
   
   document.getElementById('u-pass').value = nopass ? '' : (u.pass || '');
   document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
-  
-  const rstBtn = document.getElementById('u-reset-pass-btn');
-  if (u.pass && u.pass !== 'NOPASS') rstBtn.style.display = 'block';
-  else rstBtn.style.display = 'none';
 
-  renderPermsGrid(getPerms(u));
+  renderPermsGrid(u.perms || {});
   openM('M-user');
-}
-// הגשר לכפתור העריכה ב-HTML
-window._openEditUser = openEditUser; 
-window.openEditUser = openEditUser;
+};
 
 export function renderPermsGrid(p) {
   const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
@@ -245,7 +235,6 @@ export function saveUser() {
   renderUsersList();
   toast('משתמש נשמר ✅');
 }
-window.saveUser = saveUser;
 
 export function deleteUser() {
   if (!_editUserName) return;
@@ -259,4 +248,3 @@ export function deleteUser() {
   renderUsersList();
   toast('משתמש נמחק ✅');
 }
-window.deleteUser = deleteUser;
