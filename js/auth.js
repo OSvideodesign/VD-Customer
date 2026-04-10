@@ -152,6 +152,7 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
+  // קורא לפונקציה מה-HTML שמחזירה את הצבעים והרקע
   if (window.applyUserDesign) window.applyUserDesign(u);
 
   const badgeDisplay = document.getElementById('user-badge-display');
