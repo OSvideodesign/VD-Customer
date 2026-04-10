@@ -98,7 +98,6 @@ export function doLogin() {
   
   if (!_loginTarget) return;
   
-  // אם למשתמש עדיין אין סיסמה מוגדרת
   if (!_loginTarget.pass || _loginTarget.pass === '') {
       if (inp.length < 3) {
           err.textContent = 'הסיסמה חייבת להכיל לפחות 3 תווים';
@@ -119,7 +118,6 @@ export function doLogin() {
       
       toast('הסיסמה האישית נשמרה בהצלחה!', 'success');
   } 
-  // אם יש לו סיסמה מוגדרת ואנחנו בודקים אם היא נכונה
   else if (inp !== _loginTarget.pass) {
     err.textContent = 'סיסמה שגויה ❌';
     err.style.display = 'block';
@@ -143,6 +141,29 @@ export function logout() {
   backToUsers();
 }
 
+// פונקציית העיצוב נמצאת כעת באופן בטוח בתוך קובץ זה!
+export function applyUserDesign(u) {
+  if (!u) return;
+  const d = u.design || { bg: 'stone', color: u.color || '#3b82f6', glow: true };
+  document.documentElement.style.setProperty('--acc', d.color);
+  
+  if (d.bgImage) {
+      document.body.setAttribute('data-bg', 'custom'); 
+      document.body.style.setProperty('background-image', `url(${d.bgImage})`, 'important');
+      document.body.style.setProperty('background-size', 'cover', 'important');
+      document.body.style.setProperty('background-position', 'center', 'important');
+      document.body.style.setProperty('background-attachment', 'fixed', 'important');
+  } else {
+      document.body.style.removeProperty('background-image');
+      document.body.setAttribute('data-bg', d.bg);
+  }
+  
+  document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
+}
+
+// מאפשר לקבצים אחרים (כמו מסך ההגדרות) לקרוא לפונקציה מבלי לקרוס
+window.applyUserDesign = applyUserDesign;
+
 export function applyUser(u) {
   if (!u || !u.name) return;
   window._currentUser  = u.name;
@@ -152,7 +173,8 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  if (window.applyUserDesign) window.applyUserDesign(u);
+  // הפעלה בטוחה של העיצוב
+  applyUserDesign(u);
 
   const badgeDisplay = document.getElementById('user-badge-display');
   if (badgeDisplay) {
@@ -193,7 +215,6 @@ export function applyUser(u) {
   }, 3000);
 }
 
-// ── התיקון שפותר את השגיאה: חשיפת הפונקציות החוצה כדי שהכפתורים יעבדו ──
 window._selectUser = selectUser;
 window.doLogin = doLogin;
 window.backToUsers = backToUsers;
