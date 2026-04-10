@@ -51,13 +51,15 @@ export function initLogin() {
   }
 
   const btns = document.getElementById('user-btns');
-  btns.innerHTML = USERS.map(u => {
-    const glowColor = u.color + '40';
-    return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
-       <div class="login-user-icon">${u.name[0]}</div>
-       <div class="login-user-name">${u.name}</div>
-     </button>`;
-  }).join('');
+  if (btns) {
+    btns.innerHTML = USERS.map(u => {
+      const glowColor = u.color + '40';
+      return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
+         <div class="login-user-icon">${u.name[0]}</div>
+         <div class="login-user-name">${u.name}</div>
+       </button>`;
+    }).join('');
+  }
   
   document.getElementById('login-screen').style.display = 'flex';
 }
@@ -78,18 +80,20 @@ export function selectUser(name) {
   document.getElementById('pass-err').style.display = 'none';
   
   const inp = document.getElementById('pass-inp');
-  inp.value = '';
+  if(inp) inp.value = '';
   
   const fMsg = document.getElementById('first-time-msg');
-  if (!_loginTarget.pass || _loginTarget.pass === '') {
-      fMsg.style.display = 'block'; 
-      inp.placeholder = 'הקלד סיסמה חדשה...';
-  } else {
-      fMsg.style.display = 'none';
-      inp.placeholder = 'סיסמה';
+  if(fMsg) {
+      if (!_loginTarget.pass || _loginTarget.pass === '') {
+          fMsg.style.display = 'block'; 
+          if(inp) inp.placeholder = 'הקלד סיסמה חדשה...';
+      } else {
+          fMsg.style.display = 'none';
+          if(inp) inp.placeholder = 'סיסמה';
+      }
   }
   
-  setTimeout(() => inp.focus(), 100);
+  setTimeout(() => { if(inp) inp.focus(); }, 100);
 }
 
 export function doLogin() {
@@ -100,8 +104,8 @@ export function doLogin() {
   
   if (!_loginTarget.pass || _loginTarget.pass === '') {
       if (inp.length < 3) {
-          err.textContent = 'הסיסמה חייבת להכיל לפחות 3 תווים';
-          err.style.display = 'block'; return;
+          if(err) { err.textContent = 'הסיסמה חייבת להכיל לפחות 3 תווים'; err.style.display = 'block'; }
+          return;
       }
       _loginTarget.pass = inp; 
       
@@ -115,12 +119,10 @@ export function doLogin() {
           }
           if (window._dbSaveCfg) window._dbSaveCfg(window.cfg); 
       }
-      
       toast('הסיסמה האישית נשמרה בהצלחה!', 'success');
   } 
   else if (inp !== _loginTarget.pass) {
-    err.textContent = 'סיסמה שגויה ❌';
-    err.style.display = 'block';
+    if(err) { err.textContent = 'סיסמה שגויה ❌'; err.style.display = 'block'; }
     return;
   }
   
@@ -141,7 +143,6 @@ export function logout() {
   backToUsers();
 }
 
-// פונקציית העיצוב נמצאת כעת באופן בטוח בתוך קובץ זה!
 export function applyUserDesign(u) {
   if (!u) return;
   const d = u.design || { bg: 'stone', color: u.color || '#3b82f6', glow: true };
@@ -161,7 +162,6 @@ export function applyUserDesign(u) {
   document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
 }
 
-// מאפשר לקבצים אחרים (כמו מסך ההגדרות) לקרוא לפונקציה מבלי לקרוס
 window.applyUserDesign = applyUserDesign;
 
 export function applyUser(u) {
@@ -173,7 +173,6 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  // הפעלה בטוחה של העיצוב
   applyUserDesign(u);
 
   const badgeDisplay = document.getElementById('user-badge-display');
@@ -215,6 +214,7 @@ export function applyUser(u) {
   }, 3000);
 }
 
+// החשיפה של הפונקציות החוצה כדי שהכפתורים ב-HTML יעבדו בלי שגיאות!
 window._selectUser = selectUser;
 window.doLogin = doLogin;
 window.backToUsers = backToUsers;
