@@ -1,13 +1,13 @@
 // ══ settings.js — settings page + user management ══
 
 import { USERS, DEFAULT_PERMS } from './config.js';
+import { getPerms } from './auth.js';
 import { toast } from './utils.js';
 import { openM, closeM } from './nav.js';
 import { addLog } from './log.js'; 
 
 let _editUserName = null;
 
-// ── העלאת לוגואים ורקעים עם כיווץ אוטומטי ──
 window.uploadLogo = function(input, type) {
     const file = input.files[0];
     if(!file) return;
@@ -19,8 +19,12 @@ window.uploadLogo = function(input, type) {
             const MAX_WIDTH = type === 'header' ? 600 : 300; 
             let width = img.width;
             let height = img.height;
-            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-            canvas.width = width; canvas.height = height;
+            if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+            }
+            canvas.width = width;
+            canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             const dataUrl = canvas.toDataURL('image/png', 0.8);
@@ -54,12 +58,19 @@ window.uploadCustomBg = function(input) {
             let height = img.height;
             
             if (width > height) {
-                if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                if (width > MAX_SIZE) {
+                    height *= MAX_SIZE / width;
+                    width = MAX_SIZE;
+                }
             } else {
-                if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                if (height > MAX_SIZE) {
+                    width *= MAX_SIZE / height;
+                    height = MAX_SIZE;
+                }
             }
             
-            canvas.width = width; canvas.height = height;
+            canvas.width = width;
+            canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
@@ -96,11 +107,12 @@ window._resetUserPassword = function() {
     if(confirm(`לאפס את הסיסמה ל-${u.name}? בכניסה הבאה הוא יידרש לבחור סיסמה חדשה.`)) {
         u.pass = ''; 
         if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
+        document.getElementById('u-reset-pass-btn').style.display = 'none';
         toast('הסיסמה אופסה. העובד יבחר חדשה בהתחברות הבאה.');
     }
 };
 
-// ── אלו 5 הפונקציות המדויקות שהמנוע הראשי מחפש: ──
+// ── כאן התיקון הקריטי: הפונקציות המדויקות ש-main.js מחפש (Export) ──
 
 export function loadSettings() {
   document.getElementById('s-company').value = window.cfg.company || '';
@@ -112,6 +124,7 @@ export function loadSettings() {
   if (panel) panel.style.display = canManageUsers ? '' : 'none';
   if (canManageUsers) renderUsersList();
 }
+window.loadSettings = loadSettings;
 
 export function saveSettings() {
   window.cfg.company = document.getElementById('s-company').value.trim();
@@ -121,6 +134,21 @@ export function saveSettings() {
   localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
   toast('הגדרות נשמרו ✅');
 }
+window.saveSettings = saveSettings;
+
+export function renderUsersList() {
+  const el = document.getElementById('s-users-list');
+  if (!el) return;
+  el.innerHTML = USERS.map(u => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sur2);border-radius:8px;margin-bottom:8px">
+      <div style="width:32px;height:32px;border-radius:50%;background:${u.color || '#3b82f6'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${u.name[0]}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${u.name}</div>
+        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}</div>
+      </div>
+      <button class="btn bs btn-sm" onclick="window._openEditUser('${u.name}')">✏️ ערוך</button>
+    </div>`).join('');
+}
 
 export function openAddUser() {
   _editUserName = null;
@@ -129,15 +157,71 @@ export function openAddUser() {
   document.getElementById('u-name').disabled = false;
   document.getElementById('u-pass').value   = ''; 
   document.getElementById('u-nopass').checked = false;
+  document.getElementById('u-color').value  = '#3b82f6';
   document.getElementById('u-del-btn').style.display = 'none';
+  document.getElementById('u-reset-pass-btn').style.display = 'none';
   
   renderPermsGrid({});
   openM('M-user');
+}
+window.openAddUser = openAddUser;
+
+export function openEditUser(name) {
+  const u = USERS.find(x => x.name === name); if (!u) return;
+  _editUserName = name;
+  document.getElementById('M-user-title').textContent = 'עריכת ' + name;
+  document.getElementById('u-name').value   = u.name;
+  document.getElementById('u-name').disabled = true;
+  document.getElementById('u-color').value = u.color || '#3b82f6';
+  
+  const nopass = (u.pass === 'NOPASS');
+  document.getElementById('u-nopass').checked  = nopass;
+  
+  document.getElementById('u-pass').value = nopass ? '' : (u.pass || '');
+  document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
+  
+  const rstBtn = document.getElementById('u-reset-pass-btn');
+  if (u.pass && u.pass !== 'NOPASS') rstBtn.style.display = 'block';
+  else rstBtn.style.display = 'none';
+
+  renderPermsGrid(getPerms(u));
+  openM('M-user');
+}
+// הגשר לכפתור העריכה ב-HTML
+window._openEditUser = openEditUser; 
+window.openEditUser = openEditUser;
+
+export function renderPermsGrid(p) {
+  const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
+  const grid = document.getElementById('u-perms-grid');
+  if (!grid) return;
+  
+  let h = '';
+  for (let k in map) {
+    const v = p[k] !== undefined ? p[k] : 3; 
+    h += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1)">
+      <div style="font-weight:600; font-size:13px;">${map[k]}</div>
+      <select class="finp perm-sel" data-key="${k}" style="width:200px; padding:6px; font-size:12px; cursor:pointer;" id="p-${k}">
+        <option value="0" ${v==0?'selected':''}>🚫 חסום (לא יראה את המסך בכלל)</option>
+        <option value="1" ${v==1?'selected':''}>👁️ צפייה בלבד</option>
+        <option value="2" ${v==2?'selected':''}>✏️ צפייה + הוספה ועריכה</option>
+        <option value="3" ${v==3?'selected':''}>👑 ניהול מלא (כולל מחיקה)</option>
+      </select>
+    </div>`;
+  }
+  grid.innerHTML = h;
+}
+
+function getPermsFromGrid() {
+  const perms = {};
+  document.querySelectorAll('.perm-sel').forEach(sel => { perms[sel.dataset.key] = parseInt(sel.value); });
+  return perms;
 }
 
 export function saveUser() {
   const name  = _editUserName || document.getElementById('u-name').value.trim();
   const nopass = document.getElementById('u-nopass').checked;
+  const color  = document.getElementById('u-color').value;
   const passInp = document.getElementById('u-pass').value.trim();
   
   if (!name) { toast('חובה להכניס שם', 'err'); return; }
@@ -149,11 +233,10 @@ export function saveUser() {
   
   if (_editUserName) {
     const idx = USERS.findIndex(x => x.name === _editUserName);
-    const existingColor = USERS[idx].color || '#3b82f6';
-    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color: existingColor, perms };
+    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color, perms };
   } else {
     if (USERS.find(x => x.name === name)) { toast('משתמש עם שם זה כבר קיים', 'err'); return; }
-    USERS.push({ name, pass, color: '#3b82f6', role: 'admin', perms });
+    USERS.push({ name, pass, color, role: 'admin', perms });
   }
   
   if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
@@ -162,6 +245,7 @@ export function saveUser() {
   renderUsersList();
   toast('משתמש נשמר ✅');
 }
+window.saveUser = saveUser;
 
 export function deleteUser() {
   if (!_editUserName) return;
@@ -176,64 +260,3 @@ export function deleteUser() {
   toast('משתמש נמחק ✅');
 }
 window.deleteUser = deleteUser;
-window.saveUser = saveUser;
-
-// ── פונקציות פנימיות לעזרה: ──
-
-function renderUsersList() {
-  const el = document.getElementById('s-users-list');
-  if (!el) return;
-  el.innerHTML = USERS.map(u => `
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sur2);border-radius:8px;margin-bottom:8px">
-      <div style="width:32px;height:32px;border-radius:50%;background:${u.color || '#3b82f6'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${u.name[0]}</div>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:13px">${u.name}</div>
-        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}</div>
-      </div>
-      <button class="btn bs btn-sm" onclick="window._openEditUser('${u.name}')">✏️ ערוך</button>
-    </div>`).join('');
-}
-
-window._openEditUser = function(name) {
-  const u = USERS.find(x => x.name === name); if (!u) return;
-  _editUserName = name;
-  document.getElementById('M-user-title').textContent = 'עריכת ' + name;
-  document.getElementById('u-name').value   = u.name;
-  document.getElementById('u-name').disabled = true;
-  
-  const nopass = (u.pass === 'NOPASS');
-  document.getElementById('u-nopass').checked  = nopass;
-  
-  document.getElementById('u-pass').value = nopass ? '' : (u.pass || '');
-  document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
-  
-  renderPermsGrid(u.perms || {});
-  openM('M-user');
-};
-
-function renderPermsGrid(p) {
-  const map = { custs:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warr:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
-  const grid = document.getElementById('u-perms-grid');
-  if (!grid) return;
-  
-  let h = '';
-  for (let k in map) {
-    const v = p[k] !== undefined ? p[k] : 3; 
-    h += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1)">
-      <div style="font-weight:600; font-size:13px;">${map[k]}</div>
-      <select class="finp perm-sel" data-key="${k}" style="width:200px; padding:6px; font-size:12px; cursor:pointer;" id="p-${k}">
-        <option value="0" ${v==0?'selected':''}>🚫 חסום (ללא גישה)</option>
-        <option value="1" ${v==1?'selected':''}>👁️ צפייה בלבד</option>
-        <option value="2" ${v==2?'selected':''}>✏️ צפייה, הוספה ועריכה</option>
-        <option value="3" ${v==3?'selected':''}>👑 ניהול מלא (כולל מחיקה)</option>
-      </select>
-    </div>`;
-  }
-  grid.innerHTML = h;
-}
-
-function getPermsFromGrid() {
-  const perms = {};
-  document.querySelectorAll('.perm-sel').forEach(sel => { perms[sel.dataset.key] = parseInt(sel.value); });
-  return perms;
-}
