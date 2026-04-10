@@ -1,6 +1,6 @@
 // ══ settings.js — settings page + user management ══
 
-import { USERS, DEFAULT_PERMS, PERM_MODULES } from './config.js';
+import { USERS } from './config.js';
 import { getPerms } from './auth.js';
 import { toast } from './utils.js';
 import { openM, closeM } from './nav.js';
@@ -8,7 +8,7 @@ import { addLog } from './log.js';
 
 let _editUserName = null;
 
-// פונקציית כיווץ והעלאת לוגו
+// העלאת לוגו
 window.uploadLogo = function(input, type) {
     const file = input.files[0];
     if(!file) return;
@@ -28,7 +28,6 @@ window.uploadLogo = function(input, type) {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            
             const dataUrl = canvas.toDataURL('image/png', 0.8);
 
             window.cfg.logos = window.cfg.logos || {};
@@ -37,12 +36,40 @@ window.uploadLogo = function(input, type) {
             if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
             localStorage.setItem('vd_crm_logos', JSON.stringify(window.cfg.logos));
             window.applyLogos(); 
-            
             toast('לוגו עודכן בהצלחה! 🎨', 'success');
         }
         img.src = e.target.result;
     }
     reader.readAsDataURL(file);
+};
+
+// העלאת רקע אישי משלך
+window.uploadCustomBg = function(input) {
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const u = window.cfg.users.find(x => x.name === window._currentUser);
+        if (u) {
+            u.design = u.design || {};
+            u.design.bgImage = dataUrl;
+            if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
+            window.applyUserDesign(u);
+            toast('רקע אישי עודכן!', 'success');
+        }
+    }
+    reader.readAsDataURL(file);
+};
+
+window.clearCustomBg = function() {
+    const u = window.cfg.users.find(x => x.name === window._currentUser);
+    if (u && u.design) {
+        u.design.bgImage = null;
+        if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
+        window.applyUserDesign(u);
+        toast('רקע אישי הוסר', 'info');
+    }
 };
 
 export function loadSettings() {
@@ -73,7 +100,9 @@ export function renderUsersList() {
       <div style="width:32px;height:32px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${u.name[0]}</div>
       <div style="flex:1">
         <div style="font-weight:600;font-size:13px">${u.name}</div>
-        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}</div>
+        <div style="font-size:11px;color:var(--tx3)">
+           ${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}
+        </div>
       </div>
       <button class="btn bs btn-sm" onclick="window._openEditUser('${u.name}')">✏️ ערוך</button>
     </div>`).join('');
@@ -84,10 +113,10 @@ export function openAddUser() {
   document.getElementById('M-user-title').textContent = 'משתמש חדש';
   document.getElementById('u-name').value   = '';
   document.getElementById('u-name').disabled = false;
+  document.getElementById('u-pass').value   = ''; 
   document.getElementById('u-nopass').checked = false;
   document.getElementById('u-color').value  = '#3b82f6';
   document.getElementById('u-del-btn').style.display = 'none';
-  document.getElementById('u-reset-pass-btn').style.display = 'none';
   
   renderPermsGrid({});
   openM('M-user');
@@ -103,29 +132,17 @@ export function openEditUser(name) {
   
   const nopass = (u.pass === 'NOPASS');
   document.getElementById('u-nopass').checked  = nopass;
-  document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
   
-  const rstBtn = document.getElementById('u-reset-pass-btn');
-  if (u.pass && u.pass !== 'NOPASS') rstBtn.style.display = 'block';
-  else rstBtn.style.display = 'none';
+  // כאן אתה האדמין, אז אתה תראה את הסיסמה בטקסט רגיל
+  document.getElementById('u-pass').value = nopass ? '' : (u.pass || '');
+  
+  document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
 
   renderPermsGrid(getPerms(u));
   openM('M-user');
 }
 
-window._resetUserPassword = function() {
-    if (!_editUserName) return;
-    const u = USERS.find(x => x.name === _editUserName);
-    if (!u) return;
-    if(confirm(`לאפס את הסיסמה ל-${u.name}? בכניסה הבאה הוא יידרש לבחור סיסמה חדשה.`)) {
-        u.pass = ''; 
-        if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
-        document.getElementById('u-reset-pass-btn').style.display = 'none';
-        toast('הסיסמה אופסה. העובד יבחר חדשה בהתחברות הבאה.');
-    }
-}
-
-// ── התפריט הברור בעברית ──
+// התפריט הברור בעברית להרשאות בדיוק כמו שביקשת
 export function renderPermsGrid(p) {
   const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
   const grid = document.getElementById('u-perms-grid');
@@ -134,9 +151,9 @@ export function renderPermsGrid(p) {
   let h = '';
   for (let k in map) {
     const v = p[k] !== undefined ? p[k] : 3; 
-    h += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--brd)">
-      <div style="font-weight:600; font-size:14px;">${map[k]}</div>
-      <select class="finp perm-sel" data-key="${k}" style="width:200px; padding:6px; font-size:13px; cursor:pointer;" id="p-${k}">
+    h += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1)">
+      <div style="font-weight:600; font-size:13px;">${map[k]}</div>
+      <select class="finp perm-sel" data-key="${k}" style="width:200px; padding:6px; font-size:12px; cursor:pointer;" id="p-${k}">
         <option value="0" ${v==0?'selected':''}>🚫 חסום (לא יראה את המסך בכלל)</option>
         <option value="1" ${v==1?'selected':''}>👁️ צפייה בלבד</option>
         <option value="2" ${v==2?'selected':''}>✏️ צפייה + הוספה ועריכה</option>
@@ -157,15 +174,12 @@ export function saveUser() {
   const name  = _editUserName || document.getElementById('u-name').value.trim();
   const nopass = document.getElementById('u-nopass').checked;
   const color  = document.getElementById('u-color').value;
+  const passInp = document.getElementById('u-pass').value.trim();
   
   if (!name) { toast('חובה להכניס שם', 'err'); return; }
   
-  let pass = '';
+  let pass = passInp;
   if (nopass) pass = 'NOPASS';
-  else if (_editUserName) {
-      const existing = USERS.find(x => x.name === _editUserName);
-      pass = existing ? (existing.pass || '') : '';
-  }
 
   const perms = getPermsFromGrid();
   
