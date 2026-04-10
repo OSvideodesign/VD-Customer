@@ -4,7 +4,7 @@ import { USERS, DEFAULT_PERMS, PERM_MODULES } from './config.js';
 import { getPerms } from './auth.js';
 import { toast } from './utils.js';
 import { openM, closeM } from './nav.js';
-import { addLog } from './log.js'; // הוספת הייבוא החסר מהגיבוי
+import { addLog } from './log.js'; 
 
 let _editUserName = null;
 
@@ -73,7 +73,7 @@ export function renderUsersList() {
       <div style="width:32px;height:32px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${u.name[0]}</div>
       <div style="flex:1">
         <div style="font-weight:600;font-size:13px">${u.name}</div>
-        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '••••••')}</div>
+        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}</div>
       </div>
       <button class="btn bs btn-sm" onclick="window._openEditUser('${u.name}')">✏️ ערוך</button>
     </div>`).join('');
