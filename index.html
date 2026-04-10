@@ -65,30 +65,30 @@ document.head.appendChild(_link);
     <button class="mnb" id="mn-cust" onclick="nav('customers')"><span style="font-size:20px">👥</span>לקוחות</button>
     <button class="mnb" id="mn-fault" onclick="nav('faults')"><span style="font-size:20px">🔧</span>משימות</button>
     <button class="mnb" id="mn-note" onclick="nav('notes')"><span style="font-size:20px">📝</span>הערות</button>
-    <button class="mnb" onclick="openDrawer()"><span style="font-size:20px">☰</span>עוד</button>
+    <button class="mnb" onclick="openDrawer(); document.body.style.overflow='hidden';"><span style="font-size:20px">☰</span>עוד</button>
   </div>
 </div>
 
 <div id="m-drawer">
-  <div id="m-drawer-bg" onclick="closeDrawer()"></div>
+  <div id="m-drawer-bg" onclick="closeDrawer(); document.body.style.overflow='';"></div>
   <div id="m-drawer-panel">
-    <div class="m-drawer-header"><span>תפריט</span><button onclick="closeDrawer()" class="m-drawer-close">✕</button></div>
+    <div class="m-drawer-header"><span>תפריט</span><button onclick="closeDrawer(); document.body.style.overflow='';" class="m-drawer-close">✕</button></div>
     <div id="m-user-badge-display" style="text-align:center; padding:12px; margin-bottom: 10px; border-bottom: 1px solid var(--brd); font-size: 15px; font-weight: 500; background: var(--sur2);"></div>
 
     <div class="m-drawer-sec">ניהול</div>
-    <button class="m-drawer-btn" id="md-dashboard" onclick="navD('dashboard')">📊 לוח בקרה</button>
-    <button class="m-drawer-btn" id="md-customers" onclick="navD('customers')">👥 לקוחות</button>
-    <button class="m-drawer-btn" id="md-faults" onclick="navD('faults')">🔧 משימות</button>
-    <button class="m-drawer-btn" id="md-archive" onclick="navD('archive')">✅ ארכיון</button>
+    <button class="m-drawer-btn" id="md-dashboard" onclick="navD('dashboard'); document.body.style.overflow='';">📊 לוח בקרה</button>
+    <button class="m-drawer-btn" id="md-customers" onclick="navD('customers'); document.body.style.overflow='';">👥 לקוחות</button>
+    <button class="m-drawer-btn" id="md-faults" onclick="navD('faults'); document.body.style.overflow='';">🔧 משימות</button>
+    <button class="m-drawer-btn" id="md-archive" onclick="navD('archive'); document.body.style.overflow='';">✅ ארכיון</button>
     <div class="m-drawer-sec">דוחות</div>
-    <button class="m-drawer-btn" id="md-warranties" onclick="navD('warranties')">🛡️ אחריות</button>
-    <button class="m-drawer-btn" id="md-debts" onclick="navD('debts')">💰 חובות</button>
-    <button class="m-drawer-btn" id="md-notes" onclick="navD('notes')">📝 הערות</button>
-    <button class="m-drawer-btn" id="md-reports" onclick="navD('reports')">📈 דוחות</button>
+    <button class="m-drawer-btn" id="md-warranties" onclick="navD('warranties'); document.body.style.overflow='';">🛡️ אחריות</button>
+    <button class="m-drawer-btn" id="md-debts" onclick="navD('debts'); document.body.style.overflow='';">💰 חובות</button>
+    <button class="m-drawer-btn" id="md-notes" onclick="navD('notes'); document.body.style.overflow='';">📝 הערות</button>
+    <button class="m-drawer-btn" id="md-reports" onclick="navD('reports'); document.body.style.overflow='';">📈 דוחות</button>
     <div class="m-drawer-sec">מערכת</div>
-    <button class="m-drawer-btn" id="md-settings" onclick="navD('settings')">⚙️ הגדרות</button>
-    <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer()">🔍 חיפוש גלובלי</button>
-    <button class="m-drawer-btn m-drawer-logout" onclick="logout()">🚪 התנתק</button>
+    <button class="m-drawer-btn" id="md-settings" onclick="navD('settings'); document.body.style.overflow='';">⚙️ הגדרות</button>
+    <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer(); document.body.style.overflow='';">🔍 חיפוש גלובלי</button>
+    <button class="m-drawer-btn m-drawer-logout" onclick="logout(); document.body.style.overflow='';">🚪 התנתק</button>
     
     <div style="text-align:center; margin-top:20px; padding:10px;">
       <div style="font-size:11px; color:#8a9097; margin-bottom:6px;">גודל טקסט אישי</div>
@@ -216,7 +216,7 @@ document.head.appendChild(_link);
   
   <div class="pg" id="pg-faults">
     <div class="ph">
-      <div style="display:flex; align-items:center; gap:14px;"><div style="font-size:32px; line-height:1;">🔧</div><div><div class="pt">משימות</div><div class="ps" id="cnt-faults"></div></div></div>
+      <div style="display:flex; align-items:center; gap:14px;"><div style="font-size:32px; line-height:1;">🔧</div><div><div class="pt">משימות וטיפולים</div><div class="ps" id="cnt-faults"></div></div></div>
       <button class="btn bp" onclick="openNewFault(null)">+ משימה חדשה</button>
     </div>
     <div class="toolbar">
@@ -295,9 +295,9 @@ document.head.appendChild(_link);
         </div>
       </div>
 
-      <div class="tw settings-panel" id="s-users-panel" style="display:none; grid-column:1/-1;">
+      <div class="tw settings-panel" id="s-users-panel" style="display:none;">
         <div class="stit">👥 ניהול משתמשים והרשאות</div>
-        <div id="s-users-list" style="margin-bottom:16px; display:grid; gap:10px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));"></div>
+        <div id="s-users-list" style="margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
         <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש חדש</button>
       </div>
     </div>
