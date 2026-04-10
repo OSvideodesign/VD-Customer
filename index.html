@@ -262,6 +262,7 @@ document.head.appendChild(_link);
   
   <div class="pg" id="pg-settings">
     <div class="ph"><div style="display:flex; align-items:center; gap:14px;"><div style="font-size:32px; line-height:1;">⚙️</div><div><div class="pt">הגדרות</div><div class="ps">ניהול מערכת והתאמה אישית</div></div></div></div>
+    
     <div class="settings-grid">
       
       <div class="tw settings-panel">
@@ -276,13 +277,7 @@ document.head.appendChild(_link);
         <button class="btn bd" style="width:100%" onclick="if(confirm('למחוק את כל הלוג?')) clearLog()">🗑️ נקה לוג מערכת</button>
       </div>
 
-      <div class="tw settings-panel" id="s-users-panel" style="display:none;">
-        <div class="stit">👥 ניהול משתמשים והרשאות</div>
-        <div id="s-users-list" style="margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
-        <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש חדש</button>
-      </div>
-
-      <div class="tw settings-panel" id="s-design-panel" style="grid-column: 1 / -1;">
+      <div class="tw settings-panel" id="s-design-panel">
         <div class="stit">🎨 עיצוב ומיתוג אישי</div>
         <div style="background: rgba(0,0,0,0.15); padding:12px; border-radius:8px; margin-bottom: 20px;">
            <div style="font-weight:bold; margin-bottom:10px; font-size:13px; color:var(--acc);">🖼️ החלפת לוגואים במערכת</div>
@@ -310,6 +305,12 @@ document.head.appendChild(_link);
             <label class="flbl" style="margin-bottom:0;cursor:pointer">הפעל אפקט הברקות 3D</label>
           </div>
         </div>
+      </div>
+
+      <div class="tw settings-panel" id="s-users-panel" style="display:none;">
+        <div class="stit">👥 ניהול משתמשים והרשאות</div>
+        <div id="s-users-list" style="margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
+        <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש חדש</button>
       </div>
 
     </div>
@@ -413,20 +414,33 @@ document.head.appendChild(_link);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
+  // הזרקת קוד CSS כדי להכריח את הרקע האישי להופיע!
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || { bg: 'stone', color: u.color || '#3b82f6', glow: true };
       document.documentElement.style.setProperty('--acc', d.color);
       
+      let styleTag = document.getElementById('custom-bg-style');
+      if (!styleTag) {
+          styleTag = document.createElement('style');
+          styleTag.id = 'custom-bg-style';
+          document.head.appendChild(styleTag);
+      }
+
       if (d.bgImage) {
-          document.body.setAttribute('data-bg', 'custom'); 
-          document.body.style.setProperty('background-image', `url(${d.bgImage})`, 'important');
-          document.body.style.setProperty('background-size', 'cover', 'important');
-          document.body.style.setProperty('background-position', 'center', 'important');
-          document.body.style.setProperty('background-attachment', 'fixed', 'important');
+          document.body.setAttribute('data-bg', 'custom');
+          styleTag.innerHTML = `
+              body[data-bg="custom"] {
+                  background-image: url("${d.bgImage}") !important;
+                  background-size: cover !important;
+                  background-position: center !important;
+                  background-attachment: fixed !important;
+                  background-color: #111 !important;
+              }
+          `;
       } else {
-          document.body.style.removeProperty('background-image');
           document.body.setAttribute('data-bg', d.bg);
+          styleTag.innerHTML = '';
       }
       
       document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
