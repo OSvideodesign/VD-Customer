@@ -106,9 +106,8 @@ export function doLogin() {
       }
       _loginTarget.pass = inp; 
       
-      // ── התיקון הקריטי למניעת הקריסה ──
       if (window.cfg) {
-          window.cfg.users = window.cfg.users || [...USERS]; // מוודא שרשימת המשתמשים קיימת בענן לפני ששומר!
+          window.cfg.users = window.cfg.users || [...USERS]; 
           const cfgU = window.cfg.users.find(x => x.name === _loginTarget.name);
           if (cfgU) {
               cfgU.pass = inp;
@@ -117,7 +116,6 @@ export function doLogin() {
           }
           if (window._dbSaveCfg) window._dbSaveCfg(window.cfg); 
       }
-      // ────────────────────────────────
       
       toast('הסיסמה האישית נשמרה בהצלחה!', 'success');
   } 
@@ -135,7 +133,7 @@ export function doLogin() {
 export function backToUsers() {
   _loginTarget = null;
   document.getElementById('pass-area').style.display = 'none';
-  document.getElementById('user-btns').style.display = 'grid';
+  document.getElementById('user-btns').style.display = 'grid'; 
 }
 
 export function logout() {
@@ -194,3 +192,9 @@ export function applyUser(u) {
     try { addLog('other', 'כניסה למערכת', u.name + ' — ' + (isMobile ? '📱 מובייל' : '💻 מחשב')); } catch (e) {}
   }, 3000);
 }
+
+// ── התיקון שפותר את השגיאה: חשיפת הפונקציות החוצה כדי שהכפתורים יעבדו ──
+window._selectUser = selectUser;
+window.doLogin = doLogin;
+window.backToUsers = backToUsers;
+window.logout = logout;
