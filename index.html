@@ -264,7 +264,6 @@ document.head.appendChild(_link);
     <div class="ph"><div style="display:flex; align-items:center; gap:14px;"><div style="font-size:32px; line-height:1;">⚙️</div><div><div class="pt">הגדרות</div><div class="ps">ניהול מערכת והתאמה אישית</div></div></div></div>
     
     <div class="settings-grid">
-      
       <div class="tw settings-panel">
         <div class="stit">🏢 פרטי החברה</div>
         <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company"></div>
@@ -320,22 +319,39 @@ document.head.appendChild(_link);
 <div class="modal" id="M-cust">
   <div class="mbox">
     <div class="mhd"><h2 id="M-cust-title">לקוח חדש</h2><button class="btn bs btn-sm" onclick="closeM('M-cust')">✕</button></div>
-    <div class="mbody"><div class="fgrid">
-      <div><label class="flbl">שם מלא *</label><input class="finp" id="mc-name"></div>
-      <div><label class="flbl">טלפון</label><input class="finp" id="mc-phone" type="tel"></div>
-      <div><label class="flbl">עיר</label><input class="finp" id="mc-city"></div>
-      <div class="fg1"><label class="flbl">כתובת</label><input class="finp" id="mc-address"></div>
-      <div class="fg1"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><label class="flbl" style="margin-bottom:0">כתובות נוספות</label><button type="button" class="btn bs btn-sm" onclick="addAddressRow()">+ הוסף כתובת</button></div><div id="mc-addresses-list" style="display:flex;flex-direction:column;gap:6px"></div></div>
-      <div><label class="flbl">תאריך התקנה</label><input class="finp" id="mc-install" type="date"></div>
-      <div><label class="flbl">שנות אחריות</label><input class="finp" id="mc-warr" type="number" value="0" min="0" max="20"></div>
-      <div><label class="flbl">סוג פרויקט</label><input class="finp" id="mc-project"></div>
-      <div><label class="flbl">ציוד</label><input class="finp" id="mc-equip"></div>
-      <div><label class="flbl">חוב (₪)</label><input class="finp" id="mc-debt" type="number" value="0" min="0"></div>
-      <div class="fg1"><label class="flbl">הערות חוב</label><input class="finp" id="mc-debt-desc"></div>
-      <div class="fg1"><label class="flbl">הערות כלליות</label><textarea class="finp" id="mc-notes" rows="3"></textarea></div>
-      <div class="fg1"><div class="stit" style="margin-top:4px">👥 אנשי קשר נוספים</div><div id="mc-contacts-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div><button type="button" class="btn bs btn-sm" onclick="addContactRow()">+ הוסף איש קשר</button></div>
-    </div></div>
-    <div class="mft"><button class="btn bd btn-sm" id="mc-del" style="display:none;margin-left:auto" onclick="delCust()">🗑️ מחק</button><button class="btn bs" onclick="closeM('M-cust')">ביטול</button><button class="btn bp" onclick="saveCust()">💾 שמור</button></div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div><label class="flbl">שם מלא *</label><input class="finp" id="mc-name"></div>
+        <div><label class="flbl">טלפון</label><input class="finp" id="mc-phone" type="tel"></div>
+        <div><label class="flbl">מייל</label><input class="finp" id="mc-email" type="email"></div>
+        <div><label class="flbl">עיר</label><input class="finp" id="mc-city"></div>
+        <div class="fg1"><label class="flbl">כתובת</label><input class="finp" id="mc-address"></div>
+        <div class="fg1">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <label class="flbl" style="margin-bottom:0">כתובות נוספות</label>
+            <button type="button" class="btn bs btn-sm" onclick="addAddressRow()">+ הוסף כתובת</button>
+          </div>
+          <div id="mc-addresses-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+        <div><label class="flbl">תאריך התקנה</label><input class="finp" id="mc-install" type="date"></div>
+        <div><label class="flbl">שנות אחריות</label><input class="finp" id="mc-warr" type="number" value="0" min="0" max="20"></div>
+        <div><label class="flbl">סוג פרויקט</label><input class="finp" id="mc-project"></div>
+        <div><label class="flbl">ציוד</label><input class="finp" id="mc-equip"></div>
+        <div><label class="flbl">חוב (₪)</label><input class="finp" id="mc-debt" type="number" value="0" min="0"></div>
+        <div class="fg1"><label class="flbl">הערות חוב</label><input class="finp" id="mc-debt-desc"></div>
+        <div class="fg1"><label class="flbl">הערות כלליות</label><textarea class="finp" id="mc-notes" rows="3"></textarea></div>
+        <div class="fg1">
+          <div class="stit" style="margin-top:4px">👥 אנשי קשר נוספים</div>
+          <div id="mc-contacts-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+          <button type="button" class="btn bs btn-sm" onclick="addContactRow()">+ הוסף איש קשר</button>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="mc-del" style="display:none;margin-left:auto" onclick="delCust()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-cust')">ביטול</button>
+      <button class="btn bp" onclick="saveCust()">💾 שמור</button>
+    </div>
   </div>
 </div>
 
@@ -350,20 +366,22 @@ document.head.appendChild(_link);
 <div class="modal" id="M-fault">
   <div class="mbox">
     <div class="mhd"><h2 id="M-fault-title">משימה חדשה</h2><button class="btn bs btn-sm" onclick="closeM('M-fault')">✕</button></div>
-    <div class="mbody"><div class="fgrid">
-      <div class="fg1"><label class="flbl">סוג *</label><select class="finp" id="mf-type"><option value="fault">🔧 משימה</option><option value="meeting">🤝 פגישה</option><option value="service">🛠️ שירות</option><option value="installation">📦 המשך התקנה</option><option value="other">📋 אחר</option></select></div>
-      <div class="fg1"><label class="flbl">לקוח</label><select class="finp" id="mf-cust" onchange="toggleGuestFields()"></select></div>
-      <div class="fg1" id="mf-guest-fields" style="display:none"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="flbl">שם מלא (מזדמן)</label><input class="finp" id="mf-guest-name"></div><div><label class="flbl">טלפון</label><input class="finp" id="mf-guest-phone" type="tel"></div></div></div>
-      <div class="fg1"><label class="flbl">תיאור *</label><textarea class="finp" id="mf-desc" rows="3"></textarea></div>
-      <div><label class="flbl">צבע ביומן</label><select class="finp" id="mf-color"><option value="">ברירת מחדל</option><option value="blue">🔵 כחול</option><option value="green">🟢 ירוק</option><option value="yellow">🟡 צהוב</option><option value="orange">🟠 כתום</option><option value="red">🔴 אדום</option><option value="purple">🟣 סגול</option><option value="pink">🩷 ורוד</option><option value="cyan">🩵 טורקיז</option><option value="indigo">🌌 אינדיגו</option><option value="black">⚫ שחור</option><option value="gray">🔘 אפור</option></select></div>
-      <div><label class="flbl">דחיפות</label><select class="finp" id="mf-pri"><option value="low">🟢 נמוכה</option><option value="medium" selected>🟡 בינונית</option><option value="high">🔴 גבוהה</option><option value="urgent">🚨 דחוף!</option></select></div>
-      <div><label class="flbl">סטטוס</label><select class="finp" id="mf-status"><option value="open">פתוחה</option><option value="scheduled">נקבע תאריך</option><option value="done">טופלה</option></select></div>
-      <div><label class="flbl">תאריך הגעה</label><input class="finp" id="mf-date" type="date"></div>
-      <div><label class="flbl">שעה</label><input class="finp" id="mf-time" type="time"></div>
-      <div><label class="flbl">💰 סכום שירות (₪)</label><div style="display:flex;align-items:center;gap:10px;"><input class="finp" id="mf-amount" type="number" min="0" style="flex:1;"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" id="mf-vat" style="width:16px;height:16px;cursor:pointer;">+18% מע"מ</label></div></div>
-      <div><label class="flbl">שולם?</label><select class="finp" id="mf-paid"><option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option></select></div>
-      <div class="fg1"><label class="flbl">הערות פנימיות</label><textarea class="finp" id="mf-notes" rows="2"></textarea></div>
-    </div></div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="fg1"><label class="flbl">סוג *</label><select class="finp" id="mf-type"><option value="fault">🔧 משימה</option><option value="meeting">🤝 פגישה</option><option value="service">🛠️ שירות</option><option value="installation">📦 המשך התקנה</option><option value="other">📋 אחר</option></select></div>
+        <div class="fg1"><label class="flbl">לקוח</label><select class="finp" id="mf-cust" onchange="toggleGuestFields()"></select></div>
+        <div class="fg1" id="mf-guest-fields" style="display:none"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="flbl">שם מלא (מזדמן)</label><input class="finp" id="mf-guest-name"></div><div><label class="flbl">טלפון</label><input class="finp" id="mf-guest-phone" type="tel"></div></div></div>
+        <div class="fg1"><label class="flbl">תיאור *</label><textarea class="finp" id="mf-desc" rows="3"></textarea></div>
+        <div><label class="flbl">צבע ביומן</label><select class="finp" id="mf-color"><option value="">ברירת מחדל</option><option value="blue">🔵 כחול</option><option value="green">🟢 ירוק</option><option value="yellow">🟡 צהוב</option><option value="orange">🟠 כתום</option><option value="red">🔴 אדום</option><option value="purple">🟣 סגול</option><option value="pink">🩷 ורוד</option><option value="cyan">🩵 טורקיז</option><option value="indigo">🌌 אינדיגו</option><option value="black">⚫ שחור</option><option value="gray">🔘 אפור</option></select></div>
+        <div><label class="flbl">דחיפות</label><select class="finp" id="mf-pri"><option value="low">🟢 נמוכה</option><option value="medium" selected>🟡 בינונית</option><option value="high">🔴 גבוהה</option><option value="urgent">🚨 דחוף!</option></select></div>
+        <div><label class="flbl">סטטוס</label><select class="finp" id="mf-status"><option value="open">פתוחה</option><option value="scheduled">נקבע תאריך</option><option value="done">טופלה</option></select></div>
+        <div><label class="flbl">תאריך הגעה</label><input class="finp" id="mf-date" type="date"></div>
+        <div><label class="flbl">שעה</label><input class="finp" id="mf-time" type="time"></div>
+        <div><label class="flbl">💰 סכום שירות (₪)</label><div style="display:flex;align-items:center;gap:10px;"><input class="finp" id="mf-amount" type="number" min="0" style="flex:1;"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" id="mf-vat" style="width:16px;height:16px;cursor:pointer;">+18% מע"מ</label></div></div>
+        <div><label class="flbl">שולם?</label><select class="finp" id="mf-paid"><option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option></select></div>
+        <div class="fg1"><label class="flbl">הערות פנימיות</label><textarea class="finp" id="mf-notes" rows="2"></textarea></div>
+      </div>
+    </div>
     <div class="mft"><button class="btn bd btn-sm" id="mf-del" style="display:none;margin-left:auto" onclick="window.delFault()">🗑️ מחק</button><button class="btn bs" onclick="closeM('M-fault')">ביטול</button><button class="btn bp" onclick="window.saveFault()">💾 שמור</button></div>
   </div>
 </div>
@@ -389,6 +407,7 @@ document.head.appendChild(_link);
       <div class="fgrid">
         <div class="fg1"><label class="flbl">שם העובד</label><input class="finp" id="u-name" placeholder="הכנס שם..."></div>
         <div><label class="flbl">סיסמה נוכחית (שנה/נקה)</label><input class="finp" id="u-pass" type="text" placeholder="בחר סיסמה או השאר ריק"></div>
+        <div><label class="flbl">צבע מערכת</label><input class="finp" id="u-color" type="color" value="#3b82f6" style="height:42px;padding:4px"></div>
         <div class="fg1" style="background: rgba(0,0,0,0.15); padding:10px; border-radius:6px; margin-top:8px;">
           <div style="font-weight:bold; margin-bottom:6px; font-size:13px; color:var(--acc);">🔐 הגדרות התחברות:</div>
           <div style="font-size:12px; color:var(--tx2); margin-bottom:8px;">אם תשמור סיסמה ריקה העובד יבחר אותה בעצמו בכניסה.</div>
