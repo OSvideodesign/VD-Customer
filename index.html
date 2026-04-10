@@ -269,7 +269,7 @@ document.head.appendChild(_link);
         <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company"></div>
         <div style="margin-bottom:12px"><label class="flbl">טלפון</label><input class="finp" id="s-phone"></div>
         <div style="margin-bottom:20px"><label class="flbl">מייל</label><input class="finp" type="email" id="s-email"></div>
-        <button class="btn bp" style="width:100%" onclick="saveSettings()">💾 שמור הגדרות חברה</button>
+        <button class="btn bp" style="width:100%" onclick="window.saveSettings()">💾 שמור הגדרות חברה</button>
         
         <div class="stit" style="margin-top:30px">🔔 התראות וגיבויים</div>
         <button class="btn bs" style="width:100%; margin-bottom:10px" onclick="downloadLogCSV()">📥 ייצוא לוג שינויים (CSV)</button>
@@ -279,7 +279,7 @@ document.head.appendChild(_link);
       <div class="tw settings-panel" id="s-users-panel" style="display:none;">
         <div class="stit">👥 ניהול משתמשים והרשאות</div>
         <div id="s-users-list" style="margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
-        <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש חדש</button>
+        <button class="btn bs" style="width:100%" onclick="window.openAddUser()">➕ הוסף משתמש חדש</button>
       </div>
 
       <div class="tw settings-panel" id="s-design-panel">
@@ -407,7 +407,6 @@ document.head.appendChild(_link);
       <div class="fgrid">
         <div class="fg1"><label class="flbl">שם העובד</label><input class="finp" id="u-name" placeholder="הכנס שם..."></div>
         <div><label class="flbl">סיסמה נוכחית (שנה/נקה)</label><input class="finp" id="u-pass" type="text" placeholder="בחר סיסמה או השאר ריק"></div>
-        <div><label class="flbl">צבע מערכת</label><input class="finp" id="u-color" type="color" value="#3b82f6" style="height:42px;padding:4px"></div>
         <div class="fg1" style="background: rgba(0,0,0,0.15); padding:10px; border-radius:6px; margin-top:8px;">
           <div style="font-weight:bold; margin-bottom:6px; font-size:13px; color:var(--acc);">🔐 הגדרות התחברות:</div>
           <div style="font-size:12px; color:var(--tx2); margin-bottom:8px;">אם תשמור סיסמה ריקה העובד יבחר אותה בעצמו בכניסה.</div>
@@ -432,7 +431,6 @@ document.head.appendChild(_link);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
-  // הזרקת קוד CSS להלבשת התמונה *מאחורי* העיצוב המובנה, מבלי למחוק אותו
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || { bg: 'stone', glow: true };
