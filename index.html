@@ -264,7 +264,6 @@ document.head.appendChild(_link);
     <div class="ph"><div style="display:flex; align-items:center; gap:14px;"><div style="font-size:32px; line-height:1;">⚙️</div><div><div class="pt">הגדרות</div><div class="ps">ניהול מערכת והתאמה אישית</div></div></div></div>
     
     <div class="settings-grid">
-      
       <div class="tw settings-panel">
         <div class="stit">🏢 פרטי החברה</div>
         <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company"></div>
@@ -275,6 +274,12 @@ document.head.appendChild(_link);
         <div class="stit" style="margin-top:30px">🔔 התראות וגיבויים</div>
         <button class="btn bs" style="width:100%; margin-bottom:10px" onclick="downloadLogCSV()">📥 ייצוא לוג שינויים (CSV)</button>
         <button class="btn bd" style="width:100%" onclick="if(confirm('למחוק את כל הלוג?')) clearLog()">🗑️ נקה לוג מערכת</button>
+      </div>
+
+      <div class="tw settings-panel" id="s-users-panel" style="display:none;">
+        <div class="stit">👥 ניהול משתמשים והרשאות</div>
+        <div id="s-users-list" style="margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
+        <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש חדש</button>
       </div>
 
       <div class="tw settings-panel" id="s-design-panel">
@@ -288,9 +293,8 @@ document.head.appendChild(_link);
         </div>
         <div class="fgrid">
           <div class="fg1"><label class="flbl">רקע המערכת (מובנה)</label>
-            <select class="finp" id="ds-bg" onchange="applyDesignSettings()"><option value="stone">🪨 אבן טבעית (ברירת מחדל)</option><option value="metal">⚙️ מתכת מוברשת</option><option value="carbon">⬛ קרבון ספורטיבי</option><option value="dark">🌙 שחור חלק ונקי</option></select>
+            <select class="finp" id="ds-bg" onchange="window.applyDesignSettings()"><option value="stone">🪨 אבן טבעית (ברירת מחדל)</option><option value="metal">⚙️ מתכת מוברשת</option><option value="carbon">⬛ קרבון ספורטיבי</option><option value="dark">🌙 שחור חלק ונקי</option></select>
           </div>
-          <div class="fg1"><label class="flbl">צבע נושא מרכזי</label><input class="finp" type="color" id="ds-color" value="#3b82f6" onchange="applyDesignSettings()" style="height:42px;padding:4px;cursor:pointer"></div>
           
           <div class="fg1" style="grid-column: 1/-1;">
             <label class="flbl">העלה רקע אישי משלך (תמונה או גוון)</label>
@@ -301,16 +305,10 @@ document.head.appendChild(_link);
           </div>
 
           <div class="fg1" style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer" onclick="document.getElementById('ds-glow').click()">
-            <input type="checkbox" id="ds-glow" onchange="applyDesignSettings()" checked style="width:18px;height:18px;cursor:pointer">
+            <input type="checkbox" id="ds-glow" onchange="window.applyDesignSettings()" checked style="width:18px;height:18px;cursor:pointer">
             <label class="flbl" style="margin-bottom:0;cursor:pointer">הפעל אפקט הברקות 3D</label>
           </div>
         </div>
-      </div>
-
-      <div class="tw settings-panel" id="s-users-panel" style="display:none;">
-        <div class="stit">👥 ניהול משתמשים והרשאות</div>
-        <div id="s-users-list" style="margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
-        <button class="btn bs" style="width:100%" onclick="openAddUser()">➕ הוסף משתמש חדש</button>
       </div>
 
     </div>
@@ -389,7 +387,6 @@ document.head.appendChild(_link);
       <div class="fgrid">
         <div class="fg1"><label class="flbl">שם העובד</label><input class="finp" id="u-name" placeholder="הכנס שם..."></div>
         <div><label class="flbl">סיסמה נוכחית (שנה/נקה)</label><input class="finp" id="u-pass" type="text" placeholder="בחר סיסמה או השאר ריק"></div>
-        <div><label class="flbl">צבע מערכת</label><input class="finp" id="u-color" type="color" value="#3b82f6" style="height:42px;padding:4px"></div>
         <div class="fg1" style="background: rgba(0,0,0,0.15); padding:10px; border-radius:6px; margin-top:8px;">
           <div style="font-weight:bold; margin-bottom:6px; font-size:13px; color:var(--acc);">🔐 הגדרות התחברות:</div>
           <div style="font-size:12px; color:var(--tx2); margin-bottom:8px;">אם תשמור סיסמה ריקה העובד יבחר אותה בעצמו בכניסה.</div>
@@ -414,60 +411,32 @@ document.head.appendChild(_link);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
-  // הזרקת קוד CSS כדי להכריח את הרקע האישי להופיע!
+  // הפונקציה ששומרת על הצבעים המקוריים ופשוט שמה תמונה מאחורה!
   window.applyUserDesign = function(u) {
       if (!u) return;
-      const d = u.design || { bg: 'stone', color: u.color || '#3b82f6', glow: true };
-      document.documentElement.style.setProperty('--acc', d.color);
+      const d = u.design || { bg: 'stone', glow: true };
       
-      let styleTag = document.getElementById('custom-bg-style');
-      if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = 'custom-bg-style';
-          document.head.appendChild(styleTag);
-      }
-
-      if (d.bgImage) {
-          document.body.setAttribute('data-bg', 'custom');
-          styleTag.innerHTML = `
-              body[data-bg="custom"] {
-                  background-image: url("${d.bgImage}") !important;
-                  background-size: cover !important;
-                  background-position: center !important;
-                  background-attachment: fixed !important;
-                  background-color: #111 !important;
-              }
-          `;
-      } else {
-          document.body.setAttribute('data-bg', d.bg);
-          styleTag.innerHTML = '';
-      }
+      // מנקים קודם את החלפת הצבעים כדי למנוע התנגשויות
+      document.documentElement.style.removeProperty('--acc');
       
+      // תמיד משאירים את ערכת הנושא הבסיסית כדי שהדאשבורד לא יהפוך לשחור
+      document.body.setAttribute('data-bg', d.bg || 'stone');
       document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
+      
+      if (d.bgImage) {
+          // שמים את התמונה בכוח *מעל* הרקע הקיים, מבלי למחוק אותו
+          document.body.style.setProperty('background-image', `url(${d.bgImage})`, 'important');
+          document.body.style.setProperty('background-size', 'cover', 'important');
+          document.body.style.setProperty('background-position', 'center', 'important');
+          document.body.style.setProperty('background-attachment', 'fixed', 'important');
+      } else {
+          document.body.style.removeProperty('background-image');
+      }
 
       const bgSel = document.getElementById('ds-bg');
-      if (bgSel) bgSel.value = d.bg;
-      const colorSel = document.getElementById('ds-color');
-      if (colorSel) colorSel.value = d.color;
+      if (bgSel) bgSel.value = d.bg || 'stone';
       const glowChk = document.getElementById('ds-glow');
-      if (glowChk) glowChk.checked = d.glow;
-  };
-
-  window.applyDesignSettings = function() {
-      if (!window._currentUser) return;
-      const bg = document.getElementById('ds-bg')?.value || 'stone';
-      const color = document.getElementById('ds-color')?.value || '#3b82f6';
-      const glow = document.getElementById('ds-glow')?.checked ?? true;
-      
-      const u = (window.cfg && window.cfg.users) ? window.cfg.users.find(x => x.name === window._currentUser) : null;
-      if (u) {
-          u.design = u.design || {};
-          u.design.bg = bg;
-          u.design.color = color;
-          u.design.glow = glow;
-          if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
-          window.applyUserDesign(u);
-      }
+      if (glowChk) glowChk.checked = d.glow !== false;
   };
 
   let currentFontLevel = 0;
