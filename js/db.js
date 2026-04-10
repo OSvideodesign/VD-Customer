@@ -1,8 +1,7 @@
-// ══ db.js — Firebase init, data loading, real-time listeners, _db* helpers ══
+// ══ db.js — Firebase init, real-time listeners, In-App Notifications ══
 
-import { initializeApp }         from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, query, orderBy, limit, enableIndexedDbPersistence }
-  from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy, limit, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 import { FIREBASE_CONFIG, USERS } from './config.js';
 import { loader, hideLoader, toast } from './utils.js';
@@ -22,15 +21,10 @@ export const db = getFirestore(app);
 
 try {
     enableIndexedDbPersistence(db).catch((err) => {
-        if (err.code == 'failed-precondition') {
-            console.warn('לא ניתן להפעיל אופליין בכמה חלונות במקביל');
-        } else if (err.code == 'unimplemented') {
-            console.warn('הדפדפן הזה לא תומך בשמירת נתונים ללא אינטרנט');
-        }
+        if (err.code == 'failed-precondition') console.warn('לא ניתן להפעיל אופליין בכמה חלונות במקביל');
     });
 } catch(e) {}
 
-// משתנה שעוקב האם זו טעינה ראשונה של הלוגים (כדי למנוע קפיצת התראות על דברים ישנים כשרק פותחים)
 let _firstLoadLogs = true;
 
 window._dbSaveCusts = async (items) => {
@@ -68,7 +62,6 @@ window._dbDel = async (col, id) => {
     await deleteDoc(doc(db, col, id));
     return true;
   } catch (e) {
-    console.error('Delete error:', e);
     window._deletingIds && window._deletingIds.delete(col + ':' + id);
     return false;
   }
@@ -81,7 +74,6 @@ window._dbDelMulti = async (col, ids) => {
     await Promise.all(ids.map(id => deleteDoc(doc(db, col, id))));
     return true;
   } catch (e) {
-    console.error('DeleteMulti error:', e);
     ids.forEach(id => window._deletingIds && window._deletingIds.delete(col + ':' + id));
     return false;
   }
@@ -97,7 +89,7 @@ export async function loadAll() {
   window.logEntries = window.logEntries || [];
 
   if (!navigator.onLine) {
-      toast('המערכת פועלת כרגע ללא אינטרנט (אופליין) ✈️', 'warn');
+      toast('המערכת פועלת באופליין ✈️', 'warn');
   }
 
   try {
@@ -128,7 +120,7 @@ export async function loadAll() {
     onSnapshot(collection(db, 'faults'), snap => {
       const del = window._deletingIds || new Set();
       window.faults = snap.docs.map(d => d.data()).filter(f => !del.has('faults:' + f.id));
-
+      
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('faults')) renderFaults();
       if (on('archive')) renderArchive();
@@ -149,13 +141,12 @@ export async function loadAll() {
     onSnapshot(collection(db, 'notes'), snap => {
       const del = window._deletingIds || new Set();
       window.notes = snap.docs.map(d => d.data()).filter(n => !del.has('notes:' + n.id));
-
+      
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('notes')) renderNotes();
       if (on('dashboard')) renderDash();
     });
 
-    // ── המוח של ההתראות המובנות (בזמן אמת) ──
     onSnapshot(query(collection(db, 'log'), orderBy('ts', 'desc'), limit(50)), snap => {
       const newLogs = snap.docs.map(d => d.data());
       const oldLogs = window.logEntries || [];
@@ -163,11 +154,9 @@ export async function loadAll() {
 
       if (document.getElementById('pg-log')?.classList.contains('on')) renderLog();
 
-      // אם זו לא פתיחה ראשונה, ויש לוגים, נבדוק אם התווסף משהו על ידי משתמש אחר!
       if (!_firstLoadLogs && oldLogs.length > 0) {
          const added = newLogs.filter(n => !oldLogs.some(o => o.id === n.id) && n.user !== window._currentUser);
          added.forEach(log => {
-             // מקפיץ התראה (Toast) קטנה בתוך האפליקציה על כל שינוי שמישהו אחר עשה
              toast(`🔔 ${log.user}: ${log.action}`, 'success'); 
          });
       }
@@ -179,15 +168,12 @@ export async function loadAll() {
         renderDash();
         setTimeout(gcalInit, 400);
 
-        // ── התראות "מה פספסת" (כשנכנסים לאפליקציה אחרי היעדרות) ──
         const lastLogin = parseInt(localStorage.getItem('vd_last_login') || '0');
         const now = Date.now();
-        localStorage.setItem('vd_last_login', now.toString()); // מתעדכן לפעם הבאה
+        localStorage.setItem('vd_last_login', now.toString());
 
         if (lastLogin > 0 && window.logEntries.length > 0) {
-            // מחפש פעולות של עובדים אחרים שקרו מאז ההתחברות האחרונה שלך
             const missed = window.logEntries.filter(l => l.ts > lastLogin && l.user !== window._currentUser);
-            
             if (missed.length > 0) {
                 let html = missed.map(l => `
                     <div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); margin-bottom:8px; background:rgba(0,0,0,0.2); border-radius:6px;">
@@ -208,7 +194,6 @@ export async function loadAll() {
                 }
             }
         }
-
     }, 800);
 
   } catch (e) {
