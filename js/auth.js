@@ -53,8 +53,8 @@ export function initLogin() {
   const btns = document.getElementById('user-btns');
   if (btns) {
     btns.innerHTML = USERS.map(u => {
-      const glowColor = u.color + '40';
-      return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color};">
+      const glowColor = (u.color || '#444') + '40';
+      return `<button class="login-user-btn" onclick="window._selectUser('${u.name}')" style="--user-glow: ${glowColor}; color: ${u.color || '#fff'};">
          <div class="login-user-icon">${u.name[0]}</div>
          <div class="login-user-name">${u.name}</div>
        </button>`;
@@ -152,17 +152,16 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  // כאן הוא לוקח את פקודת העיצוב ישירות מה-HTML בלי ליצור התנגשות!
   if (window.applyUserDesign) window.applyUserDesign(u);
 
   const badgeDisplay = document.getElementById('user-badge-display');
   if (badgeDisplay) {
-    badgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:16px;">👤</span> מחובר כ: ${u.name}`;
+    badgeDisplay.innerHTML = `<span style="color:${u.color || '#fff'}; font-size:16px;">👤</span> מחובר כ: ${u.name}`;
   }
 
   const mBadgeDisplay = document.getElementById('m-user-badge-display');
   if (mBadgeDisplay) {
-    mBadgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:15px; margin-left:6px;">👤</span> שלום, <strong style="color:${u.color}">${u.name}</strong>`;
+    mBadgeDisplay.innerHTML = `<span style="color:${u.color || '#fff'}; font-size:15px; margin-left:6px;">👤</span> שלום, <strong style="color:${u.color || '#fff'}">${u.name}</strong>`;
   }
 
   const perms = getPerms(u);
