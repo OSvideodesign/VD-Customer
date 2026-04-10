@@ -1,7 +1,6 @@
 // ══ settings.js — settings page + user management ══
 
 import { USERS, DEFAULT_PERMS } from './config.js';
-import { getPerms } from './auth.js';
 import { toast } from './utils.js';
 import { openM, closeM } from './nav.js';
 import { addLog } from './log.js'; 
@@ -49,7 +48,7 @@ window.uploadCustomBg = function(input) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_SIZE = 1920; 
+            const MAX_SIZE = 1024; 
             let width = img.width;
             let height = img.height;
             
@@ -63,7 +62,7 @@ window.uploadCustomBg = function(input) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
 
             const u = window.cfg.users.find(x => x.name === window._currentUser);
             if (u) {
@@ -99,8 +98,6 @@ window._resetUserPassword = function() {
         toast('הסיסמה אופסה. העובד יבחר חדשה בהתחברות הבאה.');
     }
 };
-
-// ── יצוא הפונקציות וקשירה ישירה למסך (מונע לחלוטין את השגיאה!) ──
 
 export function loadSettings() {
   if (document.getElementById('s-company')) document.getElementById('s-company').value = window.cfg.company || '';
@@ -146,6 +143,10 @@ export function openAddUser() {
   document.getElementById('u-name').disabled = false;
   document.getElementById('u-pass').value   = ''; 
   document.getElementById('u-nopass').checked = false;
+  
+  // מחזיר את הצבע לברירת מחדל אם אין
+  if(document.getElementById('u-color')) document.getElementById('u-color').value = '#3b82f6';
+  
   document.getElementById('u-del-btn').style.display = 'none';
   
   renderPermsGrid({});
@@ -159,6 +160,9 @@ export function openEditUser(name) {
   document.getElementById('M-user-title').textContent = 'עריכת ' + name;
   document.getElementById('u-name').value   = u.name;
   document.getElementById('u-name').disabled = true;
+  
+  // מושך את הצבע ששמור לפרופיל של המשתמש
+  if(document.getElementById('u-color')) document.getElementById('u-color').value = u.color || '#3b82f6';
   
   const nopass = (u.pass === 'NOPASS');
   document.getElementById('u-nopass').checked  = nopass;
@@ -203,6 +207,7 @@ export function saveUser() {
   const name  = _editUserName || document.getElementById('u-name').value.trim();
   const nopass = document.getElementById('u-nopass').checked;
   const passInp = document.getElementById('u-pass').value.trim();
+  const colorInp = document.getElementById('u-color') ? document.getElementById('u-color').value : '#3b82f6';
   
   if (!name) { toast('חובה להכניס שם', 'err'); return; }
   
@@ -213,14 +218,19 @@ export function saveUser() {
   
   if (_editUserName) {
     const idx = USERS.findIndex(x => x.name === _editUserName);
-    const existingColor = USERS[idx].color || '#3b82f6';
-    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color: existingColor, perms };
+    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color: colorInp, perms };
   } else {
     if (USERS.find(x => x.name === name)) { toast('משתמש עם שם זה כבר קיים', 'err'); return; }
-    USERS.push({ name, pass, color: '#3b82f6', role: 'admin', perms });
+    USERS.push({ name, pass, color: colorInp, role: 'admin', perms });
   }
   
   if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
+  
+  // מחיל את הצבע המעודכן אם המשתמש ערך את עצמו
+  if (name === window._currentUser && window.applyUserDesign) {
+      window.applyUserDesign(USERS.find(x => x.name === name));
+  }
+
   addLog('system', _editUserName ? 'עריכת משתמש' : 'משתמש חדש', name);
   closeM('M-user');
   renderUsersList();
