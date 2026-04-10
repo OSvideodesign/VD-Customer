@@ -433,13 +433,12 @@ document.head.appendChild(_link);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
-  // הזרקת קוד CSS להלבשת התמונה + שמירה על כל הצבעים החשובים של המערכת!
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || { bg: 'stone', glow: true };
       
-      // חובה! מחזיר למערכת את הצבע הראשי שלה כדי שהכפתורים והדאשבורד לא יהיו אפורים
-      document.documentElement.style.setProperty('--acc', u.color || '#3b82f6');
+      // התיקון הקריטי: מחיקת הקישור המעצבן שצבע את הכל באפור! המערכת תחזור לברירת המחדל היפה של ה-CSS.
+      document.documentElement.style.removeProperty('--acc');
       
       document.body.setAttribute('data-bg', d.bg || 'stone');
       document.body.setAttribute('data-glow', d.glow !== false ? 'true' : 'false');
