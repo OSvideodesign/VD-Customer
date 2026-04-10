@@ -100,7 +100,8 @@ window.clearCustomBg = function() {
     }
 };
 
-export function renderSettings() {
+// ── התיקון כאן: השם הוחזר ל-loadSettings כדי למנוע קריסה ב-main.js ──
+export function loadSettings() {
   document.getElementById('s-company').value = window.cfg.company || '';
   document.getElementById('s-phone').value   = window.cfg.phone   || '';
   document.getElementById('s-email').value   = window.cfg.email   || '';
@@ -143,6 +144,7 @@ export function openAddUser() {
   document.getElementById('u-nopass').checked = false;
   document.getElementById('u-color').value  = '#3b82f6';
   document.getElementById('u-del-btn').style.display = 'none';
+  document.getElementById('u-reset-pass-btn').style.display = 'none';
   
   renderPermsGrid({});
   openM('M-user');
@@ -161,6 +163,10 @@ window._openEditUser = function(name) {
   
   document.getElementById('u-pass').value = nopass ? '' : (u.pass || '');
   document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
+  
+  const rstBtn = document.getElementById('u-reset-pass-btn');
+  if (u.pass && u.pass !== 'NOPASS') rstBtn.style.display = 'block';
+  else rstBtn.style.display = 'none';
 
   renderPermsGrid(getPerms(u));
   openM('M-user');
