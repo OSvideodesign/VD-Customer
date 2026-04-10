@@ -6,7 +6,6 @@ import { addLog } from './log.js';
 
 let _loginTarget = null;
 
-// ── Helper to hide/show app content ────────────────────────────────────────
 function toggleAppView(show) {
   const els = ['.sidebar', '.main', '#mnav'];
   els.forEach(sel => {
@@ -15,7 +14,6 @@ function toggleAppView(show) {
   });
 }
 
-// ── Clean corrupt session on load ──────────────────────────────────────────
 (function () {
   try {
     const s = sessionStorage.getItem('crm_user');
@@ -26,7 +24,6 @@ function toggleAppView(show) {
   } catch (e) { sessionStorage.removeItem('crm_user'); }
 })();
 
-// ── Public: getPerms, canDo ────────────────────────────────────────────────
 export function getPerms(u) {
   return u.perms || DEFAULT_PERMS[u.role || 'tech'] || DEFAULT_PERMS.tech;
 }
@@ -37,7 +34,6 @@ export function canDo(module, level) {
   return (getPerms(u)[module] || 0) >= level;
 }
 
-// ── initLogin — show user buttons or restore session ───────────────────────
 export function initLogin() {
   toggleAppView(false);
 
@@ -102,7 +98,6 @@ export function doLogin() {
   
   if (!_loginTarget) return;
   
-  // אם למשתמש עדיין אין סיסמה מוגדרת
   if (!_loginTarget.pass || _loginTarget.pass === '') {
       if (inp.length < 3) {
           err.textContent = 'הסיסמה חייבת להכיל לפחות 3 תווים';
@@ -116,7 +111,6 @@ export function doLogin() {
       }
       toast('הסיסמה האישית נשמרה בהצלחה!', 'success');
   } 
-  // אם יש לו סיסמה מוגדרת ואנחנו בודקים אם היא נכונה
   else if (inp !== _loginTarget.pass) {
     err.textContent = 'סיסמה שגויה ❌';
     err.style.display = 'block';
@@ -140,7 +134,6 @@ export function logout() {
   backToUsers();
 }
 
-// ── applyUser — set globals, show/hide nav, log entry ─────────────────────
 export function applyUser(u) {
   if (!u || !u.name) return;
   window._currentUser  = u.name;
@@ -149,6 +142,9 @@ export function applyUser(u) {
 
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
+
+  // ── מלביש על המערכת את העיצוב האישי של המשתמש! ──
+  if (window.applyUserDesign) window.applyUserDesign(u);
 
   const badgeDisplay = document.getElementById('user-badge-display');
   if (badgeDisplay) {
@@ -160,7 +156,6 @@ export function applyUser(u) {
     mBadgeDisplay.innerHTML = `<span style="color:${u.color}; font-size:15px; margin-left:6px;">👤</span> שלום, <strong style="color:${u.color}">${u.name}</strong>`;
   }
 
-  // מסתיר כפתורי תפריט למי שההרשאה שלו למסך היא 0
   const perms = getPerms(u);
   const checkPerm = (btns, key) => {
       if(perms[key] === 0) {
