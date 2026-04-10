@@ -143,27 +143,6 @@ export function logout() {
   backToUsers();
 }
 
-export function applyUserDesign(u) {
-  if (!u) return;
-  const d = u.design || { bg: 'stone', color: u.color || '#3b82f6', glow: true };
-  document.documentElement.style.setProperty('--acc', d.color);
-  
-  if (d.bgImage) {
-      document.body.setAttribute('data-bg', 'custom'); 
-      document.body.style.setProperty('background-image', `url(${d.bgImage})`, 'important');
-      document.body.style.setProperty('background-size', 'cover', 'important');
-      document.body.style.setProperty('background-position', 'center', 'important');
-      document.body.style.setProperty('background-attachment', 'fixed', 'important');
-  } else {
-      document.body.style.removeProperty('background-image');
-      document.body.setAttribute('data-bg', d.bg);
-  }
-  
-  document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
-}
-
-window.applyUserDesign = applyUserDesign;
-
 export function applyUser(u) {
   if (!u || !u.name) return;
   window._currentUser  = u.name;
@@ -173,7 +152,8 @@ export function applyUser(u) {
   document.getElementById('login-screen').style.display = 'none';
   toggleAppView(true);
 
-  applyUserDesign(u);
+  // כאן הוא לוקח את פקודת העיצוב ישירות מה-HTML בלי ליצור התנגשות!
+  if (window.applyUserDesign) window.applyUserDesign(u);
 
   const badgeDisplay = document.getElementById('user-badge-display');
   if (badgeDisplay) {
@@ -214,7 +194,6 @@ export function applyUser(u) {
   }, 3000);
 }
 
-// החשיפה של הפונקציות החוצה כדי שהכפתורים ב-HTML יעבדו בלי שגיאות!
 window._selectUser = selectUser;
 window.doLogin = doLogin;
 window.backToUsers = backToUsers;
