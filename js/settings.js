@@ -53,7 +53,7 @@ window.uploadCustomBg = function(input) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_SIZE = 1920; 
+            const MAX_SIZE = 1024; // מונע מהתמונה לקרוס בשמירה
             let width = img.width;
             let height = img.height;
             
@@ -74,7 +74,7 @@ window.uploadCustomBg = function(input) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
 
             const u = window.cfg.users.find(x => x.name === window._currentUser);
             if (u) {
@@ -100,6 +100,21 @@ window.clearCustomBg = function() {
     }
 };
 
+window.applyDesignSettings = function() {
+    if (!window._currentUser) return;
+    const bg = document.getElementById('ds-bg')?.value || 'stone';
+    const glow = document.getElementById('ds-glow')?.checked ?? true;
+    
+    const u = (window.cfg && window.cfg.users) ? window.cfg.users.find(x => x.name === window._currentUser) : null;
+    if (u) {
+        u.design = u.design || {};
+        u.design.bg = bg;
+        u.design.glow = glow;
+        if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
+        if(window.applyUserDesign) window.applyUserDesign(u);
+    }
+};
+
 window._resetUserPassword = function() {
     if (!_editUserName) return;
     const u = USERS.find(x => x.name === _editUserName);
@@ -111,8 +126,6 @@ window._resetUserPassword = function() {
         toast('הסיסמה אופסה. העובד יבחר חדשה בהתחברות הבאה.');
     }
 };
-
-// ── כאן התיקון הקריטי: כל הפונקציות מיוצאות בדיוק כמו ש main.js מחפש ──
 
 export function loadSettings() {
   document.getElementById('s-company').value = window.cfg.company || '';
@@ -155,7 +168,6 @@ export function openAddUser() {
   document.getElementById('u-name').disabled = false;
   document.getElementById('u-pass').value   = ''; 
   document.getElementById('u-nopass').checked = false;
-  document.getElementById('u-color').value  = '#3b82f6';
   document.getElementById('u-del-btn').style.display = 'none';
   document.getElementById('u-reset-pass-btn').style.display = 'none';
   
@@ -169,7 +181,6 @@ export function openEditUser(name) {
   document.getElementById('M-user-title').textContent = 'עריכת ' + name;
   document.getElementById('u-name').value   = u.name;
   document.getElementById('u-name').disabled = true;
-  document.getElementById('u-color').value = u.color;
   
   const nopass = (u.pass === 'NOPASS');
   document.getElementById('u-nopass').checked  = nopass;
@@ -215,7 +226,6 @@ function getPermsFromGrid() {
 export function saveUser() {
   const name  = _editUserName || document.getElementById('u-name').value.trim();
   const nopass = document.getElementById('u-nopass').checked;
-  const color  = document.getElementById('u-color').value;
   const passInp = document.getElementById('u-pass').value.trim();
   
   if (!name) { toast('חובה להכניס שם', 'err'); return; }
@@ -227,10 +237,12 @@ export function saveUser() {
   
   if (_editUserName) {
     const idx = USERS.findIndex(x => x.name === _editUserName);
-    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color, perms };
+    // לוקחים את הצבע הקיים (או רנדומלי) כי הסרנו את בחירת הצבע
+    const existingColor = USERS[idx].color || '#3b82f6';
+    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color: existingColor, perms };
   } else {
     if (USERS.find(x => x.name === name)) { toast('משתמש עם שם זה כבר קיים', 'err'); return; }
-    USERS.push({ name, pass, color, role: 'admin', perms });
+    USERS.push({ name, pass, color: '#3b82f6', role: 'admin', perms });
   }
   
   if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
