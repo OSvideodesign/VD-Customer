@@ -100,7 +100,19 @@ window.clearCustomBg = function() {
     }
 };
 
-// ── התיקון כאן: השם הוחזר ל-loadSettings כדי למנוע קריסה ב-main.js ──
+window._resetUserPassword = function() {
+    if (!_editUserName) return;
+    const u = USERS.find(x => x.name === _editUserName);
+    if (!u) return;
+    if(confirm(`לאפס את הסיסמה ל-${u.name}? בכניסה הבאה הוא יידרש לבחור סיסמה חדשה.`)) {
+        u.pass = ''; 
+        if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
+        document.getElementById('u-reset-pass-btn').style.display = 'none';
+        toast('הסיסמה אופסה. העובד יבחר חדשה בהתחברות הבאה.');
+    }
+};
+
+// ── הייצוא המדויק ש- main.js דורש ──
 export function loadSettings() {
   document.getElementById('s-company').value = window.cfg.company || '';
   document.getElementById('s-phone').value   = window.cfg.phone   || '';
@@ -150,7 +162,7 @@ export function openAddUser() {
   openM('M-user');
 }
 
-window._openEditUser = function(name) {
+export function openEditUser(name) {
   const u = USERS.find(x => x.name === name); if (!u) return;
   _editUserName = name;
   document.getElementById('M-user-title').textContent = 'עריכת ' + name;
@@ -170,7 +182,7 @@ window._openEditUser = function(name) {
 
   renderPermsGrid(getPerms(u));
   openM('M-user');
-};
+}
 
 export function renderPermsGrid(p) {
   const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
