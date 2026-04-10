@@ -1,6 +1,6 @@
 // ══ settings.js — settings page + user management ══
 
-import { USERS, DEFAULT_PERMS, PERM_MODULES } from './config.js';
+import { USERS, DEFAULT_PERMS } from './config.js';
 import { getPerms } from './auth.js';
 import { toast } from './utils.js';
 import { openM, closeM } from './nav.js';
@@ -34,7 +34,7 @@ window.uploadLogo = function(input, type) {
             
             if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
             localStorage.setItem('vd_crm_logos', JSON.stringify(window.cfg.logos));
-            window.applyLogos(); 
+            if(window.applyLogos) window.applyLogos(); 
             toast('לוגו עודכן בהצלחה! 🎨', 'success');
         }
         img.src = e.target.result;
@@ -81,7 +81,7 @@ window.uploadCustomBg = function(input) {
                 u.design = u.design || {};
                 u.design.bgImage = dataUrl;
                 if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
-                window.applyUserDesign(u);
+                if(window.applyUserDesign) window.applyUserDesign(u);
                 toast('רקע אישי הוחלף בהצלחה! 🖼️', 'success');
             }
         };
@@ -95,7 +95,7 @@ window.clearCustomBg = function() {
     if (u && u.design) {
         u.design.bgImage = null;
         if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
-        window.applyUserDesign(u);
+        if(window.applyUserDesign) window.applyUserDesign(u);
         toast('רקע אישי הוסר', 'info');
     }
 };
@@ -112,7 +112,8 @@ window._resetUserPassword = function() {
     }
 };
 
-// ── הייצוא המדויק ש- main.js דורש ──
+// ── כאן התיקון הקריטי: כל הפונקציות מיוצאות בדיוק כמו ש main.js מחפש ──
+
 export function loadSettings() {
   document.getElementById('s-company').value = window.cfg.company || '';
   document.getElementById('s-phone').value   = window.cfg.phone   || '';
