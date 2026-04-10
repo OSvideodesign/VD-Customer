@@ -19,12 +19,8 @@ window.uploadLogo = function(input, type) {
             const MAX_WIDTH = type === 'header' ? 600 : 300; 
             let width = img.width;
             let height = img.height;
-            if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width;
-                width = MAX_WIDTH;
-            }
-            canvas.width = width;
-            canvas.height = height;
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+            canvas.width = width; canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             const dataUrl = canvas.toDataURL('image/png', 0.8);
@@ -58,19 +54,12 @@ window.uploadCustomBg = function(input) {
             let height = img.height;
             
             if (width > height) {
-                if (width > MAX_SIZE) {
-                    height *= MAX_SIZE / width;
-                    width = MAX_SIZE;
-                }
+                if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
             } else {
-                if (height > MAX_SIZE) {
-                    width *= MAX_SIZE / height;
-                    height = MAX_SIZE;
-                }
+                if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
             }
             
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = width; canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
@@ -107,14 +96,13 @@ window._resetUserPassword = function() {
     if(confirm(`לאפס את הסיסמה ל-${u.name}? בכניסה הבאה הוא יידרש לבחור סיסמה חדשה.`)) {
         u.pass = ''; 
         if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
-        document.getElementById('u-reset-pass-btn').style.display = 'none';
         toast('הסיסמה אופסה. העובד יבחר חדשה בהתחברות הבאה.');
     }
 };
 
+// ── יצוא הפונקציות וקשירה ישירה למסך (מונע לחלוטין את השגיאה!) ──
 
 export function loadSettings() {
-  // ── התיקון: בדיקה שהתיבות קיימות לפני שמכניסים אליהן ערך ──
   if (document.getElementById('s-company')) document.getElementById('s-company').value = window.cfg.company || '';
   if (document.getElementById('s-phone'))   document.getElementById('s-phone').value   = window.cfg.phone   || '';
   if (document.getElementById('s-email'))   document.getElementById('s-email').value   = window.cfg.email   || '';
@@ -124,6 +112,7 @@ export function loadSettings() {
   if (panel) panel.style.display = canManageUsers ? '' : 'none';
   if (canManageUsers) renderUsersList();
 }
+window.loadSettings = loadSettings;
 
 export function saveSettings() {
   if (document.getElementById('s-company')) window.cfg.company = document.getElementById('s-company').value.trim();
@@ -134,6 +123,7 @@ export function saveSettings() {
   localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
   toast('הגדרות נשמרו ✅');
 }
+window.saveSettings = saveSettings;
 
 export function renderUsersList() {
   const el = document.getElementById('s-users-list');
@@ -145,7 +135,7 @@ export function renderUsersList() {
         <div style="font-weight:600;font-size:13px">${u.name}</div>
         <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}</div>
       </div>
-      <button class="btn bs btn-sm" onclick="window._openEditUser('${u.name}')">✏️ ערוך</button>
+      <button class="btn bs btn-sm" onclick="window.openEditUser('${u.name}')">✏️ ערוך</button>
     </div>`).join('');
 }
 
@@ -156,20 +146,19 @@ export function openAddUser() {
   document.getElementById('u-name').disabled = false;
   document.getElementById('u-pass').value   = ''; 
   document.getElementById('u-nopass').checked = false;
-  document.getElementById('u-color').value  = '#3b82f6';
   document.getElementById('u-del-btn').style.display = 'none';
   
   renderPermsGrid({});
   openM('M-user');
 }
+window.openAddUser = openAddUser;
 
-window._openEditUser = function(name) {
+export function openEditUser(name) {
   const u = USERS.find(x => x.name === name); if (!u) return;
   _editUserName = name;
   document.getElementById('M-user-title').textContent = 'עריכת ' + name;
   document.getElementById('u-name').value   = u.name;
   document.getElementById('u-name').disabled = true;
-  document.getElementById('u-color').value = u.color || '#3b82f6';
   
   const nopass = (u.pass === 'NOPASS');
   document.getElementById('u-nopass').checked  = nopass;
@@ -179,7 +168,9 @@ window._openEditUser = function(name) {
 
   renderPermsGrid(u.perms || {});
   openM('M-user');
-};
+}
+window.openEditUser = openEditUser;
+window._openEditUser = openEditUser;
 
 export function renderPermsGrid(p) {
   const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
@@ -211,7 +202,6 @@ function getPermsFromGrid() {
 export function saveUser() {
   const name  = _editUserName || document.getElementById('u-name').value.trim();
   const nopass = document.getElementById('u-nopass').checked;
-  const color  = document.getElementById('u-color').value;
   const passInp = document.getElementById('u-pass').value.trim();
   
   if (!name) { toast('חובה להכניס שם', 'err'); return; }
@@ -223,10 +213,11 @@ export function saveUser() {
   
   if (_editUserName) {
     const idx = USERS.findIndex(x => x.name === _editUserName);
-    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color, perms };
+    const existingColor = USERS[idx].color || '#3b82f6';
+    if (idx >= 0) USERS[idx] = { ...USERS[idx], pass, color: existingColor, perms };
   } else {
     if (USERS.find(x => x.name === name)) { toast('משתמש עם שם זה כבר קיים', 'err'); return; }
-    USERS.push({ name, pass, color, role: 'admin', perms });
+    USERS.push({ name, pass, color: '#3b82f6', role: 'admin', perms });
   }
   
   if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
@@ -235,6 +226,7 @@ export function saveUser() {
   renderUsersList();
   toast('משתמש נשמר ✅');
 }
+window.saveUser = saveUser;
 
 export function deleteUser() {
   if (!_editUserName) return;
@@ -248,3 +240,4 @@ export function deleteUser() {
   renderUsersList();
   toast('משתמש נמחק ✅');
 }
+window.deleteUser = deleteUser;
