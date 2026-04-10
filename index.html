@@ -395,8 +395,8 @@ document.head.appendChild(_link);
         <div><div class="pt">הגדרות</div><div class="ps">ניהול מערכת והתאמה אישית</div></div>
       </div>
     </div>
-    
     <div class="settings-grid">
+      
       <div class="tw settings-panel">
         <div class="stit">🏢 פרטי החברה ויומן</div>
         <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
@@ -409,7 +409,7 @@ document.head.appendChild(_link);
         <button class="btn bp" style="width:100%" onclick="window.saveSettings()">💾 שמור הגדרות</button>
         
         <div class="stit" style="margin-top:30px">🔔 התראות</div>
-        <button class="btn bs" style="width:100%" onclick="window.requestNotificationPermission()">🔔 הפעל התראות</button>
+        <button class="btn bs" style="width:100%" onclick="requestNotificationPermission()">🔔 הפעל התראות</button>
         
         <div class="stit" style="margin-top:30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top:12px;">📋 לוג מערכת</div>
         <button class="btn bs" style="width:100%; margin-bottom:10px" onclick="downloadLogCSV()">📥 ייצוא לוג שינויים (CSV)</button>
@@ -442,9 +442,6 @@ document.head.appendChild(_link);
               <option value="dark">🌙 שחור חלק ונקי</option>
             </select>
           </div>
-          <div class="fg1"><label class="flbl">צבע נושא מרכזי</label>
-            <input class="finp" type="color" id="ds-color" value="#3b82f6" onchange="window.applyDesignSettings()" style="height:42px;padding:4px;cursor:pointer">
-          </div>
           
           <div class="fg1" style="grid-column: 1/-1;">
             <label class="flbl">העלה רקע אישי משלך (תמונה או גוון)</label>
@@ -454,12 +451,13 @@ document.head.appendChild(_link);
             </div>
           </div>
 
-          <div class="fg1" style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer" onclick="document.getElementById('ds-glow').click()">
+          <div class="fg1" style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer; grid-column: 1/-1;" onclick="document.getElementById('ds-glow').click()">
             <input type="checkbox" id="ds-glow" onchange="window.applyDesignSettings()" checked style="width:18px;height:18px;cursor:pointer">
             <label class="flbl" style="margin-bottom:0;cursor:pointer">הפעל אפקט הברקות תלת-ממד</label>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </main>
@@ -527,7 +525,7 @@ document.head.appendChild(_link);
         </select>
       </div>
       <div class="fg1"><label class="flbl">לקוח</label>
-        <select class="finp" id="mf-cust" onchange="window.toggleGuestFields()"></select>
+        <select class="finp" id="mf-cust" onchange="toggleGuestFields()"></select>
       </div>
       <div class="fg1" id="mf-guest-fields">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -582,12 +580,12 @@ document.head.appendChild(_link);
           <option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option>
         </select>
       </div>
-      <div class="fg1"><label class="flbl">הערות פנימיות</label><textarea class="finp" id="mf-notes" rows="2"></textarea></div>
+      <div class="fg1"><label class="flbl">הערות</label><textarea class="finp" id="mf-notes" rows="2"></textarea></div>
     </div></div>
     <div class="mft">
-      <button class="btn bd btn-sm" id="mf-del" style="display:none;margin-left:auto" onclick="window.delFault()">🗑️ מחק</button>
+      <button class="btn bd btn-sm" id="mf-del" style="display:none;margin-left:auto" onclick="delFault()">🗑️ מחק</button>
       <button class="btn bs" onclick="closeM('M-fault')">ביטול</button>
-      <button class="btn bp" onclick="window.saveFault()">💾 שמור</button>
+      <button class="btn bp" onclick="saveFault()">💾 שמור</button>
     </div>
   </div>
 </div>
@@ -616,9 +614,9 @@ document.head.appendChild(_link);
       </div>
     </div>
     <div class="mft">
-      <button class="btn bd btn-sm" id="mn-del" style="display:none;margin-left:auto" onclick="window.delNote()">🗑️ מחק</button>
+      <button class="btn bd btn-sm" id="mn-del" style="display:none;margin-left:auto" onclick="delNote()">🗑️ מחק</button>
       <button class="btn bs" onclick="closeM('M-note')">ביטול</button>
-      <button class="btn bp" onclick="window.saveNote()">💾 שמור</button>
+      <button class="btn bp" onclick="saveNote()">💾 שמור</button>
     </div>
   </div>
 </div>
@@ -747,17 +745,16 @@ document.head.appendChild(_link);
     lbls.forEach(lbl => { lbl.textContent = currentFontLevel > 0 ? '+' + currentFontLevel : currentFontLevel; });
   }
 
-  // הפונקציה הקריטית ששומרת על הצבע שבחרת (או משחזרת אותו) וגם מציגה את הרקע נכון
+  window.applyLogos = function(logosObj) {
+      const logos = logosObj || JSON.parse(localStorage.getItem('vd_crm_logos') || '{}');
+      if (logos.main) document.querySelectorAll('.sidebar-logo-img').forEach(el => el.src = logos.main);
+      if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
+  };
+
+  // מנגנון הרקע השקט שלא נוגע במסגרות
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || {};
-      
-      // החזרת הצבע הראשי של המערכת (קריטי כדי שהמסגרות לא יהיו אפורות!)
-      const systemColor = document.getElementById('ds-color')?.value || '#3b82f6';
-      document.documentElement.style.setProperty('--acc', systemColor);
-      
-      document.body.setAttribute('data-bg', d.bg || 'stone');
-      document.body.setAttribute('data-glow', d.glow !== false ? 'true' : 'false');
       
       let styleTag = document.getElementById('custom-bg-style');
       if (!styleTag) {
@@ -778,22 +775,19 @@ document.head.appendChild(_link);
       } else {
           styleTag.innerHTML = '';
       }
-
-      if (document.getElementById('ds-bg')) document.getElementById('ds-bg').value = d.bg || 'stone';
-      if (document.getElementById('ds-glow')) document.getElementById('ds-glow').checked = d.glow !== false;
+      
+      if (d.bg) document.body.setAttribute('data-bg', d.bg);
+      if (d.glow !== undefined) document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
   };
 
   window.applyDesignSettings = function() {
-      const bg = document.getElementById('ds-bg').value;
-      const color = document.getElementById('ds-color').value;
-      const glow = document.getElementById('ds-glow').checked;
+      const bg = document.getElementById('ds-bg') ? document.getElementById('ds-bg').value : 'stone';
+      const glow = document.getElementById('ds-glow') ? document.getElementById('ds-glow').checked : true;
       
-      document.documentElement.style.setProperty('--acc', color);
       document.body.setAttribute('data-bg', bg);
       document.body.setAttribute('data-glow', glow ? 'true' : 'false');
-      localStorage.setItem('vd_crm_design', JSON.stringify({ bg, color, glow }));
 
-      // שמירה לענן אם זה משתמש מחובר
+      // עדכון השרת במקרה של משתמש
       if (window._currentUser && window.cfg && window.cfg.users) {
           const u = window.cfg.users.find(x => x.name === window._currentUser);
           if (u) {
@@ -809,21 +803,7 @@ document.head.appendChild(_link);
     const savedFont = localStorage.getItem('vd_crm_font_lvl');
     if (savedFont !== null) currentFontLevel = parseInt(savedFont);
     applyFontScale();
-    
-    const savedDesign = localStorage.getItem('vd_crm_design');
-    if (savedDesign) {
-      try {
-        const d = JSON.parse(savedDesign);
-        if (document.getElementById('ds-bg')) {
-          document.getElementById('ds-bg').value = d.bg;
-          document.getElementById('ds-color').value = d.color;
-          document.getElementById('ds-glow').checked = d.glow;
-        }
-        document.documentElement.style.setProperty('--acc', d.color);
-        document.body.setAttribute('data-bg', d.bg);
-        document.body.setAttribute('data-glow', d.glow ? 'true' : 'false');
-      } catch (e) {}
-    }
+    window.applyLogos();
   });
 </script>
 
