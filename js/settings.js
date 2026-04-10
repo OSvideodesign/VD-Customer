@@ -1,6 +1,6 @@
 // ══ settings.js — settings page + user management ══
 
-import { USERS } from './config.js';
+import { USERS, DEFAULT_PERMS, PERM_MODULES } from './config.js';
 import { getPerms } from './auth.js';
 import { toast } from './utils.js';
 import { openM, closeM } from './nav.js';
@@ -8,7 +8,6 @@ import { addLog } from './log.js';
 
 let _editUserName = null;
 
-// העלאת לוגו
 window.uploadLogo = function(input, type) {
     const file = input.files[0];
     if(!file) return;
@@ -43,21 +42,50 @@ window.uploadLogo = function(input, type) {
     reader.readAsDataURL(file);
 };
 
-// העלאת רקע אישי משלך
 window.uploadCustomBg = function(input) {
     const file = input.files[0];
     if(!file) return;
+    
+    toast('מעבד תמונה...', 'info');
+
     const reader = new FileReader();
     reader.onload = function(e) {
-        const dataUrl = e.target.result;
-        const u = window.cfg.users.find(x => x.name === window._currentUser);
-        if (u) {
-            u.design = u.design || {};
-            u.design.bgImage = dataUrl;
-            if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
-            window.applyUserDesign(u);
-            toast('רקע אישי עודכן!', 'success');
-        }
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 1920; 
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > height) {
+                if (width > MAX_SIZE) {
+                    height *= MAX_SIZE / width;
+                    width = MAX_SIZE;
+                }
+            } else {
+                if (height > MAX_SIZE) {
+                    width *= MAX_SIZE / height;
+                    height = MAX_SIZE;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+            const u = window.cfg.users.find(x => x.name === window._currentUser);
+            if (u) {
+                u.design = u.design || {};
+                u.design.bgImage = dataUrl;
+                if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
+                window.applyUserDesign(u);
+                toast('רקע אישי הוחלף בהצלחה! 🖼️', 'success');
+            }
+        };
+        img.src = e.target.result;
     }
     reader.readAsDataURL(file);
 };
@@ -72,7 +100,8 @@ window.clearCustomBg = function() {
     }
 };
 
-export function loadSettings() {
+// תיקון חשוב: שיניתי בחזרה את השם ל-renderSettings כדי שהנתונים שלך יחזרו להופיע!
+export function renderSettings() {
   document.getElementById('s-company').value = window.cfg.company || '';
   document.getElementById('s-phone').value   = window.cfg.phone   || '';
   document.getElementById('s-email').value   = window.cfg.email   || '';
@@ -100,9 +129,7 @@ export function renderUsersList() {
       <div style="width:32px;height:32px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${u.name[0]}</div>
       <div style="flex:1">
         <div style="font-weight:600;font-size:13px">${u.name}</div>
-        <div style="font-size:11px;color:var(--tx3)">
-           ${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}
-        </div>
+        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}</div>
       </div>
       <button class="btn bs btn-sm" onclick="window._openEditUser('${u.name}')">✏️ ערוך</button>
     </div>`).join('');
@@ -133,16 +160,14 @@ export function openEditUser(name) {
   const nopass = (u.pass === 'NOPASS');
   document.getElementById('u-nopass').checked  = nopass;
   
-  // כאן אתה האדמין, אז אתה תראה את הסיסמה בטקסט רגיל
+  // מציג את הסיסמה הקיימת כטקסט גלוי
   document.getElementById('u-pass').value = nopass ? '' : (u.pass || '');
-  
   document.getElementById('u-del-btn').style.display = name === 'רז' ? 'none' : '';
 
   renderPermsGrid(getPerms(u));
   openM('M-user');
 }
 
-// התפריט הברור בעברית להרשאות בדיוק כמו שביקשת
 export function renderPermsGrid(p) {
   const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
   const grid = document.getElementById('u-perms-grid');
