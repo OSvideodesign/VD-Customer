@@ -405,14 +405,11 @@ document.head.appendChild(_link);
     <div class="settings-grid">
       
       <div class="tw settings-panel">
-        <div class="stit">🏢 פרטי החברה ויומן</div>
+        <div class="stit">🏢 פרטי החברה</div>
         <div style="margin-bottom:12px"><label class="flbl">שם החברה</label><input class="finp" id="s-company" placeholder="וידאו דיזיין"></div>
         <div style="margin-bottom:12px"><label class="flbl">טלפון</label>    <input class="finp" id="s-phone"   placeholder="0526223300"></div>
         <div style="margin-bottom:20px"><label class="flbl">מייל שולח</label><input class="finp" type="email" id="s-email" placeholder="info@videodesign.co.il"></div>
         
-        <div class="stit" style="margin-top:24px; border-top: 1px solid rgba(255,255,255,0.05); padding-top:12px;">📅 יומן Google</div>
-        <div style="margin-bottom:6px"><label class="flbl">כתובת Gmail</label><input class="finp" type="email" id="s-gcal" placeholder="info.videodesign@gmail.com"></div>
-        <div style="font-size:11px;color:var(--tx3);margin-bottom:18px">לפתיחת אירועים ביומן Google</div>
         <button class="btn bp" style="width:100%" onclick="window.saveSettings()">💾 שמור הגדרות</button>
         
         <div class="stit" style="margin-top:30px">🔔 התראות</div>
@@ -736,22 +733,13 @@ document.head.appendChild(_link);
 </div>
 
 <script>
-  // מנקה את הזיכרון אוטומטית בכל פתיחה כדי למנוע את הלופ של השגיאות
-  if ('serviceWorker' in navigator) {
-    caches.keys().then(names => names.forEach(name => caches.delete(name)));
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(reg => reg.unregister());
-    }).then(() => {
-      navigator.serviceWorker.register('sw.js?v=' + new Date().getTime());
-    });
-  }
-
   window.applyLogos = function(logosObj) {
       const logos = logosObj || JSON.parse(localStorage.getItem('vd_crm_logos') || '{}');
       if (logos.main) document.querySelectorAll('.sidebar-logo-img').forEach(el => el.src = logos.main);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
+  // פונקציית העיצוב הנקייה. לא מתערבת בצבעים הכלליים בכלל!
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || {};
@@ -841,9 +829,35 @@ document.head.appendChild(_link);
       } catch (e) {}
     }
   });
+
+  // מנקה את הזיכרון של הדפדפן (Cache) באופן אוטומטי כדי שהשגיאות לא יחזרו גם בלי Shift+F5
+  if ('caches' in window) {
+      caches.keys().then(function(names) {
+          for (let name of names) {
+              caches.delete(name);
+          }
+      });
+  }
 </script>
 
 <script type="module" src="js/main.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Unregister old service workers to prevent stuck cache
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+      }).then(() => {
+        navigator.serviceWorker.register('sw.js?v=' + new Date().getTime()).catch(err => {
+          console.error('Service Worker registration failed:', err);
+        });
+      });
+    });
+  }
+</script>
 
 </body>
 </html>
