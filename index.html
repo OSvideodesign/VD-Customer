@@ -169,23 +169,69 @@ document.head.appendChild(_link);
       </div>
     </div>
     <div class="stats">
-      <div class="sc info">   <div class="sc-lbl">סה״כ לקוחות</div>      <div class="sc-val" id="st-total">—</div>    <div class="sc-sub">במערכת</div></div>
-      <div class="sc warn">   <div class="sc-lbl">אחריות פגה/בקרוב</div> <div class="sc-val" id="st-warr">—</div>     <div class="sc-sub">⚠️ דורש טיפול</div></div>
-      <div class="sc danger"> <div class="sc-lbl">לקוחות עם חוב</div>    <div class="sc-val" id="st-debts">—</div>    <div class="sc-sub">חובות פתוחים</div></div>
-      <div class="sc success"><div class="sc-lbl">סה״כ חוב</div>         <div class="sc-val" id="st-debt-sum">—</div> <div class="sc-sub">₪ לגבייה</div></div>
-      <div class="sc orange"> <div class="sc-lbl">משימות פתוחות</div>    <div class="sc-val" id="st-faults">—</div>   <div class="sc-sub">🔧 ממתינות</div></div>
+      <div class="sc info" style="border-right: 4px solid #3b82f6 !important;">
+         <div class="sc-lbl">סה״כ לקוחות</div><div class="sc-val" id="st-total">—</div><div class="sc-sub">במערכת</div>
+      </div>
+      <div class="sc warn" style="border-right: 4px solid #eab308 !important;">
+         <div class="sc-lbl">אחריות פגה/בקרוב</div><div class="sc-val" id="st-warr">—</div><div class="sc-sub">⚠️ דורש טיפול</div>
+      </div>
+      <div class="sc danger" style="border-right: 4px solid #ef4444 !important;">
+         <div class="sc-lbl">לקוחות עם חוב</div><div class="sc-val" id="st-debts">—</div><div class="sc-sub">חובות פתוחים</div>
+      </div>
+      <div class="sc success" style="border-right: 4px solid #22c55e !important;">
+         <div class="sc-lbl">סה״כ חוב</div><div class="sc-val" id="st-debt-sum">—</div><div class="sc-sub">₪ לגבייה</div>
+      </div>
+      <div class="sc orange" style="border-right: 4px solid #f59e0b !important;">
+         <div class="sc-lbl">משימות פתוחות</div><div class="sc-val" id="st-faults">—</div><div class="sc-sub">🔧 ממתינות</div>
+      </div>
     </div>
     
     <div class="dash3">
-      <div class="tw" style="border-top:3px solid var(--acc)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>⚠️ אחריות בפתח</span><button onclick="nav('warranties')" class="panel-link-btn" style="color:var(--acc)">הכל ›</button></div><div class="panel-body" id="pan-warr"></div></div>
-      <div class="tw" style="border-top:3px solid var(--grn)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>💰 חובות פתוחים</span><button onclick="nav('debts')" class="panel-link-btn" style="color:var(--grn)">הכל ›</button></div><div class="panel-body" id="pan-debts"></div></div>
-      <div class="tw" style="border-top:3px solid var(--ora)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>🔧 משימות פתוחות</span><button onclick="nav('faults')" class="panel-link-btn" style="color:var(--ora)">הכל ›</button></div><div class="panel-body" id="pan-faults"></div></div>
+      <div class="tw" style="border-top:3px solid #eab308 !important;">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>⚠️ אחריות בפתח</span>
+          <button onclick="nav('warranties')" class="panel-link-btn" style="color:#eab308 !important;">הכל ›</button>
+        </div>
+        <div class="panel-body" id="pan-warr"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid #22c55e !important;">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>💰 חובות פתוחים</span>
+          <button onclick="nav('debts')" class="panel-link-btn" style="color:#22c55e !important;">הכל ›</button>
+        </div>
+        <div class="panel-body" id="pan-debts"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid #f59e0b !important;">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🔧 משימות פתוחות</span>
+          <button onclick="nav('faults')" class="panel-link-btn" style="color:#f59e0b !important;">הכל ›</button>
+        </div>
+        <div class="panel-body" id="pan-faults"></div>
+      </div>
     </div>
     
     <div class="dash3" style="margin-top:14px">
-      <div class="tw" style="border-top:3px solid var(--acc)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>📌 כללי</span><button onclick="nav('notes')" class="panel-link-btn" style="color:var(--acc)">כל ההערות ›</button></div><div class="panel-body" id="pan-notes-general"></div></div>
-      <div class="tw" style="border-top:3px solid var(--grn)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>🤝 פגישות</span><button onclick="nav('notes')" class="panel-link-btn" style="color:var(--grn)">כל ההערות ›</button></div><div class="panel-body" id="pan-notes-meeting"></div></div>
-      <div class="tw" style="border-top:3px solid var(--yel)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>⏰ תזכורות</span><button onclick="nav('notes')" class="panel-link-btn" style="color:var(--yel)">כל ההערות ›</button></div><div class="panel-body" id="pan-notes-reminder"></div></div>
+      <div class="tw" style="border-top:3px solid #3b82f6 !important;">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>📌 כללי</span>
+          <button onclick="nav('notes')" class="panel-link-btn" style="color:#3b82f6 !important;">כל ההערות ›</button>
+        </div>
+        <div class="panel-body" id="pan-notes-general"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid #10b981 !important;">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🤝 פגישות</span>
+          <button onclick="nav('notes')" class="panel-link-btn" style="color:#10b981 !important;">כל ההערות ›</button>
+        </div>
+        <div class="panel-body" id="pan-notes-meeting"></div>
+      </div>
+      <div class="tw" style="border-top:3px solid #eab308 !important;">
+        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>⏰ תזכורות</span>
+          <button onclick="nav('notes')" class="panel-link-btn" style="color:#eab308 !important;">כל ההערות ›</button>
+        </div>
+        <div class="panel-body" id="pan-notes-reminder"></div>
+      </div>
     </div>
 
     <div class="tw" style="margin-top:16px;">
@@ -206,7 +252,7 @@ document.head.appendChild(_link);
       <div style="padding:16px;">
         <div class="cal-layout" style="margin-top:0;">
           <div class="tw cal-sidebar" style="border: 1px solid var(--brd); display:flex; flex-direction:column; max-height:80vh;">
-            <div class="panel-title" style="border-bottom: 2px solid var(--ora); flex-shrink:0;">🔧 משימות לשיבוץ</div>
+            <div class="panel-title" style="border-bottom: 2px solid #f59e0b !important; flex-shrink:0;">🔧 משימות לשיבוץ</div>
             <div id="cal-unscheduled-list" style="padding:10px; display:flex; flex-direction:column; gap:8px; flex:1; min-height:400px; overflow-y:auto; transition:background 0.2s;"
                  ondragover="event.preventDefault(); this.style.background='rgba(59, 130, 246, 0.1)';"
                  ondragleave="this.style.background='transparent';"
@@ -404,6 +450,7 @@ document.head.appendChild(_link);
               <option value="metal">⚙️ מתכת מוברשת</option>
               <option value="carbon">⬛ קרבון ספורטיבי</option>
               <option value="dark">🌙 שחור חלק ונקי</option>
+              <option value="silver">🪙 כסף (Silver Theme)</option>
             </select>
           </div>
           
@@ -698,7 +745,7 @@ document.head.appendChild(_link);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
-  // פונקציית העיצוב הנקייה - לא משנה צבעים, רק מציבה תמונה
+  // פונקציית העיצוב הנקייה. לא מתערבת בצבעים הכלליים בכלל!
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || {};
