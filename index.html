@@ -728,15 +728,20 @@ document.head.appendChild(_link);
 </div>
 
 <script>
+  // חיבור הפונקציות ל-window כדי שה-HTML יכיר אותן
   window.applyLogos = function(logosObj) {
       const logos = logosObj || JSON.parse(localStorage.getItem('vd_crm_logos') || '{}');
       if (logos.main) document.querySelectorAll('.sidebar-logo-img').forEach(el => el.src = logos.main);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
+  // פונקציית העיצוב: שמה את הרקע מאחור, לא דורסת את צבע הנושא המרכזי המקורי!
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || {};
+      
+      // מבטיח שתמיד יהיה למערכת צבע בסיס כדי שהכפתורים יעבדו!
+      document.documentElement.style.setProperty('--acc', '#3b82f6');
       
       let styleTag = document.getElementById('custom-bg-style');
       if (!styleTag) {
@@ -753,6 +758,7 @@ document.head.appendChild(_link);
                   background-position: center !important;
                   background-attachment: fixed !important;
               }
+              /* שקיפות לרקע המרכזי כדי שנראה את התמונה דרכו */
               .main { background: transparent !important; }
           `;
       } else {
@@ -811,6 +817,7 @@ document.head.appendChild(_link);
     window.applyFontScale();
     window.applyLogos();
     
+    // מוודא שהעיצוב נטען עוד לפני ההתחברות כדי למנוע הבהובים
     const savedDesign = localStorage.getItem('vd_crm_design');
     if (savedDesign && !window._currentUser) {
       try {
@@ -818,6 +825,7 @@ document.head.appendChild(_link);
         if (document.getElementById('ds-bg')) document.getElementById('ds-bg').value = d.bg || 'stone';
         if (document.getElementById('ds-glow')) document.getElementById('ds-glow').checked = d.glow !== false;
         
+        document.documentElement.style.setProperty('--acc', '#3b82f6');
         document.body.setAttribute('data-bg', d.bg || 'stone');
         document.body.setAttribute('data-glow', d.glow !== false ? 'true' : 'false');
       } catch (e) {}
