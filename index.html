@@ -739,7 +739,6 @@ document.head.appendChild(_link);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
-  // פונקציית העיצוב הנקייה. לא מתערבת בצבעים הכלליים בכלל!
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || {};
@@ -830,7 +829,6 @@ document.head.appendChild(_link);
     }
   });
 
-  // מנקה את הזיכרון של הדפדפן (Cache) באופן אוטומטי כדי שהשגיאות לא יחזרו גם בלי Shift+F5
   if ('caches' in window) {
       caches.keys().then(function(names) {
           for (let name of names) {
@@ -845,7 +843,6 @@ document.head.appendChild(_link);
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      // Unregister old service workers to prevent stuck cache
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
           registration.unregister();
