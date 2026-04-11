@@ -8,8 +8,8 @@ import { renderDash } from './dashboard.js';
 import { renderCusts, openNewCust, editCustById, saveCust, viewCust, delCust, addContactRow, addAddressRow } from './customers.js';
 import { renderWarr }  from './warranties.js';
 import { renderDebts, markPaid, markFaultPaid } from './debts.js';
-import { renderFaults, openNewFault, editFaultById, saveFault, delFault, toggleSelectMode, toggleSelect, deleteSelected, toggleGuestFields, requestNotificationPermission } from './faults.js';
-import { renderNotes, openNewNote, editNoteById, saveNote, delNote, toggleNoteSelectMode, toggleNoteSelect, deleteSelectedNotes } from './notes.js';
+import { renderFaults, openNewFault, editFaultById, saveFault, delFault, toggleSelectMode, deleteSelected } from './faults.js';
+import { renderNotes, openNewNote, editNoteById, saveNote, delNote, toggleNoteSelectMode, deleteSelectedNotes } from './notes.js';
 import { renderArchive, restoreFault } from './archive.js';
 import { renderReports, exportBackup, exportCustomersExcel } from './reports.js';
 import { loadSettings, saveSettings, openAddUser, openEditUser, saveUser, deleteUser } from './settings.js';
@@ -17,7 +17,7 @@ import { renderLog, addLog, clearLog } from './log.js';
 import { gcalInit, gcalSignIn, gcalSignOut, fetchWk, wkPrev, wkNext, wkToday, gcalFault } from './gcal.js';
 import { loadAll } from './db.js';
 
-// ── Global state initialisation ────────────────────────────────────────────
+// ── Global state initialisation ──
 window.custs       = [];
 window.faults      = [];
 window.notes       = [];
@@ -27,7 +27,6 @@ window.cfg         = {};
 window._deletingIds = new Set();
 window._gsResults  = [];
 
-// ── Restore cfg from localStorage ─────────────────────────────────────────
 (function () {
   try {
     const b = localStorage.getItem('crm_cfg');
@@ -35,7 +34,6 @@ window._gsResults  = [];
   } catch (e) {}
 })();
 
-// ── Expose functions for inline HTML onclick handlers ─────────────────────
 // auth
 window.doLogin          = doLogin;
 window.backToUsers      = backToUsers;
@@ -80,14 +78,26 @@ window.openNewFault     = openNewFault;
 window._openNewFault    = openNewFault;
 window.saveFault        = saveFault;
 window.delFault         = delFault;
-window.toggleGuestFields = toggleGuestFields;
 window.renderFaults     = renderFaults;
 window._editFaultById   = editFaultById;
 window.editFaultById    = editFaultById;
 window.toggleSelectMode = toggleSelectMode;
-window._toggleSelect    = toggleSelect;
 window.deleteSelected   = deleteSelected;
-window.requestNotificationPermission = requestNotificationPermission;
+
+// התראות (נמצא כאן ישירות כדי למנוע קריסות של המנוע)
+window.requestNotificationPermission = function() {
+    if (!("Notification" in window)) {
+        toast('הדפדפן שלך לא תומך בהתראות', 'err');
+        return;
+    }
+    Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+            toast('התראות הופעלו בהצלחה ✅', 'success');
+        } else {
+            toast('התראות נחסמו', 'info');
+        }
+    });
+};
 
 // notes
 window.openNewNote          = openNewNote;
@@ -95,7 +105,6 @@ window.saveNote             = saveNote;
 window.delNote              = delNote;
 window.editNoteById         = editNoteById;
 window.toggleNoteSelectMode = toggleNoteSelectMode;
-window._toggleNoteSelect    = toggleNoteSelect;
 window.deleteSelectedNotes  = deleteSelectedNotes;
 window.renderNotes          = renderNotes;
 
@@ -112,7 +121,7 @@ window.renderReports    = renderReports;
 window.exportBackup     = exportBackup;
 window.exportCustomersExcel = exportCustomersExcel;
 
-// warranties / debts (renderers nav.js calls via window.*)
+// warranties / debts
 window.renderWarr       = renderWarr;
 window.renderDebts      = renderDebts;
 
@@ -139,14 +148,10 @@ window.wkNext           = wkNext;
 window.wkToday          = wkToday;
 window._gcalFault       = gcalFault;
 
-// ── Boot ───────────────────────────────────────────────────────────────────
-
-// רישום ה-Service Worker להפעלת PWA והתראות
+// Boot
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('Service Worker registered successfully', reg.scope))
-      .catch(err => console.error('Service Worker registration failed', err));
+    navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
   });
 }
 
