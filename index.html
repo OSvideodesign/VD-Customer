@@ -177,51 +177,15 @@ document.head.appendChild(_link);
     </div>
     
     <div class="dash3">
-      <div class="tw" style="border-top:3px solid #ef4444">
-        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>⚠️ אחריות בפתח</span>
-          <button onclick="nav('warranties')" class="panel-link-btn" style="color:#ef4444">הכל ›</button>
-        </div>
-        <div class="panel-body" id="pan-warr"></div>
-      </div>
-      <div class="tw" style="border-top:3px solid #22c55e">
-        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>💰 חובות פתוחים</span>
-          <button onclick="nav('debts')" class="panel-link-btn" style="color:#22c55e">הכל ›</button>
-        </div>
-        <div class="panel-body" id="pan-debts"></div>
-      </div>
-      <div class="tw" style="border-top:3px solid #f59e0b">
-        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>🔧 משימות פתוחות</span>
-          <button onclick="nav('faults')" class="panel-link-btn" style="color:#f59e0b">הכל ›</button>
-        </div>
-        <div class="panel-body" id="pan-faults"></div>
-      </div>
+      <div class="tw" style="border-top:3px solid var(--acc)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>⚠️ אחריות בפתח</span><button onclick="nav('warranties')" class="panel-link-btn" style="color:var(--acc)">הכל ›</button></div><div class="panel-body" id="pan-warr"></div></div>
+      <div class="tw" style="border-top:3px solid var(--grn)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>💰 חובות פתוחים</span><button onclick="nav('debts')" class="panel-link-btn" style="color:var(--grn)">הכל ›</button></div><div class="panel-body" id="pan-debts"></div></div>
+      <div class="tw" style="border-top:3px solid var(--ora)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>🔧 משימות פתוחות</span><button onclick="nav('faults')" class="panel-link-btn" style="color:var(--ora)">הכל ›</button></div><div class="panel-body" id="pan-faults"></div></div>
     </div>
     
     <div class="dash3" style="margin-top:14px">
-      <div class="tw" style="border-top:3px solid #3b82f6">
-        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>📌 כללי</span>
-          <button onclick="nav('notes')" class="panel-link-btn" style="color:#3b82f6">כל ההערות ›</button>
-        </div>
-        <div class="panel-body" id="pan-notes-general"></div>
-      </div>
-      <div class="tw" style="border-top:3px solid #10b981">
-        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>🤝 פגישות</span>
-          <button onclick="nav('notes')" class="panel-link-btn" style="color:#10b981">כל ההערות ›</button>
-        </div>
-        <div class="panel-body" id="pan-notes-meeting"></div>
-      </div>
-      <div class="tw" style="border-top:3px solid #eab308">
-        <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>⏰ תזכורות</span>
-          <button onclick="nav('notes')" class="panel-link-btn" style="color:#eab308">כל ההערות ›</button>
-        </div>
-        <div class="panel-body" id="pan-notes-reminder"></div>
-      </div>
+      <div class="tw" style="border-top:3px solid var(--acc)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>📌 כללי</span><button onclick="nav('notes')" class="panel-link-btn" style="color:var(--acc)">כל ההערות ›</button></div><div class="panel-body" id="pan-notes-general"></div></div>
+      <div class="tw" style="border-top:3px solid var(--grn)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>🤝 פגישות</span><button onclick="nav('notes')" class="panel-link-btn" style="color:var(--grn)">כל ההערות ›</button></div><div class="panel-body" id="pan-notes-meeting"></div></div>
+      <div class="tw" style="border-top:3px solid var(--yel)"><div class="panel-title" style="display:flex;align-items:center;justify-content:space-between"><span>⏰ תזכורות</span><button onclick="nav('notes')" class="panel-link-btn" style="color:var(--yel)">כל ההערות ›</button></div><div class="panel-body" id="pan-notes-reminder"></div></div>
     </div>
 
     <div class="tw" style="margin-top:16px;">
@@ -728,20 +692,16 @@ document.head.appendChild(_link);
 </div>
 
 <script>
-  // חיבור הפונקציות ל-window כדי שה-HTML יכיר אותן
   window.applyLogos = function(logosObj) {
       const logos = logosObj || JSON.parse(localStorage.getItem('vd_crm_logos') || '{}');
       if (logos.main) document.querySelectorAll('.sidebar-logo-img').forEach(el => el.src = logos.main);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
-  // פונקציית העיצוב: שמה את הרקע מאחור, לא דורסת את צבע הנושא המרכזי המקורי!
+  // פונקציית העיצוב הנקייה - לא משנה צבעים, רק מציבה תמונה
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || {};
-      
-      // מבטיח שתמיד יהיה למערכת צבע בסיס כדי שהכפתורים יעבדו!
-      document.documentElement.style.setProperty('--acc', '#3b82f6');
       
       let styleTag = document.getElementById('custom-bg-style');
       if (!styleTag) {
@@ -758,7 +718,6 @@ document.head.appendChild(_link);
                   background-position: center !important;
                   background-attachment: fixed !important;
               }
-              /* שקיפות לרקע המרכזי כדי שנראה את התמונה דרכו */
               .main { background: transparent !important; }
           `;
       } else {
@@ -817,7 +776,6 @@ document.head.appendChild(_link);
     window.applyFontScale();
     window.applyLogos();
     
-    // מוודא שהעיצוב נטען עוד לפני ההתחברות כדי למנוע הבהובים
     const savedDesign = localStorage.getItem('vd_crm_design');
     if (savedDesign && !window._currentUser) {
       try {
@@ -825,7 +783,6 @@ document.head.appendChild(_link);
         if (document.getElementById('ds-bg')) document.getElementById('ds-bg').value = d.bg || 'stone';
         if (document.getElementById('ds-glow')) document.getElementById('ds-glow').checked = d.glow !== false;
         
-        document.documentElement.style.setProperty('--acc', '#3b82f6');
         document.body.setAttribute('data-bg', d.bg || 'stone');
         document.body.setAttribute('data-glow', d.glow !== false ? 'true' : 'false');
       } catch (e) {}
