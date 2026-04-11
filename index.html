@@ -50,10 +50,10 @@ document.head.appendChild(_link);
     <div id="user-btns"></div>
     <div id="pass-area">
       <p id="pass-label"></p>
-      <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="סיסמה"
-             onkeydown="if(event.key==='Enter')doLogin()">
-      <button class="btn bp login-full-btn" onclick="doLogin()">כניסה →</button>
-      <button class="btn bs btn-sm login-full-btn" onclick="backToUsers()">חזור</button>
+      <div id="first-time-msg" style="display:none; color:var(--grn); font-size:13px; font-weight:bold; margin-bottom:8px;">ברוך הבא! אנא בחר סיסמה אישית לכניסה:</div>
+      <input type="password" id="pass-inp" class="finp login-pass-inp" placeholder="סיסמה" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn bp login-full-btn" onclick="window.doLogin()">כניסה →</button>
+      <button class="btn bs btn-sm login-full-btn" onclick="window.backToUsers()">חזור</button>
       <p id="pass-err">סיסמה שגויה ❌</p>
     </div>
   </div>
@@ -65,41 +65,41 @@ document.head.appendChild(_link);
     <button class="mnb" onclick="nav('customers')"><span style="font-size:20px">👥</span>לקוחות</button>
     <button class="mnb" onclick="nav('faults')"><span style="font-size:20px">🔧</span>משימות</button>
     <button class="mnb" onclick="nav('notes')"><span style="font-size:20px">📝</span>הערות</button>
-    <button class="mnb" onclick="openDrawer(); document.body.style.overflow='hidden';"><span style="font-size:20px">☰</span>עוד</button>
+    <button class="mnb" onclick="openDrawer()"><span style="font-size:20px">☰</span>עוד</button>
   </div>
 </div>
 
 <div id="m-drawer">
-  <div id="m-drawer-bg" onclick="closeDrawer(); document.body.style.overflow='';"></div>
+  <div id="m-drawer-bg" onclick="closeDrawer()"></div>
   <div id="m-drawer-panel">
     <div class="m-drawer-header">
       <span>תפריט</span>
-      <button onclick="closeDrawer(); document.body.style.overflow='';" class="m-drawer-close">✕</button>
+      <button onclick="closeDrawer()" class="m-drawer-close">✕</button>
     </div>
     
     <div id="m-user-badge-display" style="text-align:center; padding:12px; margin-bottom: 10px; border-bottom: 1px solid var(--brd); font-size: 15px; font-weight: 500; background: var(--sur2);"></div>
 
     <div class="m-drawer-sec">ניהול</div>
-    <button class="m-drawer-btn" onclick="navD('dashboard'); document.body.style.overflow='';">📊 לוח בקרה</button>
-    <button class="m-drawer-btn" onclick="navD('customers'); document.body.style.overflow='';">👥 לקוחות</button>
-    <button class="m-drawer-btn" onclick="navD('faults'); document.body.style.overflow='';">🔧 משימות</button>
-    <button class="m-drawer-btn" onclick="navD('archive'); document.body.style.overflow='';">✅ ארכיון</button>
+    <button class="m-drawer-btn" onclick="navD('dashboard')">📊 לוח בקרה</button>
+    <button class="m-drawer-btn" onclick="navD('customers')">👥 לקוחות</button>
+    <button class="m-drawer-btn" onclick="navD('faults')">🔧 משימות</button>
+    <button class="m-drawer-btn" onclick="navD('archive')">✅ ארכיון</button>
     <div class="m-drawer-sec">דוחות</div>
-    <button class="m-drawer-btn" onclick="navD('warranties'); document.body.style.overflow='';">🛡️ אחריות</button>
-    <button class="m-drawer-btn" onclick="navD('debts'); document.body.style.overflow='';">💰 חובות</button>
-    <button class="m-drawer-btn" onclick="navD('notes'); document.body.style.overflow='';">📝 הערות</button>
-    <button class="m-drawer-btn" id="m-drawer-reports" onclick="navD('reports'); document.body.style.overflow='';">📈 דוחות</button>
+    <button class="m-drawer-btn" onclick="navD('warranties')">🛡️ אחריות</button>
+    <button class="m-drawer-btn" onclick="navD('debts')">💰 חובות</button>
+    <button class="m-drawer-btn" onclick="navD('notes')">📝 הערות</button>
+    <button class="m-drawer-btn" id="m-drawer-reports" onclick="navD('reports')">📈 דוחות</button>
     <div class="m-drawer-sec">מערכת</div>
-    <button class="m-drawer-btn" onclick="navD('settings'); document.body.style.overflow='';">⚙️ הגדרות</button>
-    <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer(); document.body.style.overflow='';">🔍 חיפוש גלובלי</button>
-    <button class="m-drawer-btn m-drawer-logout" onclick="logout(); document.body.style.overflow='';">🚪 התנתק</button>
+    <button class="m-drawer-btn" onclick="navD('settings')">⚙️ הגדרות</button>
+    <button class="m-drawer-btn m-drawer-search" onclick="openGlobalSearch();closeDrawer()">🔍 חיפוש גלובלי</button>
+    <button class="m-drawer-btn m-drawer-logout" onclick="window.logout()">🚪 התנתק</button>
     
     <div style="text-align:center; margin-top:20px; padding:10px;">
       <div style="font-size:11px; color:#8a9097; margin-bottom:6px;">גודל טקסט אישי</div>
       <div style="display:flex; justify-content:center; align-items:center; gap:12px;">
-        <button class="btn bs btn-sm" onclick="changeFontScale(1)" style="font-size:16px">+</button>
+        <button class="btn bs btn-sm" onclick="window.changeFontScale(1)" style="font-size:16px">+</button>
         <span class="font-scale-lbl" style="font-size:14px; font-weight:700; width:20px; text-align:center; color:#fff">0</span>
-        <button class="btn bs btn-sm" onclick="changeFontScale(-1)" style="font-size:16px">-</button>
+        <button class="btn bs btn-sm" onclick="window.changeFontScale(-1)" style="font-size:16px">-</button>
       </div>
     </div>
   </div>
@@ -492,9 +492,9 @@ document.head.appendChild(_link);
       </div>
     </div></div>
     <div class="mft">
-      <button class="btn bd btn-sm" id="mc-del" style="display:none;margin-left:auto" onclick="delCust()">🗑️ מחק</button>
+      <button class="btn bd btn-sm" id="mc-del" style="display:none;margin-left:auto" onclick="window.delCust()">🗑️ מחק</button>
       <button class="btn bs" onclick="closeM('M-cust')">ביטול</button>
-      <button class="btn bp" onclick="saveCust()">💾 שמור</button>
+      <button class="btn bp" onclick="window.saveCust()">💾 שמור</button>
     </div>
   </div>
 </div>
@@ -596,23 +596,21 @@ document.head.appendChild(_link);
       <h2 id="M-note-title">הערה חדשה</h2>
       <button onclick="closeM('M-note')" class="modal-close-btn">✕</button>
     </div>
-    <div class="mbody">
-      <div class="fgrid">
-        <div class="fg1"><label class="flbl">קטגוריה</label>
-          <select class="finp" id="mn-cat">
-            <option value="general">📌 כללי</option><option value="meeting">🤝 פגישה</option><option value="reminder">⏰ תזכורת</option>
-          </select>
-        </div>
-        <div class="fg1"><label class="flbl">קישור ללקוח (אופציונלי)</label>
-          <select class="finp" id="mn-cust"><option value="">ללא קישור</option></select>
-        </div>
-        <div class="fg1"><label class="flbl">תוכן ההערה</label>
-          <textarea class="finp" id="mn-text" rows="4" placeholder="כתוב כאן את ההערה..."></textarea>
-        </div>
-        <div><label class="flbl">תאריך (אופציונלי)</label><input class="finp" id="mn-date" type="date"></div>
-        <div><label class="flbl">שעה (אופציונלי)</label>    <input class="finp" id="mn-time" type="time"></div>
+    <div class="mbody"><div class="fgrid">
+      <div class="fg1"><label class="flbl">קטגוריה</label>
+        <select class="finp" id="mn-cat">
+          <option value="general">📌 כללי</option><option value="meeting">🤝 פגישה</option><option value="reminder">⏰ תזכורת</option>
+        </select>
       </div>
-    </div>
+      <div class="fg1"><label class="flbl">קישור ללקוח (אופציונלי)</label>
+        <select class="finp" id="mn-cust"><option value="">ללא קישור</option></select>
+      </div>
+      <div class="fg1"><label class="flbl">תוכן ההערה</label>
+        <textarea class="finp" id="mn-text" rows="4" placeholder="כתוב כאן את ההערה..."></textarea>
+      </div>
+      <div><label class="flbl">תאריך (אופציונלי)</label><input class="finp" id="mn-date" type="date"></div>
+      <div><label class="flbl">שעה (אופציונלי)</label>    <input class="finp" id="mn-time" type="time"></div>
+    </div></div>
     <div class="mft">
       <button class="btn bd btn-sm" id="mn-del" style="display:none;margin-left:auto" onclick="window.delNote()">🗑️ מחק</button>
       <button class="btn bs" onclick="closeM('M-note')">ביטול</button>
@@ -736,7 +734,6 @@ document.head.appendChild(_link);
       if (logos.header) document.querySelectorAll('.login-header-img').forEach(el => el.src = logos.header);
   };
   
-  // פונקציית העיצוב הנקייה שלא מתערבת למסגרות בצבעים
   window.applyUserDesign = function(u) {
       if (!u) return;
       const d = u.design || {};
