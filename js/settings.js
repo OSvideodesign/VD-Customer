@@ -7,6 +7,7 @@ import { addLog } from './log.js';
 
 let _editUserName = null;
 
+// ── העלאת לוגואים ורקעים עם כיווץ אוטומטי ──
 window.uploadLogo = function(input, type) {
     const file = input.files[0];
     if(!file) return;
@@ -98,6 +99,8 @@ window._resetUserPassword = function() {
         toast('הסיסמה אופסה. העובד יבחר חדשה בהתחברות הבאה.');
     }
 };
+
+// ── יצוא הפונקציות וקשירה ישירה למסך למניעת השגיאות שחווית ──
 
 export function loadSettings() {
   if (document.getElementById('s-company')) document.getElementById('s-company').value = window.cfg.company || '';
