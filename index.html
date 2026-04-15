@@ -96,10 +96,10 @@ document.head.appendChild(_link);
     
     <div style="text-align:center; margin-top:20px; padding:10px;">
       <div style="font-size:11px; color:#8a9097; margin-bottom:6px;">גודל טקסט אישי</div>
-      <div style="display:flex; justify-content:center; align-items:center; width:150px; margin:0 auto; gap:10px;">
-        <button class="btn bs btn-sm" onclick="window.changeFontScale(1)" style="font-size:18px; width:40px; height:40px; padding:0; flex-shrink:0;">+</button>
+      <div style="display:flex; justify-content:center; align-items:center; margin:0 auto; gap:15px; direction:ltr;">
+        <button class="btn bs btn-sm" onclick="window.changeFontScale(-1)" style="font-size:22px; width:40px; height:40px; padding:0; flex-shrink:0; display:flex; align-items:center; justify-content:center; line-height:1;">-</button>
         <span class="font-scale-lbl" style="font-size:16px; font-weight:700; width:30px; text-align:center; color:#fff;">0</span>
-        <button class="btn bs btn-sm" onclick="window.changeFontScale(-1)" style="font-size:18px; width:40px; height:40px; padding:0; flex-shrink:0;">-</button>
+        <button class="btn bs btn-sm" onclick="window.changeFontScale(1)" style="font-size:22px; width:40px; height:40px; padding:0; flex-shrink:0; display:flex; align-items:center; justify-content:center; line-height:1;">+</button>
       </div>
     </div>
   </div>
@@ -151,10 +151,10 @@ document.head.appendChild(_link);
 
   <div id="user-badge-display-wrapper">
     <div style="font-size:calc(11px * var(--fz-scale, 1)); color:#8a9097; margin-bottom:6px;">גודל טקסט אישי</div>
-    <div style="display:flex; justify-content:center; align-items:center; width:150px; margin:0 auto; gap:10px;">
-      <button class="btn bs btn-sm" onclick="window.changeFontScale(1)" title="הגדל טקסט" style="font-size:18px; width:36px; height:36px; padding:0; flex-shrink:0;">+</button>
+    <div style="display:flex; justify-content:center; align-items:center; margin:0 auto; gap:15px; direction:ltr;">
+      <button class="btn bs btn-sm" onclick="window.changeFontScale(-1)" title="הקטן טקסט" style="font-size:22px; width:40px; height:40px; padding:0; flex-shrink:0; display:flex; align-items:center; justify-content:center; line-height:1;">-</button>
       <span class="font-scale-lbl" style="font-size:16px; font-weight:700; width:30px; text-align:center; color:#fff;">0</span>
-      <button class="btn bs btn-sm" onclick="window.changeFontScale(-1)" title="הקטן טקסט" style="font-size:18px; width:36px; height:36px; padding:0; flex-shrink:0;">-</button>
+      <button class="btn bs btn-sm" onclick="window.changeFontScale(1)" title="הגדל טקסט" style="font-size:22px; width:40px; height:40px; padding:0; flex-shrink:0; display:flex; align-items:center; justify-content:center; line-height:1;">+</button>
     </div>
   </div>
 </aside>
@@ -485,6 +485,8 @@ document.head.appendChild(_link);
       </div>
       <div><label class="flbl">תאריך התקנה</label><input class="finp" id="mc-install" type="date"></div>
       <div><label class="flbl">שנות אחריות</label><input class="finp" id="mc-warr" type="number" value="0" min="0" max="20"></div>
+      <div><label class="flbl">תאריך ביקור אחרון</label><input class="finp" id="mc-last-visit" type="date"></div>
+      <div><label class="flbl">צפי ביקור הבא</label><input class="finp" id="mc-next-visit" type="date"></div>
       <div><label class="flbl">סוג פרויקט</label><input class="finp" id="mc-project" placeholder="מצלמות / אינטרקום..."></div>
       <div><label class="flbl">ציוד</label><input class="finp" id="mc-equip"></div>
       <div><label class="flbl">חוב (₪)</label><input class="finp" id="mc-debt" type="number" value="0" min="0" placeholder="0"></div>
