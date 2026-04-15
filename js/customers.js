@@ -36,17 +36,23 @@ export function renderCusts() {
   tb.innerHTML = list.map(c => {
     const s = wStat(c);
     return `<tr>
-      <td><div class="ci"><div class="av" style="background:${avClr(c.name)}">${ini(c.name)}</div>
-        <div><div style="font-weight:600">${c.name}</div>
-        ${c.projectType ? `<div style="font-size:11px;color:var(--tx3)">${c.projectType}</div>` : ''}</div></div></td>
+      <td onclick="window._viewCust('${c.id}')" style="cursor:pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">
+        <div class="ci">
+          <div class="av" style="background:${avClr(c.name)}">${ini(c.name)}</div>
+          <div>
+            <div style="font-weight:600">${c.name}</div>
+            ${c.projectType ? `<div style="font-size:11px;color:var(--tx3)">${c.projectType}</div>` : ''}
+          </div>
+        </div>
+      </td>
       <td>${c.phone ? `<a href="tel:${c.phone}" style="color:var(--acc);text-decoration:none">${c.phone}</a>` : '—'}</td>
       <td>${c.city || '—'}</td>
       <td>${s ? `<span class="badge ${s.cls}">${s.lbl}</span>` : '—'}</td>
       <td>${c.debt > 0 ? `<span class="badge br">₪${c.debt.toLocaleString('he-IL')}</span>` : '<span class="badge bg">✓</span>'}</td>
       <td style="white-space:nowrap">
-        <button class="btn bs btn-sm" onclick="window._viewCust('${c.id}')">👁️</button>
-        <button class="btn bs btn-sm" onclick="window._editCustById('${c.id}')">✏️</button>
-        <button class="btn bs btn-sm" onclick="window._openNewFault('${c.id}')">🔧</button>
+        <button class="btn bs btn-sm" onclick="window._viewCust('${c.id}')" title="צפה">👁️</button>
+        <button class="btn bs btn-sm" onclick="window._editCustById('${c.id}')" title="ערוך">✏️</button>
+        <button class="btn bs btn-sm" onclick="window._openNewFault('${c.id}')" title="משימה חדשה">🔧</button>
         ${c.phone ? `<button class="btn bs btn-sm" onclick="window._openWA('${c.phone}')" title="WhatsApp">💬</button>` : ''}
         ${c.address ? `<button class="btn bs btn-sm" onclick="window._openNav('${encodeURIComponent(c.address + (c.city ? ' ' + c.city : ''))}')" title="ניווט">🗺️</button>` : ''}
       </td></tr>`;
@@ -63,6 +69,8 @@ export function openNewCust() {
   document.getElementById('mc-install').value = '';
   document.getElementById('mc-warr').value = '0';
   document.getElementById('mc-debt').value = '0';
+  document.getElementById('mc-last-visit').value = '';
+  document.getElementById('mc-next-visit').value = '';
   document.getElementById('mc-contacts-list').innerHTML = '';
   document.getElementById('mc-addresses-list').innerHTML = '';
   openM('M-cust');
@@ -85,6 +93,8 @@ export function editCustById(id) {
   document.getElementById('mc-debt').value      = c.debt || 0;
   document.getElementById('mc-debt-desc').value = c.debtDesc || '';
   document.getElementById('mc-notes').value     = c.techNotes || '';
+  document.getElementById('mc-last-visit').value = c.lastVisit || '';
+  document.getElementById('mc-next-visit').value = c.nextVisit || '';
   document.getElementById('mc-contacts-list').innerHTML = '';
   (c.contacts || []).forEach(ct => addContactRow(ct));
   document.getElementById('mc-addresses-list').innerHTML = '';
@@ -113,6 +123,8 @@ export function saveCust() {
     projectType: document.getElementById('mc-project').value.trim(),
     equipment:   document.getElementById('mc-equip').value.trim(),
     techNotes:   document.getElementById('mc-notes').value.trim(),
+    lastVisit:   document.getElementById('mc-last-visit').value,
+    nextVisit:   document.getElementById('mc-next-visit').value,
     debt:        Number(document.getElementById('mc-debt').value) || 0,
     debtDesc:    document.getElementById('mc-debt-desc').value.trim(),
     contacts: [...document.querySelectorAll('#mc-contacts-list .contact-row')].map(row => ({
@@ -182,6 +194,8 @@ export function viewCust(id) {
       ${c.city ? `<div><div class="flbl">עיר</div><div>${c.city}</div></div>` : ''}
       ${c.address ? `<div style="grid-column:1/-1"><div class="flbl">כתובת ראשית</div><div style="display:flex;align-items:center;gap:8px"><span>${c.address}</span><button class="btn bs btn-sm" onclick="window._openNav('${encodeURIComponent(c.address + (c.city ? ' ' + c.city : ''))}')">🗺️ ניווט</button></div></div>` : ''}
       ${(c.extraAddresses && c.extraAddresses.length) ? `<div style="grid-column:1/-1"><div class="flbl">כתובות נוספות</div>${c.extraAddresses.map(a => `<div style="padding:4px 0;font-size:13px;display:flex;align-items:center;gap:8px">📍 ${a}<button class="btn bs btn-sm" onclick="window._openNav('${encodeURIComponent(a + (c.city ? ' ' + c.city : ''))}')">🗺️</button></div>`).join('')}</div>` : ''}
+      ${c.lastVisit ? `<div><div class="flbl">ביקור אחרון</div><div style="color:var(--grn);font-weight:600">📅 ${fmtD(c.lastVisit)}</div></div>` : ''}
+      ${c.nextVisit ? `<div><div class="flbl">צפי ביקור הבא</div><div style="color:var(--yel);font-weight:600">⏰ ${fmtD(c.nextVisit)}</div></div>` : ''}
       ${c.installDate ? `<div><div class="flbl">התקנה</div><div>${fmtD(c.installDate)}</div></div>` : ''}
       ${c.warrantyYears ? `<div><div class="flbl">אחריות</div><div>${c.warrantyYears} שנים ${s ? `<span class="badge ${s.cls}">${s.lbl}</span>` : ''}</div></div>` : ''}
       ${c.projectType ? `<div><div class="flbl">פרויקט</div><div>${c.projectType}</div></div>` : ''}
