@@ -155,7 +155,8 @@ export function renderScheduledTasks() {
    const minD = toLocalYMD(sun);
    const maxD = toLocalYMD(sat);
    
-   const scheduled = faults.filter(f => f.status !== 'done' && f.date && f.date >= minD && f.date <= maxD);
+   // מאפשר להציג משימות ביומן גם אם הן טופלו (done) בתנאי שלא הוסתרו בארכיון
+   const scheduled = faults.filter(f => (f.status === 'scheduled' || f.status === 'done') && !f.archivedHidden && f.date && f.date >= minD && f.date <= maxD);
    
    scheduled.forEach(f => {
        let timeStr = f.time || '09:00';
@@ -171,17 +172,28 @@ export function renderScheduledTasks() {
            const name = c ? c.name : (f.guestName || 'לקוח מזדמן');
            const amountHtml = (f.amount && Number(f.amount) > 0) ? `<div style="font-size:10px; background:rgba(0,0,0,0.3); display:inline-block; padding:2px 6px; border-radius:4px; margin-top:4px; font-weight:700;">💰 ${f.amount} ₪</div>` : '';
            
+           let bgClr = getTaskColor(f);
+           let iconStr = '⏱️';
+           let titleSuffix = '';
+           
+           // אם המשימה טופלה, שינוי לירוק וסימן וי
+           if (f.status === 'done') {
+               bgClr = 'linear-gradient(to bottom, #10b981, #059669)';
+               iconStr = '✅';
+               titleSuffix = ' (טופל)';
+           }
+
            const div = document.createElement('div');
            div.className = 'cal-task';
-           div.style.background = getTaskColor(f);
+           div.style.background = bgClr;
            div.style.cursor = 'grab';
            div.title = "לחץ לעריכה, או גרור לשינוי/ביטול";
            div.draggable = true;
            div.ondragstart = (e) => { e.dataTransfer.setData('taskData', JSON.stringify({id:f.id, type:'crm'})); };
            div.onclick = (e) => { e.stopPropagation(); if(window.editFaultById) window.editFaultById(f.id); };
            
-           div.innerHTML = `<div style="font-size:10px;font-weight:700">⏱️ ${timeStr}</div>
-                            <div style="font-weight:600;font-size:12px;">${name}</div>
+           div.innerHTML = `<div style="font-size:10px;font-weight:700">${iconStr} ${timeStr}</div>
+                            <div style="font-weight:600;font-size:12px;">${name}${titleSuffix}</div>
                             <div style="font-size:10px; opacity:0.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.desc||''}</div>
                             ${amountHtml}`;
            cell.appendChild(div);
@@ -364,7 +376,6 @@ window._saveGcalColor = async function() {
     }
 };
 
-// הפונקציה החדשה למחיקה!
 window._deleteGcalEvent = async function() {
     if (!_editGcalId) return;
     if (!confirm('האם אתה בטוח שברצונך למחוק אירוע זה מיומן גוגל?')) return;
