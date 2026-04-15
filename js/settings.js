@@ -7,7 +7,17 @@ import { addLog } from './log.js';
 
 let _editUserName = null;
 
-// ── העלאת לוגואים ורקעים עם כיווץ אוטומטי ──
+// פונקציה לבחירת צבע הדגשה אישי המשולבת בהגדרות העיצוב
+window.updateAccentColor = function(color) {
+    document.documentElement.style.setProperty('--acc', color);
+    const u = window.cfg.users.find(x => x.name === window._currentUser);
+    if (u) {
+        u.design = u.design || {};
+        u.design.accent = color;
+        if(window._dbSaveCfg) window._dbSaveCfg(window.cfg);
+    }
+};
+
 window.uploadLogo = function(input, type) {
     const file = input.files[0];
     if(!file) return;
@@ -100,12 +110,32 @@ window._resetUserPassword = function() {
     }
 };
 
-// ── יצוא הפונקציות וקשירה ישירה למסך למניעת השגיאות שחווית ──
-
 export function loadSettings() {
   if (document.getElementById('s-company')) document.getElementById('s-company').value = window.cfg.company || '';
   if (document.getElementById('s-phone'))   document.getElementById('s-phone').value   = window.cfg.phone   || '';
   if (document.getElementById('s-email'))   document.getElementById('s-email').value   = window.cfg.email   || '';
+
+  // הזרקת אופציית צבע הדגשה דינמית אם לא קיימת
+  const designGrid = document.querySelector('#s-design-panel .fgrid');
+  if (designGrid && !document.getElementById('ds-accent-container')) {
+      const div = document.createElement('div');
+      div.id = 'ds-accent-container';
+      div.className = 'fg1';
+      div.style.gridColumn = '1/-1';
+      div.style.marginTop = '10px';
+      div.innerHTML = `<label class="flbl">צבע הדגשה אישי למערכת (כפתורים ואייקונים)</label>
+          <div style="display:flex;gap:10px;align-items:center;">
+              <input type="color" id="ds-accent" value="#3b82f6" style="height:36px;padding:2px;cursor:pointer;flex:1" onchange="window.updateAccentColor(this.value)">
+              <button class="btn bs btn-sm" onclick="document.getElementById('ds-accent').value='#3b82f6'; window.updateAccentColor('#3b82f6');">חזור לכחול רגיל</button>
+          </div>`;
+      designGrid.appendChild(div);
+      
+      const u = window.cfg.users.find(x => x.name === window._currentUser);
+      if (u && u.design && u.design.accent) {
+          document.getElementById('ds-accent').value = u.design.accent;
+          document.documentElement.style.setProperty('--acc', u.design.accent);
+      }
+  }
 
   const canManageUsers = ['owner', 'admin'].includes(window._currentRole) || window._currentUser === 'רז';
   const panel = document.getElementById('s-users-panel');
@@ -133,7 +163,7 @@ export function renderUsersList() {
       <div style="width:32px;height:32px;border-radius:50%;background:${u.color || '#3b82f6'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${u.name[0]}</div>
       <div style="flex:1">
         <div style="font-weight:600;font-size:13px">${u.name}</div>
-        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 סיסמה: ' + u.pass)}</div>
+        <div style="font-size:11px;color:var(--tx3)">${(!u.pass || u.pass === '') ? 'ללא סיסמה / לא הוגדר' : (u.pass === 'NOPASS' ? 'כניסה חופשית' : '🔑 מוגן בסיסמה')}</div>
       </div>
       <button class="btn bs btn-sm" onclick="window.openEditUser('${u.name}')">✏️ ערוך</button>
     </div>`).join('');
@@ -147,7 +177,6 @@ export function openAddUser() {
   document.getElementById('u-pass').value   = ''; 
   document.getElementById('u-nopass').checked = false;
   
-  // מחזיר את הצבע לברירת מחדל אם אין
   if(document.getElementById('u-color')) document.getElementById('u-color').value = '#3b82f6';
   
   document.getElementById('u-del-btn').style.display = 'none';
@@ -164,7 +193,6 @@ export function openEditUser(name) {
   document.getElementById('u-name').value   = u.name;
   document.getElementById('u-name').disabled = true;
   
-  // מושך את הצבע ששמור לפרופיל של המשתמש
   if(document.getElementById('u-color')) document.getElementById('u-color').value = u.color || '#3b82f6';
   
   const nopass = (u.pass === 'NOPASS');
@@ -229,7 +257,6 @@ export function saveUser() {
   
   if (window._dbSaveCfg) window._dbSaveCfg({ ...window.cfg, users: USERS });
   
-  // מחיל את הצבע המעודכן אם המשתמש ערך את עצמו
   if (name === window._currentUser && window.applyUserDesign) {
       window.applyUserDesign(USERS.find(x => x.name === name));
   }
