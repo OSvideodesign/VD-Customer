@@ -7,7 +7,8 @@ export function renderArchive() {
   const q  = (document.getElementById('q-archive') || {}).value || '';
   const uf = (document.getElementById('f-archive-user') || {}).value || '';
 
-  let list = window.faults.filter(f => f.status === 'done');
+  // מציג רק משימות שלא הוסתרו ידנית
+  let list = window.faults.filter(f => f.status === 'done' && !f.archivedHidden);
   if (q) list = list.filter(f => {
     const c = window.custs.find(x => x.id === f.custId);
     return (f.desc || '').includes(q) || (c && c.name.includes(q)) || (f.guestName || '').includes(q);
@@ -22,7 +23,7 @@ export function renderArchive() {
   if (!el) return;
 
   if (!list.length) {
-    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--tx3);font-size:14px">✅<br><br>אין משימות בוצעו עדיין</div>';
+    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--tx3);font-size:14px">✅<br><br>אין משימות בארכיון</div>';
     return;
   }
 
@@ -43,11 +44,12 @@ export function renderArchive() {
         <span class="badge bg">✅ טופל</span>
       </div>
       <div class="fdesc">${f.desc || ''}</div>
-      <div class="fmeta" style="margin-top:8px">
+      <div class="fmeta" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         ${f.updatedBy ? `<span style="color:var(--tx3)">✏️ ${f.updatedBy}</span>` : ''}
         ${f.created ? `<span style="color:var(--tx3)">📅 ${fmtD(f.created)}</span>` : ''}
         <button class="btn bs btn-sm" onclick="window._editFaultById('${f.id}')">✏️ ערוך</button>
-        <button class="btn bs btn-sm" onclick="window._restoreFault('${f.id}')">↩️ החזר למשימות</button>
+        <button class="btn bs btn-sm" onclick="window._restoreFault('${f.id}')">↩️ החזר לטיפול</button>
+        <button class="btn bd btn-sm" onclick="window._hideFromArchive('${f.id}')" style="margin-right:auto;">🗑️ הסתר</button>
       </div>
     </div>`;
   }).join('');
@@ -60,3 +62,13 @@ export function restoreFault(id) {
   renderArchive(); renderDash();
   toast('משימה הוחזרה ✅');
 }
+
+export async function hideFromArchive(id) {
+  if (!confirm('להסתיר משימה זו מהארכיון? (היא עדיין תופיע בהיסטוריה של כרטיס הלקוח)')) return;
+  const f = window.faults.find(x => x.id === id); if (!f) return;
+  f.archivedHidden = true;
+  if (window._dbSaveFaults) await window._dbSaveFaults([f]);
+  renderArchive();
+  toast('הוסתר מהארכיון ✅');
+}
+window._hideFromArchive = hideFromArchive;
