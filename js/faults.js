@@ -34,12 +34,18 @@ export function renderFaults() {
 
   el.innerHTML = '<div class="fg-grid">' + list.map(f => {
     const c = window.custs.find(x => x.id === f.custId);
-    const custName = c ? c.name : (f.guestName ? f.guestName + '👤' : 'לא ידוע');
+    const custName = c ? c.name : (f.guestName ? f.guestName + ' (מזדמן)' : 'לקוח מזדמן');
     
-    // ── פיצ'ר מי היה אצל הלקוח פעם אחרונה ──
+    // מי היה פעם אחרונה
     const past = window.faults.filter(x => x.custId === f.custId && x.status === 'done' && x.date < (f.date || '9999')).sort((a,b) => b.date.localeCompare(a.date))[0];
     const techName = past ? (past.assignedTo || past.updatedBy || 'איש צוות') : '';
     const lastVisitHtml = past ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(0,0,0,0.15); border-radius:6px; font-size:11px; color:var(--tx2); border-right:2px solid var(--acc);"><b>🕒 טיפול קודם ב-${fmtD(past.date)} (ע"י ${techName}):</b> ${past.desc}</div>` : '';
+
+    // תאריך ושעת יצירה ומי פתח
+    const dateObj = f.createdAt ? new Date(f.createdAt) : new Date();
+    const timeStr = dateObj.toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'});
+    const creator = f.updatedBy || 'מערכת';
+    const createdHtml = `<div style="font-size:11px; color:var(--tx3); margin-top:8px; border-top:1px solid rgba(255,255,255,0.05); padding-top:6px;">👤 נפתח ע"י: <b>${creator}</b> | 🕒 ${fmtD(f.created || today())} בשעה ${timeStr}</div>`;
 
     const cbHtml  = _selectMode ? `<input type="checkbox" class="fc-cb" onclick="event.stopPropagation();window._toggleSelect('${f.id}',this)">` : '';
     const fcClick = _selectMode ? `window._toggleSelect('${f.id}',this.querySelector('.fc-cb'))` : `window.editFaultById('${f.id}')`;
@@ -64,6 +70,7 @@ export function renderFaults() {
         <span>${PMAP[f.priority || 'medium']}</span>
         ${f.date ? `<span style="color:var(--acc)">📅 ${fmtD(f.date)}${f.time ? ' ' + f.time : ''}</span>` : ''}
       </div>
+      ${createdHtml}
     </div>`;
   }).join('') + '</div>';
 }
@@ -131,6 +138,7 @@ export function toggleGuestFields() {
   const v = document.getElementById('mf-cust').value;
   document.getElementById('mf-guest-fields').style.display = v === '__guest__' ? 'block' : 'none';
 }
+window.toggleGuestFields = toggleGuestFields;
 
 export function saveFault() {
   const custVal  = document.getElementById('mf-cust').value;
@@ -144,6 +152,12 @@ export function saveFault() {
   const hasVat = document.getElementById('mf-vat').checked;
   const finalAmount = hasVat ? parseFloat((baseAmount * 1.18).toFixed(2)) : baseAmount;
 
+  // החלפת סטטוס אוטומטית אם הוזן תאריך
+  const date = document.getElementById('mf-date').value;
+  let status = document.getElementById('mf-status').value;
+  if (date && status === 'open') status = 'scheduled';
+  if (!date && status === 'scheduled') status = 'open';
+
   const f = {
     id:          _eFault || uid(),
     custId:      isGuest ? '' : custVal,
@@ -153,8 +167,8 @@ export function saveFault() {
     type:        document.getElementById('mf-type').value,
     priority:    document.getElementById('mf-pri').value,
     color:       document.getElementById('mf-color').value, 
-    status:      document.getElementById('mf-status').value,
-    date:        document.getElementById('mf-date').value,
+    status:      status,
+    date:        date,
     time:        document.getElementById('mf-time').value,
     amount:      finalAmount, 
     baseAmount:  baseAmount,  
@@ -163,6 +177,8 @@ export function saveFault() {
     notes:       document.getElementById('mf-notes').value.trim(),
     updatedBy:   window._currentUser || '',
     created:     _eFault ? (window.faults.find(x => x.id === _eFault) || {}).created : today(),
+    createdAt:   _eFault ? (window.faults.find(x => x.id === _eFault).createdAt || Date.now()) : Date.now(),
+    archivedHidden: _eFault ? (window.faults.find(x => x.id === _eFault).archivedHidden || false) : false,
   };
 
   if (_eFault) window.faults = window.faults.map(x => x.id === _eFault ? f : x);
@@ -178,7 +194,18 @@ export function saveFault() {
 export async function delFault() {
   if (!confirm('למחוק רשומה זו?')) return;
   const id = _eFault;
+  const f = window.faults.find(x => x.id === id);
   closeM('M-fault');
+  
+  // אם מוחקים משימה שסוימה, היא רק תוסתר מהארכיון ולא תימחק לחלוטין מכרטיס הלקוח
+  if (f && f.status === 'done') {
+      toast('מוסתר מהארכיון...');
+      f.archivedHidden = true;
+      if (window._dbSaveFaults) await window._dbSaveFaults([f]);
+      renderFaults(); renderDash(); if(window.fetchWk) window.fetchWk();
+      return;
+  }
+
   toast('מוחק...');
   if (window._dbDel) await window._dbDel('faults', id);
   window.faults = window.faults.filter(x => x.id !== id);
@@ -201,6 +228,7 @@ export function toggleSelect(id, el) {
   document.getElementById('bulk-count').textContent = count + ' נבחרו';
   document.getElementById('bulk-bar').classList[count > 0 ? 'add' : 'remove']('show');
 }
+window._toggleSelect = toggleSelect;
 
 export async function deleteSelected() {
   if (_selectedIds.size === 0) return;
@@ -213,5 +241,4 @@ export async function deleteSelected() {
   if(window.fetchWk) window.fetchWk();
 }
 
-// חשיפה ל-main.js כבקשת המנוע המקורי שלך
 export function requestNotificationPermission() {}
