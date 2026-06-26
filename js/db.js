@@ -15,6 +15,7 @@ import { renderFaults }    from './faults.js';
 import { renderNotes }     from './notes.js';
 import { renderArchive }   from './archive.js';
 import { renderLog }       from './log.js';
+import { renderWorkReports } from './workreports.js';
 
 const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
@@ -42,6 +43,11 @@ window._dbSaveFaults = async (items) => {
 window._dbSaveNotes = async (items) => {
   try { await Promise.all(items.map(n => setDoc(doc(db, 'notes', n.id), n))); }
   catch (e) { console.error('saveNotes:', e); }
+};
+
+window._dbSaveWReports = async (items) => {
+  try { await Promise.all(items.map(r => setDoc(doc(db, 'workreports', r.id), r))); }
+  catch (e) { console.error('saveWReports:', e); }
 };
 
 window._dbLogAdd = async (entry) => {
@@ -87,6 +93,7 @@ export async function loadAll() {
   window.notes = window.notes || [];
   window.waMessages = window.waMessages || [];
   window.logEntries = window.logEntries || [];
+  window.wreports = window.wreports || [];
 
   if (!navigator.onLine) {
       toast('המערכת פועלת באופליין ✈️', 'warn');
@@ -125,6 +132,14 @@ export async function loadAll() {
       if (on('faults')) renderFaults();
       if (on('archive')) renderArchive();
       if (on('dashboard')) renderDash();
+    });
+
+    onSnapshot(collection(db, 'workreports'), snap => {
+      const del = window._deletingIds || new Set();
+      window.wreports = snap.docs.map(d => d.data()).filter(r => !del.has('workreports:' + r.id));
+
+      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
+      if (on('workreports')) renderWorkReports();
     });
 
     onSnapshot(collection(db, 'whatsapp'), snap => {
