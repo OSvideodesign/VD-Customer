@@ -2,6 +2,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy, limit, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
 import { FIREBASE_CONFIG, USERS } from './config.js';
 import { loader, hideLoader, toast } from './utils.js';
@@ -16,9 +17,11 @@ import { renderNotes }     from './notes.js';
 import { renderArchive }   from './archive.js';
 import { renderLog }       from './log.js';
 import { renderWorkReports } from './workreports.js';
+import { renderQuotes } from './quotes.js';
 
 const app = initializeApp(FIREBASE_CONFIG);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 try {
     enableIndexedDbPersistence(db).catch((err) => {
@@ -48,6 +51,11 @@ window._dbSaveNotes = async (items) => {
 window._dbSaveWReports = async (items) => {
   try { await Promise.all(items.map(r => setDoc(doc(db, 'workreports', r.id), r))); }
   catch (e) { console.error('saveWReports:', e); }
+};
+
+window._dbSaveQuotes = async (items) => {
+  try { await Promise.all(items.map(r => setDoc(doc(db, 'quotes', r.id), r))); }
+  catch (e) { console.error('saveQuotes:', e); }
 };
 
 window._dbLogAdd = async (entry) => {
@@ -88,12 +96,18 @@ window._dbDelMulti = async (col, ids) => {
 export async function loadAll() {
   loader('טוען נתונים...');
 
+  // התחברות אנונימית ל-Firebase — דרושה כשמפעילים חוקי אבטחה (request.auth != null).
+  // עטוף ב-try/catch: אם ההתחברות האנונימית לא מופעלת בקונסול, האפליקציה ממשיכה כרגיל.
+  try { await signInAnonymously(auth); }
+  catch (e) { console.warn('Anonymous auth not enabled yet:', e.code || e); }
+
   window.custs = window.custs || [];
   window.faults = window.faults || [];
   window.notes = window.notes || [];
   window.waMessages = window.waMessages || [];
   window.logEntries = window.logEntries || [];
   window.wreports = window.wreports || [];
+  window.quotes = window.quotes || [];
 
   if (!navigator.onLine) {
       toast('המערכת פועלת באופליין ✈️', 'warn');
@@ -140,6 +154,14 @@ export async function loadAll() {
 
       const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
       if (on('workreports')) renderWorkReports();
+    });
+
+    onSnapshot(collection(db, 'quotes'), snap => {
+      const del = window._deletingIds || new Set();
+      window.quotes = snap.docs.map(d => d.data()).filter(r => !del.has('quotes:' + r.id));
+
+      const on = p => document.getElementById('pg-' + p)?.classList.contains('on');
+      if (on('quotes')) renderQuotes();
     });
 
     onSnapshot(collection(db, 'whatsapp'), snap => {
