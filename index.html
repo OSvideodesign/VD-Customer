@@ -88,6 +88,7 @@ document.head.appendChild(_link);
     <button class="m-drawer-btn" onclick="navD('warranties')">🛡️ אחריות</button>
     <button class="m-drawer-btn" onclick="navD('debts')">💰 חובות</button>
     <button class="m-drawer-btn" onclick="navD('notes')">📝 הערות</button>
+    <button class="m-drawer-btn" onclick="navD('workreports')">📋 דוחות עבודה</button>
     <button class="m-drawer-btn" id="m-drawer-reports" onclick="navD('reports')">📈 דוחות</button>
     <div class="m-drawer-sec">מערכת</div>
     <button class="m-drawer-btn" onclick="navD('settings')">⚙️ הגדרות</button>
@@ -139,6 +140,7 @@ document.head.appendChild(_link);
     <button class="nav-btn"    id="nb-warranties" onclick="nav('warranties')">🛡️ אחריות</button>
     <button class="nav-btn"    id="nb-debts"      onclick="nav('debts')">💰 חובות</button>
     <button class="nav-btn"    id="nb-notes"      onclick="nav('notes')">📝 הערות</button>
+    <button class="nav-btn"    id="nb-workreports" onclick="nav('workreports')">📋 דוחות עבודה</button>
     <button class="nav-btn"    id="nb-reports"    onclick="nav('reports')">📈 דוחות</button>
     <div class="nav-sec">מערכת</div>
     <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
@@ -372,6 +374,20 @@ document.head.appendChild(_link);
     <div id="list-archive" class="fg-grid"></div>
   </div>
   
+  <div class="pg" id="pg-workreports">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">📋</div>
+        <div><div class="pt">דוחות עבודה</div><div class="ps" id="cnt-wreports"></div></div>
+      </div>
+      <button class="btn bp" onclick="openNewWReport(null)">+ דוח עבודה חדש</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-wreports" placeholder="חפש לפי לקוח / טכנאי / תיאור..." oninput="renderWorkReports()"><span class="si">🔍</span></div>
+    </div>
+    <div id="list-wreports"></div>
+  </div>
+
   <div class="pg" id="pg-reports">
     <div class="ph">
       <div style="display:flex; align-items:center; gap:14px;">
@@ -593,6 +609,68 @@ document.head.appendChild(_link);
       <button class="btn bd btn-sm" id="mf-del" style="display:none;margin-left:auto" onclick="window.delFault()">🗑️ מחק</button>
       <button class="btn bs" onclick="closeM('M-fault')">ביטול</button>
       <button class="btn bp" onclick="window.saveFault()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-wreport">
+  <div class="mbox">
+    <div class="mhd"><h2 id="M-wreport-title">דוח עבודה חדש</h2><button class="btn bs btn-sm" onclick="closeM('M-wreport')">✕</button></div>
+    <div class="mbody"><div class="fgrid">
+      <div class="fg1"><label class="flbl">לקוח *</label>
+        <select class="finp" id="wr-cust" onchange="window.wrToggleGuest()"></select>
+      </div>
+      <div class="fg1" id="wr-guest-fields" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="flbl">שם לקוח מזדמן</label><input class="finp" id="wr-guest-name" placeholder="שם מלא"></div>
+          <div><label class="flbl">טלפון</label><input class="finp" id="wr-guest-phone" type="tel" placeholder="050-0000000"></div>
+        </div>
+      </div>
+
+      <div><label class="flbl">תאריך *</label><input class="finp" id="wr-date" type="date"></div>
+      <div><label class="flbl">טכנאי</label><select class="finp" id="wr-tech"></select></div>
+      <div><label class="flbl">שעת התחלה</label><input class="finp" id="wr-start" type="time" oninput="window.wrUpdateHours()"></div>
+      <div><label class="flbl">שעת סיום</label><input class="finp" id="wr-end" type="time" oninput="window.wrUpdateHours()"></div>
+      <div class="fg1"><div id="wr-hours-disp" style="font-size:13px;font-weight:700;color:var(--acc);min-height:18px"></div></div>
+
+      <div class="fg1"><label class="flbl">תיאור העבודה שבוצעה *</label><textarea class="finp" id="wr-workdesc" rows="4" placeholder="פרט את העבודה שבוצעה אצל הלקוח..."></textarea></div>
+
+      <div class="fg1">
+        <label class="flbl">🔌 ציוד שהותקן</label>
+        <div id="wr-equip-list"></div>
+        <button type="button" class="btn bs btn-sm" onclick="window.addEquipRow('','')" style="margin-top:4px">➕ הוסף פריט</button>
+      </div>
+
+      <div>
+        <label class="flbl">💰 סכום לתשלום (₪)</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input class="finp" id="wr-amount" type="number" min="0" placeholder="לא חובה" style="flex:1;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--tx2); cursor:pointer;">
+            <input type="checkbox" id="wr-vat" style="width:16px;height:16px;cursor:pointer;">+18% מע"מ
+          </label>
+        </div>
+      </div>
+      <div><label class="flbl">תשלום</label>
+        <select class="finp" id="wr-paid">
+          <option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option>
+        </select>
+      </div>
+
+      <div class="fg1"><label class="flbl">הערות נוספות</label><textarea class="finp" id="wr-notes" rows="2"></textarea></div>
+
+      <div class="fg1">
+        <label class="flbl">✍️ חתימת הלקוח</label>
+        <canvas id="wr-sig" style="width:100%;height:140px;background:#fff;border:1px dashed var(--brd2);border-radius:8px;touch-action:none;cursor:crosshair"></canvas>
+        <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+          <input class="finp" id="wr-signer" placeholder="שם החותם" style="flex:1">
+          <button type="button" class="btn bs btn-sm" onclick="window.clearSig()" style="flex-shrink:0">🗑️ נקה חתימה</button>
+        </div>
+      </div>
+    </div></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="wr-del" style="display:none;margin-left:auto" onclick="window.delWReport()">🗑️ מחק</button>
+      <button class="btn bs" onclick="closeM('M-wreport')">ביטול</button>
+      <button class="btn bp" onclick="window.saveWReport()">💾 שמור</button>
     </div>
   </div>
 </div>
