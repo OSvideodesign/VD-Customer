@@ -208,7 +208,7 @@ window.openEditUser = openEditUser;
 window._openEditUser = openEditUser;
 
 export function renderPermsGrid(p) {
-  const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות' };
+  const map = { customers:'👥 לקוחות', faults:'🔧 משימות', notes:'📝 הערות', warranties:'🛡️ אחריות', debts:'💰 חובות', archive:'✅ ארכיון', reports:'📈 דוחות', workreports:'📋 דוחות עבודה', quotes:'📄 הצעות מחיר' };
   const grid = document.getElementById('u-perms-grid');
   if (!grid) return;
   
