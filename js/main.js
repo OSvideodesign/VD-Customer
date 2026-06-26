@@ -12,6 +12,7 @@ import { renderFaults, openNewFault, editFaultById, saveFault, delFault, toggleS
 import { renderNotes, openNewNote, editNoteById, saveNote, delNote, toggleNoteSelectMode, deleteSelectedNotes } from './notes.js';
 import { renderArchive, restoreFault } from './archive.js';
 import { renderReports, exportBackup, exportCustomersExcel } from './reports.js';
+import { renderWorkReports, openNewWReport, editWReportById, saveWReport, delWReport, exportWReportPDF, addEquipRow, clearSig, wrToggleGuest, wrUpdateHours } from './workreports.js';
 import { loadSettings, saveSettings, openAddUser, openEditUser, saveUser, deleteUser } from './settings.js';
 import { renderLog, addLog, clearLog } from './log.js';
 import { gcalInit, gcalSignIn, gcalSignOut, fetchWk, wkPrev, wkNext, wkToday, gcalFault } from './gcal.js';
@@ -23,6 +24,7 @@ window.faults      = [];
 window.notes       = [];
 window.waMessages  = [];
 window.logEntries  = [];
+window.wreports    = [];
 window.cfg         = {};
 window._deletingIds = new Set();
 window._gsResults  = [];
@@ -120,6 +122,18 @@ window._markFaultPaid   = markFaultPaid;
 window.renderReports    = renderReports;
 window.exportBackup     = exportBackup;
 window.exportCustomersExcel = exportCustomersExcel;
+
+// work reports (דוחות עבודה)
+window.renderWorkReports = renderWorkReports;
+window.openNewWReport    = openNewWReport;
+window.editWReportById   = editWReportById;
+window.saveWReport       = saveWReport;
+window.delWReport        = delWReport;
+window.exportWReportPDF  = exportWReportPDF;
+window.addEquipRow       = addEquipRow;
+window.clearSig          = clearSig;
+window.wrToggleGuest     = wrToggleGuest;
+window.wrUpdateHours     = wrUpdateHours;
 
 // warranties / debts
 window.renderWarr       = renderWarr;
