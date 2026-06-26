@@ -7,7 +7,7 @@ import { toast }  from './utils.js';
 
 // ── Page navigation ────────────────────────────────────────────────────────
 export function nav(page) {
-  const restricted = ['customers', 'faults', 'archive', 'notes', 'warranties', 'debts', 'reports', 'workreports'];
+  const restricted = ['customers', 'faults', 'archive', 'notes', 'warranties', 'debts', 'reports', 'workreports', 'quotes'];
   if (restricted.includes(page) && !canDo(page, 1)) { toast('אין הרשאה לדף זה ❌', 'err'); return; }
   if (page === 'log' && !['רז', 'אופיר'].includes(window._currentUser)) { toast('אין הרשאה ❌', 'err'); return; }
 
@@ -36,6 +36,7 @@ export function nav(page) {
     log:        () => window.renderLog?.(),
     reports:    () => window.renderReports?.(),
     workreports:() => window.renderWorkReports?.(),
+    quotes:     () => window.renderQuotes?.(),
     settings:   () => window.loadSettings?.(),
   };
   if (R[page]) R[page]();
