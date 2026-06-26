@@ -181,6 +181,8 @@ export function applyUser(u) {
   checkPerm(['nb-warranties', 'md-warranties'], 'warranties');
   checkPerm(['nb-debts', 'md-debts'], 'debts');
   checkPerm(['nb-reports', 'md-reports'], 'reports');
+  checkPerm(['nb-workreports', 'm-drawer-workreports'], 'workreports');
+  checkPerm(['nb-quotes', 'm-drawer-quotes'], 'quotes');
 
   const canSeeLog = ['רז', 'אופיר'].includes(u.name) || ['owner', 'admin'].includes(u.role);
   ['nb-log', 'm-drawer-log'].forEach(id => {
