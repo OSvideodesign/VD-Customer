@@ -548,7 +548,11 @@ document.head.appendChild(_link);
         </select>
       </div>
       <div class="fg1"><label class="flbl">לקוח</label>
-        <select class="finp" id="mf-cust" onchange="window.toggleGuestFields()"></select>
+        <div class="cust-picker" id="PICK-mf-cust">
+          <input type="text" class="finp cp-input" placeholder="🔍 חפש לקוח לפי שם או טלפון..." autocomplete="off" inputmode="search">
+          <input type="hidden" id="mf-cust" class="cp-value">
+          <div class="cp-drop"></div>
+        </div>
       </div>
       <div class="fg1" id="mf-guest-fields" style="display:none">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -618,7 +622,11 @@ document.head.appendChild(_link);
     <div class="mhd"><h2 id="M-wreport-title">דוח עבודה חדש</h2><button class="btn bs btn-sm" onclick="closeM('M-wreport')">✕</button></div>
     <div class="mbody"><div class="fgrid">
       <div class="fg1"><label class="flbl">לקוח *</label>
-        <select class="finp" id="wr-cust" onchange="window.wrToggleGuest()"></select>
+        <div class="cust-picker" id="PICK-wr-cust">
+          <input type="text" class="finp cp-input" placeholder="🔍 חפש לקוח לפי שם או טלפון..." autocomplete="off" inputmode="search">
+          <input type="hidden" id="wr-cust" class="cp-value">
+          <div class="cp-drop"></div>
+        </div>
       </div>
       <div class="fg1" id="wr-guest-fields" style="display:none">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -688,7 +696,11 @@ document.head.appendChild(_link);
         </select>
       </div>
       <div class="fg1"><label class="flbl">קישור ללקוח (אופציונלי)</label>
-        <select class="finp" id="mn-cust"><option value="">ללא קישור</option></select>
+        <div class="cust-picker" id="PICK-mn-cust">
+          <input type="text" class="finp cp-input" placeholder="🔍 חפש לקוח (או השאר ריק)..." autocomplete="off" inputmode="search">
+          <input type="hidden" id="mn-cust" class="cp-value">
+          <div class="cp-drop"></div>
+        </div>
       </div>
       <div class="fg1"><label class="flbl">תוכן ההערה</label>
         <textarea class="finp" id="mn-text" rows="4" placeholder="כתוב כאן את ההערה..."></textarea>
