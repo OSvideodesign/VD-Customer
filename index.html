@@ -88,7 +88,8 @@ document.head.appendChild(_link);
     <button class="m-drawer-btn" onclick="navD('warranties')">🛡️ אחריות</button>
     <button class="m-drawer-btn" onclick="navD('debts')">💰 חובות</button>
     <button class="m-drawer-btn" onclick="navD('notes')">📝 הערות</button>
-    <button class="m-drawer-btn" onclick="navD('workreports')">📋 דוחות עבודה</button>
+    <button class="m-drawer-btn" id="m-drawer-workreports" onclick="navD('workreports')">📋 דוחות עבודה</button>
+    <button class="m-drawer-btn" id="m-drawer-quotes" onclick="navD('quotes')">📄 הצעות מחיר</button>
     <button class="m-drawer-btn" id="m-drawer-reports" onclick="navD('reports')">📈 דוחות</button>
     <div class="m-drawer-sec">מערכת</div>
     <button class="m-drawer-btn" onclick="navD('settings')">⚙️ הגדרות</button>
@@ -141,6 +142,7 @@ document.head.appendChild(_link);
     <button class="nav-btn"    id="nb-debts"      onclick="nav('debts')">💰 חובות</button>
     <button class="nav-btn"    id="nb-notes"      onclick="nav('notes')">📝 הערות</button>
     <button class="nav-btn"    id="nb-workreports" onclick="nav('workreports')">📋 דוחות עבודה</button>
+    <button class="nav-btn"    id="nb-quotes"     onclick="nav('quotes')">📄 הצעות מחיר</button>
     <button class="nav-btn"    id="nb-reports"    onclick="nav('reports')">📈 דוחות</button>
     <div class="nav-sec">מערכת</div>
     <button class="nav-btn"    id="nb-settings"   onclick="nav('settings')">⚙️ הגדרות</button>
@@ -374,6 +376,27 @@ document.head.appendChild(_link);
     <div id="list-archive" class="fg-grid"></div>
   </div>
   
+  <div class="pg" id="pg-quotes">
+    <div class="ph">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px; line-height:1;">📄</div>
+        <div><div class="pt">הצעות מחיר</div><div class="ps" id="cnt-quotes"></div></div>
+      </div>
+      <button class="btn bp" onclick="openNewQuote(null)">+ הצעת מחיר חדשה</button>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><input type="text" id="q-quotes" placeholder="חפש לפי לקוח / מספר..." oninput="renderQuotes()"><span class="si">🔍</span></div>
+      <select class="finp" id="q-filter-status" onchange="renderQuotes()" style="max-width:160px">
+        <option value="">כל הסטטוסים</option>
+        <option value="draft">📝 טיוטה</option>
+        <option value="sent">📤 נשלחה</option>
+        <option value="approved">✅ אושרה</option>
+        <option value="rejected">❌ נדחתה</option>
+      </select>
+    </div>
+    <div id="list-quotes"></div>
+  </div>
+
   <div class="pg" id="pg-workreports">
     <div class="ph">
       <div style="display:flex; align-items:center; gap:14px;">
@@ -613,6 +636,60 @@ document.head.appendChild(_link);
       <button class="btn bd btn-sm" id="mf-del" style="display:none;margin-left:auto" onclick="window.delFault()">🗑️ מחק</button>
       <button class="btn bs" onclick="closeM('M-fault')">ביטול</button>
       <button class="btn bp" onclick="window.saveFault()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="M-quote">
+  <div class="mbox">
+    <div class="mhd"><h2 id="M-quote-title">הצעת מחיר חדשה</h2><button class="btn bs btn-sm" onclick="closeM('M-quote')">✕</button></div>
+    <div class="mbody"><div class="fgrid">
+      <div class="fg1"><label class="flbl">לקוח *</label>
+        <div class="cust-picker" id="PICK-q-cust">
+          <input type="text" class="finp cp-input" placeholder="🔍 חפש לקוח לפי שם או טלפון..." autocomplete="off" inputmode="search">
+          <input type="hidden" id="q-cust" class="cp-value">
+          <div class="cp-drop"></div>
+        </div>
+      </div>
+      <div class="fg1" id="q-guest-fields" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="flbl">שם לקוח מזדמן</label><input class="finp" id="q-guest-name" placeholder="שם מלא"></div>
+          <div><label class="flbl">טלפון</label><input class="finp" id="q-guest-phone" type="tel" placeholder="050-0000000"></div>
+        </div>
+      </div>
+
+      <div><label class="flbl">מספר הצעה</label><input class="finp" id="q-number" placeholder="Q-0001"></div>
+      <div><label class="flbl">סטטוס</label>
+        <select class="finp" id="q-status">
+          <option value="draft">📝 טיוטה</option>
+          <option value="sent">📤 נשלחה</option>
+          <option value="approved">✅ אושרה</option>
+          <option value="rejected">❌ נדחתה</option>
+        </select>
+      </div>
+      <div><label class="flbl">תאריך</label><input class="finp" id="q-date" type="date"></div>
+      <div><label class="flbl">בתוקף עד</label><input class="finp" id="q-valid" type="date"></div>
+
+      <div class="fg1">
+        <label class="flbl">פריטים</label>
+        <div id="q-items-list"></div>
+        <button type="button" class="btn bs btn-sm" onclick="window.addQuoteItemRow('','','')" style="margin-top:4px">➕ הוסף פריט</button>
+      </div>
+
+      <div class="fg1" style="display:flex;align-items:center;gap:10px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx2);cursor:pointer">
+          <input type="checkbox" id="q-vat" style="width:16px;height:16px;cursor:pointer" oninput="window.wqRecalc()" checked>+18% מע"מ
+        </label>
+      </div>
+      <div class="fg1" id="q-total-disp" style="background:var(--sur2);border-radius:8px;padding:10px 12px;font-size:13px"></div>
+
+      <div class="fg1"><label class="flbl">הערות</label><textarea class="finp" id="q-notes" rows="2" placeholder="תנאי תשלום, אחריות, הערות..."></textarea></div>
+    </div></div>
+    <div class="mft">
+      <button class="btn bd btn-sm" id="q-del" style="display:none;margin-left:auto" onclick="window.delQuote()">🗑️ מחק</button>
+      <button class="btn bs btn-sm" id="q-convert" style="display:none" onclick="window.convertQuoteToFault()">🔧 צור משימה</button>
+      <button class="btn bs" onclick="closeM('M-quote')">ביטול</button>
+      <button class="btn bp" onclick="window.saveQuote()">💾 שמור</button>
     </div>
   </div>
 </div>
