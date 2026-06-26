@@ -54,7 +54,7 @@ export function markPaid(id) {
   window.custs = window.custs.map(c => c.id === id ? { ...c, debt: 0, debtDesc: '' } : c);
   if (window._dbSaveCusts) window._dbSaveCusts(window.custs);
   renderDebts();
-  if (typeof renderDash === 'function') renderDash();
+  if (window.renderDash) window.renderDash();
   toast('סומן כשולם ✅');
 }
 
@@ -64,5 +64,6 @@ export function markFaultPaid(id) {
   f.paid = 'yes';
   if (window._dbSaveFaults) window._dbSaveFaults(window.faults);
   renderDebts();
+  if (window.renderDash) window.renderDash();
   toast('סומן כשולם ✅');
 }
