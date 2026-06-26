@@ -232,6 +232,7 @@ textarea.finp    { resize: vertical; min-height: 80px; }
   display: none; position: absolute; top: calc(100% + 4px); right: 0; left: 0;
   background: var(--sur3); border: 1px solid var(--brd2); border-radius: 10px;
   max-height: 260px; overflow-y: auto; z-index: 80; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y;
 }
 .cp-drop.open { display: block; }
 .cp-item {
