@@ -13,6 +13,7 @@ import { renderNotes, openNewNote, editNoteById, saveNote, delNote, toggleNoteSe
 import { renderArchive, restoreFault } from './archive.js';
 import { renderReports, exportBackup, exportCustomersExcel } from './reports.js';
 import { renderWorkReports, openNewWReport, editWReportById, saveWReport, delWReport, exportWReportPDF, addEquipRow, clearSig, wrToggleGuest, wrUpdateHours } from './workreports.js';
+import { renderQuotes, openNewQuote, editQuoteById, saveQuote, delQuote, exportQuotePDF, addQuoteItemRow, wqRecalc, qToggleGuest, convertQuoteToFault } from './quotes.js';
 import { initCustPicker, setCustPicker } from './custpicker.js';
 import { loadSettings, saveSettings, openAddUser, openEditUser, saveUser, deleteUser } from './settings.js';
 import { renderLog, addLog, clearLog } from './log.js';
@@ -26,6 +27,7 @@ window.notes       = [];
 window.waMessages  = [];
 window.logEntries  = [];
 window.wreports    = [];
+window.quotes      = [];
 window.cfg         = {};
 window._deletingIds = new Set();
 window._gsResults  = [];
@@ -136,6 +138,18 @@ window.clearSig          = clearSig;
 window.wrToggleGuest     = wrToggleGuest;
 window.wrUpdateHours     = wrUpdateHours;
 
+// quotes (הצעות מחיר)
+window.renderQuotes        = renderQuotes;
+window.openNewQuote        = openNewQuote;
+window.editQuoteById       = editQuoteById;
+window.saveQuote           = saveQuote;
+window.delQuote            = delQuote;
+window.exportQuotePDF      = exportQuotePDF;
+window.addQuoteItemRow     = addQuoteItemRow;
+window.wqRecalc            = wqRecalc;
+window.qToggleGuest        = qToggleGuest;
+window.convertQuoteToFault = convertQuoteToFault;
+
 // warranties / debts
 window.renderWarr       = renderWarr;
 window.renderDebts      = renderDebts;
@@ -177,6 +191,7 @@ if ('serviceWorker' in navigator) {
 // אתחול בוררי הלקוחות (פעם אחת, הרשימה נטענת דינמית בעת הפתיחה)
 initCustPicker('PICK-mf-cust', { includeGuest: true,  onChange: () => window.toggleGuestFields?.() });
 initCustPicker('PICK-wr-cust', { includeGuest: true,  onChange: () => window.wrToggleGuest?.() });
+initCustPicker('PICK-q-cust',  { includeGuest: true,  onChange: () => window.qToggleGuest?.() });
 initCustPicker('PICK-mn-cust', { includeNone:  true });
 
 initLogin();
