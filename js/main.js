@@ -13,6 +13,7 @@ import { renderNotes, openNewNote, editNoteById, saveNote, delNote, toggleNoteSe
 import { renderArchive, restoreFault } from './archive.js';
 import { renderReports, exportBackup, exportCustomersExcel } from './reports.js';
 import { renderWorkReports, openNewWReport, editWReportById, saveWReport, delWReport, exportWReportPDF, addEquipRow, clearSig, wrToggleGuest, wrUpdateHours } from './workreports.js';
+import { initCustPicker, setCustPicker } from './custpicker.js';
 import { loadSettings, saveSettings, openAddUser, openEditUser, saveUser, deleteUser } from './settings.js';
 import { renderLog, addLog, clearLog } from './log.js';
 import { gcalInit, gcalSignIn, gcalSignOut, fetchWk, wkPrev, wkNext, wkToday, gcalFault } from './gcal.js';
@@ -162,12 +163,21 @@ window.wkNext           = wkNext;
 window.wkToday          = wkToday;
 window._gcalFault       = gcalFault;
 
+// cust pickers (בורר לקוח חכם)
+window.initCustPicker = initCustPicker;
+window.setCustPicker  = setCustPicker;
+
 // Boot
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
   });
 }
+
+// אתחול בוררי הלקוחות (פעם אחת, הרשימה נטענת דינמית בעת הפתיחה)
+initCustPicker('PICK-mf-cust', { includeGuest: true,  onChange: () => window.toggleGuestFields?.() });
+initCustPicker('PICK-wr-cust', { includeGuest: true,  onChange: () => window.wrToggleGuest?.() });
+initCustPicker('PICK-mn-cust', { includeNone:  true });
 
 initLogin();
 loadAll();
