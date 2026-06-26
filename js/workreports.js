@@ -115,14 +115,9 @@ function _getSigData() {
 
 // ── רשימת בחירת לקוח ─────────────────────────────────────────────────────────
 function _fillWRCustSelect(selected) {
-  const sel = document.getElementById('wr-cust');
-  if (!sel) return;
-  sel.innerHTML = '<option value="">— בחר לקוח —</option>'
-    + '<option value="__guest__">👤 לקוח מזדמן</option>'
-    + '<option disabled>──────────────</option>'
-    + [...(window.custs || [])].sort((a, b) => a.name.localeCompare(b.name, 'he'))
-      .map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-  sel.value = selected || '';
+  // בורר הלקוח החכם (PICK-wr-cust) מאותחל ב-main.js; כאן רק קובעים את הערך הנבחר
+  if (window.setCustPicker) window.setCustPicker('PICK-wr-cust', selected || '');
+  else { const h = document.getElementById('wr-cust'); if (h) h.value = selected || ''; }
 }
 
 export function wrToggleGuest() {
