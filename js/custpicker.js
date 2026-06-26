@@ -60,25 +60,25 @@ export function initCustPicker(wrapId, opts = {}) {
   const reg = { wrap, input, drop, hidden, opts };
   REG[wrapId] = reg;
 
-  const open = (q) => { _renderDrop(reg, q); drop.classList.add('open'); };
+  const open  = (q) => { _renderDrop(reg, q); drop.classList.add('open'); };
+  const close = () => { drop.classList.remove('open'); input.value = _labelFor(reg, hidden.value); };
 
   input.addEventListener('focus', () => { try { input.select(); } catch (e) {} open(''); });
   input.addEventListener('input', () => { hidden.value = ''; open(input.value); });
-  input.addEventListener('blur', () => {
-    setTimeout(() => {
-      drop.classList.remove('open');
-      input.value = _labelFor(reg, hidden.value); // החזרת הטקסט המוצג לערך הנבחר (התעלמות מטקסט חופשי שלא נבחר)
-    }, 170);
-  });
+  // אין סגירה ב-blur — כדי לאפשר גלילה חופשית של הרשימה במגע
 
-  // pointerdown יורה לפני blur — מאפשר בחירה בעכבר ובמגע
-  drop.addEventListener('pointerdown', (e) => {
+  // בחירה ב-click (הקשה) בלבד — גלילה בגרירה לא בוחרת פריט
+  drop.addEventListener('click', (e) => {
     const it = e.target.closest('.cp-item'); if (!it) return;
-    e.preventDefault();
     const val = it.dataset.val;
     setCustPicker(wrapId, val);
-    input.blur();
     if (typeof opts.onChange === 'function') opts.onChange(val);
   });
+
+  // סגירה בלחיצה/הקשה מחוץ לבורר
+  const outside = (e) => { if (drop.classList.contains('open') && !wrap.contains(e.target)) close(); };
+  document.addEventListener('pointerdown', outside);
+  // סגירה במקש Escape
+  input.addEventListener('keydown', (e) => { if (e.key === 'Escape') { close(); input.blur(); } });
 }
 window.initCustPicker = initCustPicker;
