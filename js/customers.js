@@ -235,6 +235,31 @@ export function viewCust(id) {
       </div>`;
   }
 
+  // work-reports history (דוחות עבודה של הלקוח)
+  const custWReports = (window.wreports || []).filter(r => r.custId === id)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  if (custWReports.length) {
+    document.getElementById('Mv-body').innerHTML += `
+      <div style="margin-top:16px;border-top:1px solid var(--brd);padding-top:14px">
+        <div class="flbl" style="margin-bottom:10px">📋 דוחות עבודה (${custWReports.length})</div>
+        ${custWReports.map(r => {
+          const eq = (r.equipment || []).length;
+          return `<div style="padding:8px 10px;background:var(--sur2);border-radius:8px;margin-bottom:6px;border-right:3px solid var(--cya)">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+              <div style="font-size:13px;font-weight:600;flex:1">${(r.workDesc || '').slice(0, 80) || '—'}</div>
+              <button class="btn bs btn-sm" style="flex-shrink:0" onclick="window.exportWReportPDF('${r.id}')">🖨️ PDF</button>
+            </div>
+            <div style="font-size:11px;color:var(--tx3);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap">
+              ${r.date ? `<span>📅 ${fmtD(r.date)}</span>` : ''}
+              ${r.techName ? `<span>👷 ${r.techName}</span>` : ''}
+              ${eq ? `<span>🔌 ${eq} פריטים</span>` : ''}
+              ${r.amount > 0 ? `<span>💰 ₪${Number(r.amount).toLocaleString('he-IL')}</span>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }
+
   document.getElementById('Mv-del').onclick = async () => {
     const delName = window.custs.find(x => x.id === id)?.name || id;
     if (!confirm('למחוק?')) return;
