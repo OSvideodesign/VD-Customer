@@ -86,11 +86,9 @@ export function editNoteById(id) {
 }
 
 function _fillCustSel(selected) {
-  const sel = document.getElementById('mn-cust');
-  sel.innerHTML = '<option value="">ללא קישור</option>'
-    + [...window.custs].sort((a, b) => a.name.localeCompare(b.name, 'he'))
-      .map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-  sel.value = selected;
+  // בורר הלקוח החכם (PICK-mn-cust) מאותחל ב-main.js; כאן רק קובעים את הערך הנבחר
+  if (window.setCustPicker) window.setCustPicker('PICK-mn-cust', selected || '');
+  else { const h = document.getElementById('mn-cust'); if (h) h.value = selected || ''; }
 }
 
 export function saveNote() {
