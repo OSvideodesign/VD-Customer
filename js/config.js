@@ -29,11 +29,11 @@ export const NCAT_CLR = {
 };
 
 export const DEFAULT_PERMS = {
-  owner:     { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3, workreports: 3 },
-  admin:     { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3, workreports: 3 },
-  manager:   { customers: 2, faults: 2, archive: 2, notes: 2, warranties: 2, debts: 2, reports: 2, workreports: 2 },
-  installer: { customers: 1, faults: 2, archive: 2, notes: 2, warranties: 1, debts: 0, reports: 0, workreports: 2 },
-  tech:      { customers: 1, faults: 2, archive: 2, notes: 2, warranties: 1, debts: 0, reports: 0, workreports: 2 },
+  owner:     { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3, workreports: 3, quotes: 3 },
+  admin:     { customers: 3, faults: 3, archive: 3, notes: 3, warranties: 3, debts: 3, reports: 3, workreports: 3, quotes: 3 },
+  manager:   { customers: 2, faults: 2, archive: 2, notes: 2, warranties: 2, debts: 2, reports: 2, workreports: 2, quotes: 2 },
+  installer: { customers: 1, faults: 2, archive: 2, notes: 2, warranties: 1, debts: 0, reports: 0, workreports: 2, quotes: 0 },
+  tech:      { customers: 1, faults: 2, archive: 2, notes: 2, warranties: 1, debts: 0, reports: 0, workreports: 2, quotes: 0 },
 };
 
 export const PERM_MODULES = [
@@ -45,6 +45,7 @@ export const PERM_MODULES = [
   { key: 'debts',      label: '💰 חובות' },
   { key: 'reports',    label: '📈 דוחות' },
   { key: 'workreports', label: '📋 דוחות עבודה' },
+  { key: 'quotes',     label: '📄 הצעות מחיר' },
 ];
 
 export const GCAL_CID = '830672993595-f7fdfqj14qtnns6g0cmrb7m7nh30obqg.apps.googleusercontent.com';
