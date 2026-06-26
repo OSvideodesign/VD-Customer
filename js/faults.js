@@ -36,8 +36,10 @@ export function renderFaults() {
     const c = window.custs.find(x => x.id === f.custId);
     const custName = c ? c.name : (f.guestName ? f.guestName + ' (מזדמן)' : 'לקוח מזדמן');
     
-    // מי היה פעם אחרונה
-    const past = window.faults.filter(x => x.custId === f.custId && x.status === 'done' && x.date < (f.date || '9999')).sort((a,b) => b.date.localeCompare(a.date))[0];
+    // מי היה פעם אחרונה — רק ללקוח אמיתי (לקוח מזדמן ללא custId לא מקובץ עם מזדמנים אחרים)
+    const past = f.custId
+      ? window.faults.filter(x => x.custId === f.custId && x.status === 'done' && x.date < (f.date || '9999')).sort((a,b) => b.date.localeCompare(a.date))[0]
+      : null;
     const techName = past ? (past.assignedTo || past.updatedBy || 'איש צוות') : '';
     const lastVisitHtml = past ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(0,0,0,0.15); border-radius:6px; font-size:11px; color:var(--tx2); border-right:2px solid var(--acc);"><b>🕒 טיפול קודם ב-${fmtD(past.date)} (ע"י ${techName}):</b> ${past.desc}</div>` : '';
 
@@ -125,13 +127,9 @@ export function editFaultById(id) {
 }
 
 function _fillCustSelect(selected) {
-  const sel = document.getElementById('mf-cust');
-  sel.innerHTML = '<option value="">— בחר לקוח —</option>'
-    + '<option value="__guest__">👤 לקוח מזדמן</option>'
-    + '<option disabled style="color:var(--tx3)">──────────────</option>'
-    + [...window.custs].sort((a, b) => a.name.localeCompare(b.name, 'he'))
-      .map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-  sel.value = selected;
+  // בורר הלקוח החכם (PICK-mf-cust) מאותחל ב-main.js; כאן רק קובעים את הערך הנבחר
+  if (window.setCustPicker) window.setCustPicker('PICK-mf-cust', selected || '');
+  else { const h = document.getElementById('mf-cust'); if (h) h.value = selected || ''; }
 }
 
 export function toggleGuestFields() {
