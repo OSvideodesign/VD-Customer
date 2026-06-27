@@ -1,7 +1,7 @@
 // ══ dashboard.js — dashboard rendering ══
 
 import { USERS, NCAT_CLR } from './config.js';
-import { wStat, wExp, dLeft, avClr, ini, fmtD, today, openWA, openNav } from './utils.js';
+import { wStat, wExp, dLeft, avClr, ini, fmtD, today, openWA, openNav, faultBalance } from './utils.js';
 
 export function renderDash() {
   if (!document.getElementById('st-total')) return;
@@ -14,8 +14,8 @@ export function renderDash() {
     if (e) { const d = dLeft(e); if (d < 0 || (d >= 0 && new Date(e) <= endY)) wc++; }
     if (c.debt > 0) { dc++; ds += c.debt; }
   });
-  window.faults.filter(f => f.amount > 0 && f.paid !== 'yes').forEach(f => {
-    dc++; ds += parseFloat(f.amount) || 0;
+  window.faults.filter(f => faultBalance(f) > 0).forEach(f => {
+    dc++; ds += faultBalance(f);
   });
 
   document.getElementById('st-total').textContent    = window.custs.length;
@@ -36,12 +36,12 @@ export function renderDash() {
 
   // Debts panel - מפריד בין חוב של לקוח (פותח לקוח) לחוב משימה (פותח משימה)
   const pd = window.custs.filter(c => c.debt > 0);
-  const pdu = window.faults.filter(f => f.amount > 0 && f.paid !== 'yes');
+  const pdu = window.faults.filter(f => faultBalance(f) > 0);
   const pdAll = [
     ...pd.map(c  => ({ name: c.name, amount: c.debt, onclick: `window._viewCust('${c.id}')` })),
     ...pdu.map(f => {
       const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
-      return { name: c ? c.name : (f.guestName || 'לקוח מזדמן'), amount: parseFloat(f.amount), desc: (f.desc || '').slice(0, 25), onclick: `window._editFaultById('${f.id}')` };
+      return { name: c ? c.name : (f.guestName || 'לקוח מזדמן'), amount: faultBalance(f), desc: (f.desc || '').slice(0, 25), onclick: `window._editFaultById('${f.id}')` };
     }),
   ];
   document.getElementById('pan-debts').innerHTML = pdAll.length
