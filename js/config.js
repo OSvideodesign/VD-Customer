@@ -9,11 +9,13 @@ export const FIREBASE_CONFIG = {
   appId: "1:35797095244:web:d1d0d572fb26571cf6b5e9"
 };
 
+// הסיסמאות מנוהלות במסד הנתונים (Firestore: settings/main.users) ואינן נשמרות בקוד.
+// הערך כאן הוא placeholder בלבד — הסיסמאות האמיתיות נטענות מ-Firestore/מהמטמון ודורסות אותו.
 export const USERS = [
-  { name: 'אופיר', pass: '',          color: '#3b82f6', role: 'owner' },
-  { name: 'רז',    pass: 'Raz4123',   color: '#f1f5f9', role: 'admin' },
-  { name: 'גלאל',  pass: 'Jalal4123', color: '#10b981', role: 'installer' },
-  { name: 'מוטי',  pass: 'Moti4123',  color: '#06b6d4', role: 'installer' },
+  { name: 'אופיר', pass: '__set_in_db__', color: '#3b82f6', role: 'owner' },
+  { name: 'רז',    pass: '__set_in_db__', color: '#f1f5f9', role: 'admin' },
+  { name: 'גלאל',  pass: '__set_in_db__', color: '#10b981', role: 'installer' },
+  { name: 'מוטי',  pass: '__set_in_db__', color: '#06b6d4', role: 'installer' },
 ];
 
 export const NCAT = {
