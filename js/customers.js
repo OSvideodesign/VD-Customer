@@ -200,7 +200,7 @@ export function viewCust(id) {
       ${c.warrantyYears ? `<div><div class="flbl">אחריות</div><div>${c.warrantyYears} שנים ${s ? `<span class="badge ${s.cls}">${s.lbl}</span>` : ''}</div></div>` : ''}
       ${c.projectType ? `<div><div class="flbl">פרויקט</div><div>${c.projectType}</div></div>` : ''}
       ${c.equipment ? `<div style="grid-column:1/-1"><div class="flbl">ציוד</div><div>${c.equipment}</div></div>` : ''}
-      ${c.debt > 0 ? `<div style="grid-column:1/-1"><div class="flbl">חוב</div><div style="color:var(--red);font-weight:700">₪${c.debt.toLocaleString('he-IL')}${c.debtDesc ? ' — ' + c.debtDesc : ''}</div></div>` : ''}
+      ${c.debt > 0 ? `<div style="grid-column:1/-1"><div class="flbl">חוב</div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="color:var(--red);font-weight:700">₪${c.debt.toLocaleString('he-IL')}${c.debtDesc ? ' — ' + c.debtDesc : ''}</span>${c.phone ? `<button class="btn bs btn-sm" onclick="window._payCust('${c.id}')">💳 שלח פרטי תשלום</button>` : ''}</div></div>` : ''}
       ${c.techNotes ? `<div style="grid-column:1/-1"><div class="flbl">הערות</div><div style="color:var(--tx2)">${c.techNotes}</div></div>` : ''}
       ${(c.contacts && c.contacts.length) ? `<div style="grid-column:1/-1">
         <div class="flbl" style="margin-bottom:8px">👥 אנשי קשר נוספים</div>
