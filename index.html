@@ -632,9 +632,12 @@ document.head.appendChild(_link);
         </div>
       </div>
       <div><label class="flbl">שולם?</label>
-        <select class="finp" id="mf-paid">
+        <select class="finp" id="mf-paid" onchange="window.togglePaidAmount()">
           <option value="no">לא שולם</option><option value="yes">שולם ✅</option><option value="partial">שולם חלקית</option>
         </select>
+      </div>
+      <div id="mf-paid-amount-wrap" style="display:none"><label class="flbl">כמה שולם עד כה (₪)</label>
+        <input class="finp" id="mf-paid-amount" type="number" min="0" placeholder="סכום ששולם">
       </div>
       <div class="fg1"><label class="flbl">הערות פנימיות</label><textarea class="finp" id="mf-notes" rows="2"></textarea></div>
     </div></div>
