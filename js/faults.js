@@ -96,7 +96,9 @@ export function openNewFault(preCustId) {
   document.getElementById('mf-amount').value  = '';
   document.getElementById('mf-vat').checked   = false;
   document.getElementById('mf-paid').value    = 'no';
+  document.getElementById('mf-paid-amount').value = '';
   document.getElementById('mf-notes').value   = '';
+  togglePaidAmount();
   openM('M-fault');
 }
 
@@ -122,9 +124,19 @@ export function editFaultById(id) {
   document.getElementById('mf-amount').value  = f.baseAmount !== undefined ? f.baseAmount : (f.amount || '');
   document.getElementById('mf-vat').checked   = f.hasVat || false;
   document.getElementById('mf-paid').value    = f.paid     || 'no';
+  document.getElementById('mf-paid-amount').value = (f.paidAmount != null && f.paidAmount !== '') ? f.paidAmount : '';
   document.getElementById('mf-notes').value   = f.notes    || '';
+  togglePaidAmount();
   openM('M-fault');
 }
+
+// הצגת שדה "כמה שולם" רק כשנבחר "שולם חלקית"
+export function togglePaidAmount() {
+  const v = document.getElementById('mf-paid').value;
+  const wrap = document.getElementById('mf-paid-amount-wrap');
+  if (wrap) wrap.style.display = v === 'partial' ? 'block' : 'none';
+}
+window.togglePaidAmount = togglePaidAmount;
 
 function _fillCustSelect(selected) {
   // בורר הלקוח החכם (PICK-mf-cust) מאותחל ב-main.js; כאן רק קובעים את הערך הנבחר
@@ -156,6 +168,12 @@ export function saveFault() {
   if (date && status === 'open') status = 'scheduled';
   if (!date && status === 'scheduled') status = 'open';
 
+  // סכום ששולם בפועל: מלא אם "שולם", הסכום שהוזן אם "חלקי", 0 אם "לא שולם"
+  const paidSel = document.getElementById('mf-paid').value;
+  let paidAmount = 0;
+  if (paidSel === 'yes') paidAmount = finalAmount;
+  else if (paidSel === 'partial') paidAmount = Math.min(finalAmount, parseFloat(document.getElementById('mf-paid-amount').value) || 0);
+
   const f = {
     id:          _eFault || uid(),
     custId:      isGuest ? '' : custVal,
@@ -171,7 +189,8 @@ export function saveFault() {
     amount:      finalAmount, 
     baseAmount:  baseAmount,  
     hasVat:      hasVat,      
-    paid:        document.getElementById('mf-paid').value,
+    paid:        paidSel,
+    paidAmount:  paidAmount,
     notes:       document.getElementById('mf-notes').value.trim(),
     updatedBy:   window._currentUser || '',
     created:     _eFault ? (window.faults.find(x => x.id === _eFault) || {}).created : today(),
