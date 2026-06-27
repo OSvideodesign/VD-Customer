@@ -77,6 +77,34 @@ export function openNav(encodedAddr) {
   setTimeout(() => link.remove(), 300);
 }
 
+// שליחת פרטי תשלום ללקוח בוואטסאפ (בנק / ביט / לינק אשראי מתוך ההגדרות) + סכום אופציונלי
+export function sendPaymentDetails(phone, name, amount) {
+  if (!phone) { toast('אין מספר טלפון ללקוח', 'err'); return; }
+  const cfg = window.cfg || {};
+  if (!cfg.payBank && !cfg.payLink) {
+    toast('הזן קודם פרטי תשלום בהגדרות ⚙️', 'warn');
+    return;
+  }
+  const amt = parseFloat(amount);
+  const lines = [];
+  lines.push('שלום' + (name ? ' ' + name : '') + ',');
+  lines.push('להלן פרטים לתשלום' + (amt > 0 ? ' על סך ₪' + amt.toLocaleString('he-IL') : '') + ':');
+  lines.push('');
+  if (cfg.payBank) { lines.push('🏦 העברה בנקאית:'); lines.push(cfg.payBank); lines.push(''); }
+  if (cfg.payLink) { lines.push('💳 תשלום באשראי: ' + cfg.payLink); lines.push(''); }
+  lines.push('תודה' + (cfg.company ? ', ' + cfg.company : ''));
+
+  const clean = phone.replace(/[\s\-\(\)]/g, '').replace(/^\+/, '').replace(/^0/, '972');
+  const link = document.createElement('a');
+  link.href = 'https://wa.me/' + clean + '?text=' + encodeURIComponent(lines.join('\n'));
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => link.remove(), 300);
+}
+window.sendPaymentDetails = sendPaymentDetails;
+
 export function loader(msg) {
   let el = document.getElementById('_ldr');
   if (!el) {
