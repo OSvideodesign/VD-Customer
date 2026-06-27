@@ -114,6 +114,8 @@ export function loadSettings() {
   if (document.getElementById('s-company')) document.getElementById('s-company').value = window.cfg.company || '';
   if (document.getElementById('s-phone'))   document.getElementById('s-phone').value   = window.cfg.phone   || '';
   if (document.getElementById('s-email'))   document.getElementById('s-email').value   = window.cfg.email   || '';
+  if (document.getElementById('s-pay-bank')) document.getElementById('s-pay-bank').value = window.cfg.payBank || '';
+  if (document.getElementById('s-pay-link')) document.getElementById('s-pay-link').value = window.cfg.payLink || '';
 
   // הזרקת אופציית צבע הדגשה דינמית אם לא קיימת
   const designGrid = document.querySelector('#s-design-panel .fgrid');
@@ -148,7 +150,9 @@ export function saveSettings() {
   if (document.getElementById('s-company')) window.cfg.company = document.getElementById('s-company').value.trim();
   if (document.getElementById('s-phone'))   window.cfg.phone   = document.getElementById('s-phone').value.trim();
   if (document.getElementById('s-email'))   window.cfg.email   = document.getElementById('s-email').value.trim();
-  
+  if (document.getElementById('s-pay-bank')) window.cfg.payBank = document.getElementById('s-pay-bank').value.trim();
+  if (document.getElementById('s-pay-link')) window.cfg.payLink = document.getElementById('s-pay-link').value.trim();
+
   if (window._dbSaveCfg) window._dbSaveCfg(window.cfg);
   localStorage.setItem('crm_cfg', JSON.stringify(window.cfg));
   toast('הגדרות נשמרו ✅');
