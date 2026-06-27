@@ -36,6 +36,12 @@ window._gsResults  = [];
   try {
     const b = localStorage.getItem('crm_cfg');
     if (b) Object.assign(window.cfg, JSON.parse(b));
+    // טעינת המשתמשים (כולל סיסמאות) מהמטמון המקומי מיד בעלייה — כדי שהכניסה תעבוד
+    // ללא המתנה ל-Firestore, ובלי שהסיסמאות האמיתיות יישמרו בקוד (config.js מכיל placeholder בלבד).
+    if (window.cfg.users && window.cfg.users.length) {
+      USERS.length = 0;
+      window.cfg.users.forEach(u => USERS.push(u));
+    }
   } catch (e) {}
 })();
 
