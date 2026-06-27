@@ -180,9 +180,13 @@ export function renderWorkReports() {
       </div>
       <div class="fdesc" style="font-size:13px;margin-bottom:6px">${(r.workDesc || '').slice(0, 120) || '—'}</div>
       ${eqCount ? `<div style="font-size:11px;color:var(--tx2);background:rgba(0,0,0,0.15);padding:6px 10px;border-radius:6px;border-right:2px solid var(--acc)"><b>🔌 ציוד (${eqCount}):</b> ${eqSummary}</div>` : ''}
-      <div class="fmeta" style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+      <div class="fmeta" style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:6px">
         <span style="font-size:11px;color:var(--tx3)">👷 ${r.techName || '—'}${r.signature ? ' · ✍️ חתום' : ''}</span>
-        <button class="btn bs btn-sm" onclick="event.stopPropagation();window.exportWReportPDF('${r.id}')">🖨️ PDF</button>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn bs btn-sm" onclick="event.stopPropagation();window.editWReportById('${r.id}')" title="ערוך">✏️</button>
+          <button class="btn bs btn-sm" onclick="event.stopPropagation();window.exportWReportPDF('${r.id}')" title="PDF">🖨️</button>
+          <button class="btn bd btn-sm" onclick="event.stopPropagation();window.delWReportById('${r.id}')" title="מחק">🗑️</button>
+        </div>
       </div>
     </div>`;
   }).join('') + '</div>';
@@ -309,16 +313,28 @@ window.saveWReport = saveWReport;
 // ── מחיקה ────────────────────────────────────────────────────────────────────
 export async function delWReport() {
   if (!_eWR) return;
+  await _doDeleteWReport(_eWR, true);
+}
+window.delWReport = delWReport;
+
+// מחיקה ישירה מכרטיס ברשימה (בלי לפתוח את המודל)
+export async function delWReportById(id) {
+  await _doDeleteWReport(id, false);
+}
+window.delWReportById = delWReportById;
+
+async function _doDeleteWReport(id, fromModal) {
+  const r = (window.wreports || []).find(x => x.id === id);
+  if (!r) return;
   if (!confirm('למחוק דוח עבודה זה?')) return;
-  const id = _eWR;
-  closeM('M-wreport');
+  if (fromModal) closeM('M-wreport');
   toast('מוחק...');
   if (window._dbDel) await window._dbDel('workreports', id);
   window.wreports = (window.wreports || []).filter(x => x.id !== id);
   addLog('workreport', 'מחיקת דוח עבודה', id);
   renderWorkReports();
+  toast('דוח נמחק ✅');
 }
-window.delWReport = delWReport;
 
 // ── ייצוא PDF (דרך חלון הדפסה) ───────────────────────────────────────────────
 export function exportWReportPDF(id) {
