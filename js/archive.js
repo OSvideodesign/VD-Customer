@@ -62,9 +62,9 @@ export function renderArchive() {
   const cards = [...groups.entries()].map(([cid, fs]) => {
     const c = window.custs.find(x => x.id === cid);
     const total = fs.reduce((s, f) => s + (parseFloat(f.amount) || 0), 0);
-    const unpaid = fs.some(f => faultBalance(f) > 0);
+    const remaining = fs.reduce((s, f) => s + faultBalance(f), 0);
     const lastDate = fs.map(f => f.created || '').sort().slice(-1)[0];
-    return { cid, name: c ? c.name : 'לקוח שנמחק', count: fs.length, total, unpaid, lastDate };
+    return { cid, name: c ? c.name : 'לקוח שנמחק', count: fs.length, total, remaining, lastDate };
   }).sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''));
 
   if (cnt) cnt.textContent = cards.length + ' לקוחות · ' + list.length + ' טיפולים';
@@ -75,9 +75,11 @@ export function renderArchive() {
         <div class="av" style="background:${avClr(g.name)};width:34px;height:34px">${ini(g.name)}</div>
         <div style="flex:1;min-width:0">
           <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.name}</div>
-          <div style="font-size:11px;color:var(--tx3)">✅ ${g.count} טיפולים${g.lastDate ? ' · אחרון ' + fmtD(g.lastDate) : ''}</div>
+          <div style="font-size:11px;color:var(--tx3)">✅ ${g.count} טיפולים${g.lastDate ? ' · אחרון ' + fmtD(g.lastDate) : ''}${g.remaining > 0 && g.remaining !== g.total ? ' · סה"כ ₪' + g.total.toLocaleString('he-IL') : ''}</div>
         </div>
-        ${g.total > 0 ? `<span class="badge ${g.unpaid ? 'br' : 'bg'}">₪${g.total.toLocaleString('he-IL')}</span>` : ''}
+        ${g.remaining > 0
+          ? `<span class="badge br">נותר ₪${g.remaining.toLocaleString('he-IL')}</span>`
+          : (g.total > 0 ? `<span class="badge bg">₪${g.total.toLocaleString('he-IL')}</span>` : '')}
         <span style="color:var(--tx3);font-size:18px">›</span>
       </div>
     </div>`).join('');
