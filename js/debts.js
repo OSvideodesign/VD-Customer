@@ -28,7 +28,10 @@ export function renderDebts() {
     <td>${c.phone ? `<a href="tel:${c.phone}" style="color:var(--acc)">${c.phone}</a>` : '—'}</td>
     <td><span style="color:var(--red);font-weight:700">₪${c.debt.toLocaleString('he-IL')}</span></td>
     <td style="color:var(--tx3);font-size:12px">${c.debtDesc || 'חוב לקוח'}</td>
-    <td><button class="btn bs btn-sm" onclick="window._markPaid('${c.id}')">✅ שולם</button></td>
+    <td style="white-space:nowrap">
+      ${c.phone ? `<button class="btn bs btn-sm" onclick="window._payCust('${c.id}')" title="שלח פרטי תשלום בוואטסאפ">💳</button>` : ''}
+      <button class="btn bs btn-sm" onclick="window._markPaid('${c.id}')">✅ שולם</button>
+    </td>
   </tr>`).join('');
 
   const faultRows = unpaidFaults.map(f => {
@@ -42,12 +45,27 @@ export function renderDebts() {
       <td>${phone ? `<a href="tel:${phone}" style="color:var(--acc)">${phone}</a>` : '—'}</td>
       <td><span style="color:var(--red);font-weight:700">₪${parseFloat(f.amount).toLocaleString('he-IL')}</span></td>
       <td style="color:var(--tx3);font-size:12px">🔧 ${(f.desc || '').slice(0, 30)} — ${paidLbl}</td>
-      <td><button class="btn bs btn-sm" onclick="window._markFaultPaid('${f.id}')">✅ שולם</button></td>
+      <td style="white-space:nowrap">
+        ${phone ? `<button class="btn bs btn-sm" onclick="window._payFault('${f.id}')" title="שלח פרטי תשלום בוואטסאפ">💳</button>` : ''}
+        <button class="btn bs btn-sm" onclick="window._markFaultPaid('${f.id}')">✅ שולם</button>
+      </td>
     </tr>`;
   }).join('');
 
   tb.innerHTML = custRows + faultRows;
 }
+
+// שליחת פרטי תשלום ללקוח / למשימה דרך וואטסאפ (משתמש ב-window.sendPaymentDetails)
+window._payCust = (id) => {
+  const c = window.custs.find(x => x.id === id);
+  if (c && window.sendPaymentDetails) window.sendPaymentDetails(c.phone, c.name, c.debt);
+};
+window._payFault = (id) => {
+  const f = window.faults.find(x => x.id === id);
+  if (!f) return;
+  const c = f.custId ? window.custs.find(x => x.id === f.custId) : null;
+  if (window.sendPaymentDetails) window.sendPaymentDetails(c ? c.phone : f.guestPhone, c ? c.name : (f.guestName || ''), f.amount);
+};
 
 export function markPaid(id) {
   if (!confirm('לסמן כשולם?')) return;
