@@ -123,9 +123,13 @@ export function renderQuotes() {
         <span class="badge ${ST_CLS[st]}">${ST_LBL[st]}</span>
       </div>
       <div style="font-size:11px;color:var(--tx2);margin:6px 0">${itemsCount} פריטים${r.convertedFaultId ? ' · 🔧 הומר למשימה' : ''}</div>
-      <div class="fmeta" style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">
+      <div class="fmeta" style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;gap:6px">
         <span style="font-weight:700;color:var(--acc)">₪${Number(r.total || 0).toLocaleString('he-IL')}</span>
-        <button class="btn bs btn-sm" onclick="event.stopPropagation();window.exportQuotePDF('${r.id}')">🖨️ PDF</button>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn bs btn-sm" onclick="event.stopPropagation();window.editQuoteById('${r.id}')" title="ערוך">✏️</button>
+          <button class="btn bs btn-sm" onclick="event.stopPropagation();window.exportQuotePDF('${r.id}')" title="PDF">🖨️</button>
+          <button class="btn bd btn-sm" onclick="event.stopPropagation();window.delQuoteById('${r.id}')" title="מחק">🗑️</button>
+        </div>
       </div>
     </div>`;
   }).join('') + '</div>';
@@ -241,16 +245,28 @@ window.saveQuote = saveQuote;
 // ── מחיקה ────────────────────────────────────────────────────────────────────
 export async function delQuote() {
   if (!_eQuote) return;
-  if (!confirm('למחוק הצעת מחיר זו?')) return;
-  const id = _eQuote;
-  closeM('M-quote');
+  await _doDeleteQuote(_eQuote, true);
+}
+window.delQuote = delQuote;
+
+// מחיקה ישירה מכרטיס ברשימה (בלי לפתוח את המודל)
+export async function delQuoteById(id) {
+  await _doDeleteQuote(id, false);
+}
+window.delQuoteById = delQuoteById;
+
+async function _doDeleteQuote(id, fromModal) {
+  const r = (window.quotes || []).find(x => x.id === id);
+  if (!r) return;
+  if (!confirm('למחוק הצעת מחיר ' + (r.number || '') + '?')) return;
+  if (fromModal) closeM('M-quote');
   toast('מוחק...');
   if (window._dbDel) await window._dbDel('quotes', id);
   window.quotes = (window.quotes || []).filter(x => x.id !== id);
-  addLog('quote', 'מחיקת הצעת מחיר', id);
+  addLog('quote', 'מחיקת הצעת מחיר', r.number || id);
   renderQuotes();
+  toast('הצעה נמחקה ✅');
 }
-window.delQuote = delQuote;
 
 // ── המרה למשימה ──────────────────────────────────────────────────────────────
 export function convertQuoteToFault() {
