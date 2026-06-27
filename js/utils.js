@@ -105,6 +105,14 @@ export function sendPaymentDetails(phone, name, amount) {
 }
 window.sendPaymentDetails = sendPaymentDetails;
 
+// יתרת חוב של משימה: סכום מלא פחות מה ששולם בפועל (0 אם סומן כשולם)
+export function faultBalance(f) {
+  const amt = parseFloat(f.amount) || 0;
+  if (f.paid === 'yes') return 0;
+  const paid = parseFloat(f.paidAmount) || 0;
+  return Math.max(0, amt - paid);
+}
+
 export function loader(msg) {
   let el = document.getElementById('_ldr');
   if (!el) {
