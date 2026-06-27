@@ -1,6 +1,6 @@
 // ══ archive.js — archive page ══
 
-import { avClr, ini, fmtD, toast } from './utils.js';
+import { avClr, ini, fmtD, toast, faultBalance } from './utils.js';
 import { renderDash } from './dashboard.js';
 
 let _archiveView = 'customer';   // 'customer' = מקובץ לפי לקוח (ברירת מחדל) | 'treatment' = רשימה מלאה
@@ -62,7 +62,7 @@ export function renderArchive() {
   const cards = [...groups.entries()].map(([cid, fs]) => {
     const c = window.custs.find(x => x.id === cid);
     const total = fs.reduce((s, f) => s + (parseFloat(f.amount) || 0), 0);
-    const unpaid = fs.some(f => (parseFloat(f.amount) || 0) > 0 && f.paid !== 'yes');
+    const unpaid = fs.some(f => faultBalance(f) > 0);
     const lastDate = fs.map(f => f.created || '').sort().slice(-1)[0];
     return { cid, name: c ? c.name : 'לקוח שנמחק', count: fs.length, total, unpaid, lastDate };
   }).sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''));
@@ -93,7 +93,11 @@ export function renderArchive() {
 function _treatmentCard(f) {
   const c       = f.custId ? window.custs.find(x => x.id === f.custId) : null;
   const name    = c ? c.name : (f.guestName || 'לקוח מזדמן');
-  const paidLbl = { yes: '✅ שולם', partial: '⚠️ חלקי', no: '❌ לא שולם' }[f.paid || 'no'];
+  const bal = faultBalance(f);
+  const paidSoFar = parseFloat(f.paidAmount) || 0;
+  const paidLbl = f.paid === 'yes' ? '✅ שולם'
+    : paidSoFar > 0 ? `⚠️ שולם ₪${paidSoFar.toLocaleString('he-IL')} · נותר ₪${bal.toLocaleString('he-IL')}`
+    : '❌ לא שולם';
   const paidClr = { yes: 'var(--grn)', partial: 'var(--yel)', no: 'var(--tx3)' }[f.paid || 'no'];
   return `<div class="fc" style="border-right:3px solid var(--grn)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
