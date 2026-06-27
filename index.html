@@ -372,6 +372,8 @@ document.head.appendChild(_link);
     </div>
     <div class="toolbar">
       <div class="sw"><input type="text" id="q-archive" placeholder="חפש..." oninput="renderArchive()"><span class="si">🔍</span></div>
+      <button class="btn bp btn-sm" id="arch-view-cust" onclick="window.setArchiveView('customer')">👤 לפי לקוח</button>
+      <button class="btn bs btn-sm" id="arch-view-treat" onclick="window.setArchiveView('treatment')">🔧 לפי טיפול</button>
     </div>
     <div id="list-archive" class="fg-grid"></div>
   </div>
