@@ -126,14 +126,34 @@ export function wrToggleGuest() {
 }
 window.wrToggleGuest = wrToggleGuest;
 
+function _teamUsers() {
+  return (window.cfg && window.cfg.users && window.cfg.users.length)
+    ? window.cfg.users : [{ name: 'אופיר' }, { name: 'רז' }, { name: 'גלאל' }, { name: 'מוטי' }];
+}
+
 // ── מילוי בורר טכנאי ─────────────────────────────────────────────────────────
 function _fillTechSelect(selected) {
   const sel = document.getElementById('wr-tech');
   if (!sel) return;
-  const users = (window.cfg && window.cfg.users && window.cfg.users.length)
-    ? window.cfg.users : [{ name: 'אופיר' }, { name: 'רז' }, { name: 'גלאל' }, { name: 'מוטי' }];
+  const users = _teamUsers();
   sel.innerHTML = users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
   sel.value = selected || window._currentUser || users[0]?.name || '';
+}
+
+// ── מילוי תיבות סימון של עובדים נוספים ───────────────────────────────────────
+function _fillTeamChecks(selectedArr) {
+  const box = document.getElementById('wr-team-list');
+  if (!box) return;
+  const sel = new Set(selectedArr || []);
+  box.innerHTML = _teamUsers().map(u => `
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;background:var(--sur2);padding:6px 10px;border-radius:8px;cursor:pointer">
+      <input type="checkbox" class="wr-team-cb" value="${u.name}" ${sel.has(u.name) ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer">
+      ${u.name}
+    </label>`).join('');
+}
+
+function _readTeam() {
+  return [...document.querySelectorAll('#wr-team-list .wr-team-cb:checked')].map(cb => cb.value);
 }
 
 // ── תצוגת רשימה ──────────────────────────────────────────────────────────────
@@ -181,7 +201,7 @@ export function renderWorkReports() {
       <div class="fdesc" style="font-size:13px;margin-bottom:6px">${(r.workDesc || '').slice(0, 120) || '—'}</div>
       ${eqCount ? `<div style="font-size:11px;color:var(--tx2);background:rgba(0,0,0,0.15);padding:6px 10px;border-radius:6px;border-right:2px solid var(--acc)"><b>🔌 ציוד (${eqCount}):</b> ${eqSummary}</div>` : ''}
       <div class="fmeta" style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:6px">
-        <span style="font-size:11px;color:var(--tx3)">👷 ${r.techName || '—'}${r.signature ? ' · ✍️ חתום' : ''}</span>
+        <span style="font-size:11px;color:var(--tx3)">👷 ${r.techName || '—'}${(r.team && r.team.length) ? ' + ' + r.team.join(', ') : ''}${r.signature ? ' · ✍️ חתום' : ''}</span>
         <div style="display:flex;gap:6px;flex-shrink:0">
           <button class="btn bs btn-sm" onclick="event.stopPropagation();window.editWReportById('${r.id}')" title="ערוך">✏️</button>
           <button class="btn bs btn-sm" onclick="event.stopPropagation();window.exportWReportPDF('${r.id}')" title="PDF">🖨️</button>
@@ -200,6 +220,7 @@ export function openNewWReport(preCustId) {
 
   _fillWRCustSelect(preCustId || '');
   _fillTechSelect('');
+  _fillTeamChecks([]);
   document.getElementById('wr-guest-fields').style.display = 'none';
   document.getElementById('wr-guest-name').value  = '';
   document.getElementById('wr-guest-phone').value = '';
@@ -231,6 +252,7 @@ export function editWReportById(id) {
   const isGuest = !r.custId && r.guestName;
   _fillWRCustSelect(isGuest ? '__guest__' : (r.custId || ''));
   _fillTechSelect(r.techName);
+  _fillTeamChecks(r.team || []);
   document.getElementById('wr-guest-fields').style.display = isGuest ? 'block' : 'none';
   document.getElementById('wr-guest-name').value  = r.guestName  || '';
   document.getElementById('wr-guest-phone').value = r.guestPhone || '';
@@ -284,6 +306,7 @@ export function saveWReport() {
     date:       document.getElementById('wr-date').value || today(),
     startTime, endTime, hours,
     techName:   document.getElementById('wr-tech').value || '',
+    team:       _readTeam(),
     workDesc,
     equipment:  _readEquip(),
     baseAmount, hasVat, amount: finalAmount,
@@ -421,7 +444,8 @@ export function exportWReportPDF(id) {
     </div>
     <div class="card">
       <h3>פרטי עבודה</h3>
-      <div class="row"><span>טכנאי:</span><span>${esc(r.techName || '—')}</span></div>
+      <div class="row"><span>טכנאי אחראי:</span><span>${esc(r.techName || '—')}</span></div>
+      ${(r.team && r.team.length) ? `<div class="row"><span>עבדו גם:</span><span>${esc(r.team.join(', '))}</span></div>` : ''}
       <div class="row"><span>תאריך:</span><span>${fmtD(r.date)}</span></div>
       ${timeRange ? `<div class="row"><span>שעות עבודה:</span><span>${timeRange}</span></div>` : ''}
       <div class="row"><span>סה"כ זמן:</span><span>${hoursTxt}</span></div>
