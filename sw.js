@@ -1,6 +1,6 @@
 // ══ sw.js — Service Worker for Smart Offline Mode + Push Notifications ══
 
-const CACHE_NAME = 'vd-crm-offline-v10';
+const CACHE_NAME = 'vd-crm-offline-v11';
 
 // רשימת הקבצים שאנחנו שומרים קבוע על המכשיר (כדי שיעלו גם ללא אינטרנט)
 const FILES_TO_CACHE = [
