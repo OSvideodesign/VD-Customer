@@ -722,7 +722,10 @@ document.head.appendChild(_link);
       </div>
 
       <div><label class="flbl">תאריך *</label><input class="finp" id="wr-date" type="date"></div>
-      <div><label class="flbl">טכנאי</label><select class="finp" id="wr-tech"></select></div>
+      <div><label class="flbl">טכנאי אחראי</label><select class="finp" id="wr-tech"></select></div>
+      <div class="fg1"><label class="flbl">עבדו גם (אופציונלי)</label>
+        <div id="wr-team-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
       <div><label class="flbl">שעת התחלה</label><input class="finp" id="wr-start" type="time" oninput="window.wrUpdateHours()"></div>
       <div><label class="flbl">שעת סיום</label><input class="finp" id="wr-end" type="time" oninput="window.wrUpdateHours()"></div>
       <div class="fg1"><div id="wr-hours-disp" style="font-size:13px;font-weight:700;color:var(--acc);min-height:18px"></div></div>
