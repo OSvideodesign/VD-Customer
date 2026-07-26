@@ -51,6 +51,34 @@ export function jumpTo(id) {
 export function openM(id)  { document.getElementById(id)?.classList.add('open'); }
 export function closeM(id) { document.getElementById(id)?.classList.remove('open'); }
 
+// ── תצוגה מקדימה להדפסה (במקום window.open — לא עובד היטב באפליקציית Android/Capacitor) ──
+// מציג את מסמך ההדפסה בתוך iframe במודל בתוך האפליקציה עצמה, כך שתמיד יש כפתור "✕ סגור"
+// זמין, בלי תלות בתמיכת window.open/window.print בפלטפורמה.
+export function openPrintPreview(html) {
+  const frame = document.getElementById('print-frame');
+  if (frame) frame.srcdoc = html;
+  openM('M-print');
+}
+window.openPrintPreview = openPrintPreview;
+
+export function closePrintPreview() {
+  closeM('M-print');
+  const frame = document.getElementById('print-frame');
+  if (frame) frame.srcdoc = 'about:blank';
+}
+window.closePrintPreview = closePrintPreview;
+
+export function printPreviewFrame() {
+  const frame = document.getElementById('print-frame');
+  try {
+    frame.contentWindow.focus();
+    frame.contentWindow.print();
+  } catch (e) {
+    toast('ההדפסה אינה נתמכת במכשיר זה — אפשר לצלם מסך של התצוגה המקדימה', 'err');
+  }
+}
+window.printPreviewFrame = printPreviewFrame;
+
 // ── Drawer ─────────────────────────────────────────────────────────────────
 export function openDrawer()  { document.getElementById('m-drawer')?.classList.add('open'); }
 export function closeDrawer() { document.getElementById('m-drawer')?.classList.remove('open'); }
