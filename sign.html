@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>אישור וחתימה — דוח עבודה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #F6F5F2; }
+  body { font-family: 'Heebo', Arial, sans-serif; color: #262626; direction: rtl; min-height: 100vh; }
+  .topbar { background: #16233F; padding: 16px 20px; }
+  .topbar .co { color: #FFFFFF; font-size: 17px; font-weight: 700; }
+  .topbar .tag { color: #E8DFC8; font-size: 11px; margin-top: 2px; }
+  .topbar img { max-height: 46px; max-width: 160px; display: block; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 20px 16px 40px; }
+  .card { background: #FFFFFF; border-radius: 10px; padding: 18px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .doc-title { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .doc-sub { text-align: center; font-size: 13px; color: #6B6B6B; margin-bottom: 16px; }
+  .row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13.5px; border-bottom: 1px solid #F0EEE7; }
+  .row:last-child { border-bottom: none; }
+  .row span:first-child { color: #6B6B6B; }
+  .row span:last-child { font-weight: 600; text-align: left; }
+  .sec-title { display: flex; align-items: center; gap: 8px; margin: 4px 0 8px; }
+  .sec-title span.t { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .sec-title span.l { flex: 1; height: 2px; background: #AD8A44; }
+  .desc-box { font-size: 13.5px; white-space: pre-wrap; line-height: 1.6; }
+  .equip-item { font-size: 13px; padding: 4px 0; display: flex; justify-content: space-between; }
+  .amount-box { background: #16233F; color: #FFFFFF; border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; }
+  .paid-tag { font-size: 12px; font-weight: 500; opacity: 0.85; }
+  #sig-canvas { width: 100%; height: 160px; background: #fff; border: 1.5px dashed #C9C3B4; border-radius: 8px; touch-action: none; cursor: crosshair; display: block; }
+  input.name-inp { width: 100%; padding: 10px 12px; border: 1px solid #E5E1D6; border-radius: 8px; font-size: 14px; font-family: inherit; margin-top: 8px; }
+  .btnrow { display: flex; gap: 8px; margin-top: 10px; }
+  button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px; padding: 10px 16px; font-size: 13.5px; font-weight: 600; }
+  .btn-clear { background: #F0EEE7; color: #262626; flex-shrink: 0; }
+  .btn-submit { background: #16233F; color: #FFFFFF; flex: 1; }
+  .btn-submit:disabled { opacity: 0.5; }
+  .msg { text-align: center; padding: 60px 20px; }
+  .msg .icon { font-size: 40px; margin-bottom: 12px; }
+  .msg .t { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .msg .s { font-size: 13.5px; color: #6B6B6B; }
+  .signed-img { max-width: 100%; border: 1px solid #E5E1D6; border-radius: 8px; background: #fff; }
+</style>
+</head>
+<body>
+  <div id="app">
+    <div class="msg"><div class="icon">⏳</div><div class="t">טוען...</div></div>
+  </div>
+  <script type="module" src="js/sign-app.js"></script>
+</body>
+</html>
