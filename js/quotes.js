@@ -332,7 +332,7 @@ export function exportQuotePDF(id) {
   const cfg = window.cfg || {};
   const c = window.custs.find(x => x.id === r.custId);
   const custName  = c ? c.name : (r.guestName || 'לקוח מזדמן');
-  const logo = (cfg.logos && (cfg.logos.header || cfg.logos.login)) || '';
+  const logo = (cfg.logos && (cfg.logos.quote || cfg.logos.header || cfg.logos.main)) || '';
   const company = cfg.company || 'וידאו דיזיין';
   const tagline = cfg.tagline || 'תכנון וביצוע בתים חכמים';
   const signerName = cfg.signerName || company;
