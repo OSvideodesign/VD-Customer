@@ -455,13 +455,8 @@ export function exportQuotePDF(id) {
 
     <div class="footer">הצעת מחיר זו אינה מהווה חשבונית · ${esc(company)}${cfg.phone ? ' · ' + esc(cfg.phone) : ''}${cfg.email ? ' · ' + esc(cfg.email) : ''} · ${fmtD(today())}</div>
   </div>
-  <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 350); };<\/script>
 </body></html>`;
 
-  const w = window.open('', '_blank');
-  if (!w) { toast('חסום ע"י חוסם חלונות קופצים', 'err'); return; }
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
+  window.openPrintPreview(html);
 }
 window.exportQuotePDF = exportQuotePDF;
