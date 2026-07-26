@@ -18,6 +18,15 @@ window.updateAccentColor = function(color) {
     }
 };
 
+window.clearQuoteLogo = function() {
+    if (!window.cfg.logos) return;
+    delete window.cfg.logos.quote;
+    if (window._dbSaveCfg) window._dbSaveCfg(window.cfg);
+    localStorage.setItem('vd_crm_logos', JSON.stringify(window.cfg.logos));
+    if (window.loadSettings) window.loadSettings();
+    toast('הלוגו הוסר', 'success');
+};
+
 window.uploadLogo = function(input, type) {
     const file = input.files[0];
     if(!file) return;
@@ -26,7 +35,7 @@ window.uploadLogo = function(input, type) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = type === 'header' ? 600 : 300; 
+            const MAX_WIDTH = (type === 'header' || type === 'quote') ? 600 : 300;
             let width = img.width;
             let height = img.height;
             if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
@@ -119,6 +128,17 @@ export function loadSettings() {
   if (document.getElementById('s-tagline'))  document.getElementById('s-tagline').value  = window.cfg.tagline  || 'תכנון וביצוע בתים חכמים';
   if (document.getElementById('s-signer'))   document.getElementById('s-signer').value   = window.cfg.signerName || '';
   if (document.getElementById('s-includes')) document.getElementById('s-includes').value = window.cfg.quoteIncludes || 'אספקה והתקנה של כל הציוד המפורט\nהגדרה ובדיקת תקינות מלאה בשטח\nהדרכת שימוש למשתמש הקצה';
+
+  const qLogoPrev = document.getElementById('s-quote-logo-preview');
+  if (qLogoPrev) {
+    const qLogo = window.cfg.logos && window.cfg.logos.quote;
+    qLogoPrev.innerHTML = qLogo
+      ? `<div style="display:flex;align-items:center;gap:10px;background:#16233F;padding:8px 12px;border-radius:8px">
+           <img src="${qLogo}" style="max-height:40px;max-width:140px">
+           <button type="button" class="btn bd btn-sm" onclick="window.clearQuoteLogo()">הסר</button>
+         </div>`
+      : '';
+  }
 
   // הזרקת אופציית צבע הדגשה דינמית אם לא קיימת
   const designGrid = document.querySelector('#s-design-panel .fgrid');
