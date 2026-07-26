@@ -1,6 +1,6 @@
 // ══ workreports.js — דוחות עבודה (Work Reports) ══
 
-import { uid, today, fmtD, avClr, ini, toast } from './utils.js';
+import { uid, today, fmtD, avClr, ini, toast, sendWhatsAppText, genToken } from './utils.js';
 import { openM, closeM } from './nav.js';
 import { addLog } from './log.js';
 
@@ -217,6 +217,7 @@ export function openNewWReport(preCustId) {
   _eWR = null;
   document.getElementById('M-wreport-title').textContent = 'דוח עבודה חדש';
   document.getElementById('wr-del').style.display = 'none';
+  document.getElementById('wr-send-sign').style.display = 'none';
 
   _fillWRCustSelect(preCustId || '');
   _fillTechSelect('');
@@ -248,6 +249,7 @@ export function editWReportById(id) {
   _eWR = id;
   document.getElementById('M-wreport-title').textContent = 'עריכת דוח עבודה';
   document.getElementById('wr-del').style.display = '';
+  document.getElementById('wr-send-sign').style.display = '';
 
   const isGuest = !r.custId && r.guestName;
   _fillWRCustSelect(isGuest ? '__guest__' : (r.custId || ''));
@@ -332,6 +334,42 @@ export function saveWReport() {
   toast(_eWR ? 'דוח עודכן ✅' : 'דוח עבודה נשמר ✅');
 }
 window.saveWReport = saveWReport;
+
+// ── שליחת קישור לחתימה מרחוק (וואטסאפ) ───────────────────────────────────────
+// יוצר (בפעם הראשונה) טוקן אקראי ושומר על הדוח, ושולח ללקוח קישור לעמוד חתימה
+// ציבורי עצמאי (sign.html) שמציג לו סיכום מלא של הדוח ומאפשר לחתום מהטלפון שלו.
+export function sendWReportSignLink() {
+  if (!_eWR) { toast('שמור את הדוח קודם', 'err'); return; }
+  const r = (window.wreports || []).find(x => x.id === _eWR);
+  if (!r) { toast('דוח לא נמצא', 'err'); return; }
+
+  const c = window.custs.find(x => x.id === r.custId);
+  const custName  = c ? c.name : (r.guestName || '');
+  const custPhone = c ? (c.phone || '') : (r.guestPhone || '');
+  if (!custPhone) { toast('אין מספר טלפון ללקוח לשליחה', 'err'); return; }
+
+  if (!r.signToken) {
+    r.signToken = genToken();
+    window.wreports = (window.wreports || []).map(x => x.id === r.id ? r : x);
+    if (window._dbSaveWReports) window._dbSaveWReports([r]);
+  }
+
+  const cfg = window.cfg || {};
+  const base = (cfg.publicUrl || window.location.origin || '').replace(/\/$/, '');
+  const link = base + '/sign.html?id=' + encodeURIComponent(r.id) + '&t=' + encodeURIComponent(r.signToken);
+
+  const lines = [
+    'שלום' + (custName ? ' ' + custName : '') + ',',
+    'דוח העבודה מוכן לאישור וחתימה דיגיטלית. אפשר לצפות בפרטים ולחתום ישירות מהטלפון בקישור הבא:',
+    link,
+    '',
+    'תודה' + (cfg.company ? ', ' + cfg.company : ''),
+  ];
+
+  sendWhatsAppText(custPhone, lines.join('\n'));
+  toast('קישור לחתימה נשלח 📤');
+}
+window.sendWReportSignLink = sendWReportSignLink;
 
 // ── מחיקה ────────────────────────────────────────────────────────────────────
 export async function delWReport() {
