@@ -455,6 +455,11 @@ document.head.appendChild(_link);
         <div style="margin-bottom:12px"><label class="flbl">פרטי חשבון בנק</label><textarea class="finp" id="s-pay-bank" rows="4" placeholder="א.ש וידאו דיזיין בע&quot;מ | בנק פועלים (12) | סניף 791 | חשבון 139387"></textarea></div>
         <div style="margin-bottom:20px"><label class="flbl">לינק תשלום (אשראי, אופציונלי)</label><input class="finp" id="s-pay-link" placeholder="https://..."></div>
 
+        <div class="stit" style="margin-top:6px">📄 תבנית הצעת מחיר</div>
+        <div style="margin-bottom:12px"><label class="flbl">תגית מתחת לשם החברה</label><input class="finp" id="s-tagline" placeholder="תכנון וביצוע בתים חכמים"></div>
+        <div style="margin-bottom:12px"><label class="flbl">שם החותם ("בברכה, ...")</label><input class="finp" id="s-signer" placeholder="אופיר שטרית"></div>
+        <div style="margin-bottom:20px"><label class="flbl">"ההצעה כוללת" — ברירת מחדל (שורה לכל סעיף)</label><textarea class="finp" id="s-includes" rows="4" placeholder="אספקה והתקנה של כל הציוד המפורט"></textarea></div>
+
         <button class="btn bp" style="width:100%" onclick="window.saveSettings()">💾 שמור הגדרות</button>
         
         <div class="stit" style="margin-top:30px">🔔 התראות</div>
@@ -690,8 +695,9 @@ document.head.appendChild(_link);
           <input type="checkbox" id="q-vat" style="width:16px;height:16px;cursor:pointer" oninput="window.wqRecalc()" checked>+18% מע"מ
         </label>
       </div>
-      <div class="fg1" id="q-total-disp" style="background:var(--sur2);border-radius:8px;padding:10px 12px;font-size:13px"></div>
+      <div class="fg1" id="q-total-disp" style="background:rgba(173,138,68,0.12);border:1px solid #AD8A44;border-radius:8px;padding:10px 12px;font-size:13px"></div>
 
+      <div class="fg1"><label class="flbl">"ההצעה כוללת" — override להצעה זו (ריק = ברירת המחדל מההגדרות)</label><textarea class="finp" id="q-includes" rows="3" placeholder="השאר ריק כדי להשתמש ברשימת ברירת המחדל"></textarea></div>
       <div class="fg1"><label class="flbl">הערות</label><textarea class="finp" id="q-notes" rows="2" placeholder="תנאי תשלום, אחריות, הערות..."></textarea></div>
     </div></div>
     <div class="mft">
