@@ -146,6 +146,7 @@ export function openNewQuote(preCustId) {
   document.getElementById('q-guest-fields').style.display = 'none';
   document.getElementById('q-guest-name').value  = '';
   document.getElementById('q-guest-phone').value = '';
+  document.getElementById('q-subject').value = '';
   document.getElementById('q-number').value = _nextQuoteNumber();
   document.getElementById('q-date').value = today();
   document.getElementById('q-valid').value = '';
@@ -175,6 +176,7 @@ export function editQuoteById(id) {
   document.getElementById('q-guest-fields').style.display = isGuest ? 'block' : 'none';
   document.getElementById('q-guest-name').value  = r.guestName  || '';
   document.getElementById('q-guest-phone').value = r.guestPhone || '';
+  document.getElementById('q-subject').value = r.subject || '';
   document.getElementById('q-number').value = r.number || _nextQuoteNumber();
   document.getElementById('q-date').value = r.date || today();
   document.getElementById('q-valid').value = r.validUntil || '';
@@ -211,6 +213,7 @@ export function saveQuote() {
 
   const r = {
     id:         _eQuote || uid(),
+    subject:    document.getElementById('q-subject').value.trim(),
     number:     document.getElementById('q-number').value.trim() || _nextQuoteNumber(),
     custId:     isGuest ? '' : custVal,
     guestName:  isGuest ? guestName  : '',
@@ -329,15 +332,16 @@ export function exportQuotePDF(id) {
   const cfg = window.cfg || {};
   const c = window.custs.find(x => x.id === r.custId);
   const custName  = c ? c.name : (r.guestName || 'לקוח מזדמן');
-  const custPhone = c ? (c.phone || '') : (r.guestPhone || '');
-  const custAddr  = c ? [c.address, c.city].filter(Boolean).join(', ') : '';
   const logo = (cfg.logos && (cfg.logos.header || cfg.logos.login)) || '';
   const company = cfg.company || 'וידאו דיזיין';
   const tagline = cfg.tagline || 'תכנון וביצוע בתים חכמים';
   const signerName = cfg.signerName || company;
   const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+  const money = n => Number(n || 0).toLocaleString('he-IL', { maximumFractionDigits: 2 });
 
   // ── NAVY(#16233F) / GOLD(#AD8A44) / CREAM(#E8DFC8) / LGRAY(#F6F5F2) — תבנית מותג "וידאו דיזיין" ──
+  // מבנה תואם לדוגמת ייחוס (הצעת מחיר שמעון אקהויז): כותרת+נושא, לקוח+תאריך בלבד, טבלה, סיכום,
+  // "ההצעה כוללת", שורת תוקף, וסיום ב"בברכה + שם" — ללא חתימות/אזהרה מתחת (הוסרו לפי הדוגמה).
   const includesSrc = (r.includes && r.includes.trim())
     || cfg.quoteIncludes
     || 'אספקה והתקנה של כל הציוד המפורט\nהגדרה ובדיקת תקינות מלאה בשטח\nהדרכת שימוש למשתמש הקצה';
@@ -345,8 +349,8 @@ export function exportQuotePDF(id) {
     .map(line => `<div class="inc-row"><span class="dash">—</span>${esc(line)}</div>`).join('');
 
   const validityLine = r.validUntil
-    ? ''
-    : '<div class="validity">תוקף ההצעה: 14 יום מיום הפקתה.</div>';
+    ? `<div class="validity">תוקף ההצעה עד ${fmtD(r.validUntil)}.</div>`
+    : '<div class="validity">תוקף ההצעה: 14 ימים מיום הפקתה.</div>';
 
   const itemRows = (r.items || []).length
     ? r.items.map((it, i) => {
@@ -355,8 +359,8 @@ export function exportQuotePDF(id) {
           <td style="text-align:center">${i + 1}</td>
           <td style="text-align:right">${esc(it.desc)}</td>
           <td style="text-align:center">${it.qty || 0}</td>
-          <td style="text-align:center">₪${Number(it.unitPrice || 0).toLocaleString('he-IL')}</td>
-          <td style="text-align:center">₪${line.toLocaleString('he-IL')}</td>
+          <td style="text-align:center">${money(it.unitPrice)}</td>
+          <td style="text-align:center;font-weight:700">${money(line)}</td>
         </tr>`;
       }).join('')
     : '<tr><td colspan="5" style="text-align:center;color:#888">אין פריטים</td></tr>';
@@ -371,21 +375,23 @@ export function exportQuotePDF(id) {
   .topbar .tag { color:#E8DFC8; font-size:9pt; margin-top:2px; }
   .topbar img { max-height:60px; max-width:200px; }
   .wrap { padding:24px 32px; }
-  .doc-title { text-align:center; font-size:22pt; font-weight:700; color:#262626; margin-bottom:16px; }
+  .doc-title { text-align:center; font-size:22pt; font-weight:700; color:#262626; }
+  .doc-sub { text-align:center; font-size:12pt; color:#6B6B6B; margin-top:4px; margin-bottom:16px; }
   .grid2 { display:flex; gap:10px; margin-bottom:18px; background:#F6F5F2; border-radius:8px; padding:14px 16px; }
   .gcell { flex:1; }
   .gcell + .gcell { border-right:1px solid #E5E1D6; padding-right:14px; }
   .glabel { font-size:10pt; color:#6B6B6B; }
   .gval { font-size:13pt; font-weight:700; color:#262626; margin-top:2px; }
-  .gsub { font-size:10pt; color:#6B6B6B; margin-top:4px; }
   .sec-title { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
   .sec-title span.t { font-size:13.5pt; font-weight:700; color:#262626; white-space:nowrap; }
   .sec-title span.l { flex:1; height:2px; background:#AD8A44; }
-  table.items { width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt; }
-  table.items th { background:#16233F; color:#FFFFFF; font-weight:500; padding:8px 6px; }
-  table.items td { padding:7px 6px; }
-  .totals-row { display:flex; justify-content:space-between; padding:7px 12px; font-size:10pt; background:#F6F5F2; }
-  .totals-grand { display:flex; justify-content:space-between; padding:9px 12px; font-size:12.5pt; font-weight:700; background:#16233F; color:#FFFFFF; }
+  table.items { width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt; border:1px solid #E5E1D6; }
+  table.items th { background:#16233F; color:#FFFFFF; font-weight:500; padding:8px 6px; border:1px solid #2E3F60; }
+  table.items td { padding:7px 6px; border:1px solid #E5E1D6; }
+  table.totals { width:100%; border-collapse:collapse; margin-bottom:16px; font-size:10pt; border:1px solid #E5E1D6; }
+  table.totals td { padding:7px 12px; border:1px solid #E5E1D6; background:#F6F5F2; }
+  table.totals td.tv { text-align:center; font-weight:700; width:90px; }
+  table.totals tr.grand td { background:#16233F; color:#FFFFFF; font-size:12.5pt; font-weight:700; border-color:#16233F; }
   .inc-block { font-size:10.5pt; color:#262626; margin:14px 0; }
   .inc-block .h { font-weight:700; margin-bottom:6px; }
   .inc-row { padding:2px 0; }
@@ -393,10 +399,6 @@ export function exportQuotePDF(id) {
   .validity { font-size:10pt; color:#6B6B6B; font-style:italic; margin-bottom:14px; }
   .signoff { border-top:1px solid #AD8A44; padding-top:12px; margin-top:6px; font-size:10pt; color:#262626; }
   .signoff .name { font-size:13pt; font-weight:700; margin-top:2px; }
-  .sign-area { display:flex; justify-content:space-between; margin-top:34px; gap:30px; }
-  .sign-box { flex:1; }
-  .sign-box .line { border-top:1.5px solid #262626; margin-top:38px; padding-top:4px; font-size:10pt; color:#6B6B6B; }
-  .footer { margin-top:26px; text-align:center; font-size:9pt; color:#6B6B6B; border-top:1px solid #E5E1D6; padding-top:10px; }
   @media print { .wrap { padding:12px 18px; } @page { margin:10mm; } }
 </style></head><body>
   <div class="topbar" style="display:flex;justify-content:space-between;align-items:center">
@@ -409,36 +411,33 @@ export function exportQuotePDF(id) {
 
   <div class="wrap">
     <div class="doc-title">הצעת מחיר</div>
+    ${r.subject ? `<div class="doc-sub">${esc(r.subject)}</div>` : ''}
 
     <div class="grid2">
       <div class="gcell">
         <div class="glabel">לקוח</div>
         <div class="gval">${esc(custName)}</div>
-        ${custPhone ? `<div class="gsub">${esc(custPhone)}</div>` : ''}
-        ${custAddr  ? `<div class="gsub">${esc(custAddr)}</div>`  : ''}
       </div>
       <div class="gcell">
         <div class="glabel">תאריך</div>
         <div class="gval">${fmtD(r.date)}</div>
-        <div class="gsub">מס' הצעה: ${esc(r.number || '')}</div>
-        ${r.validUntil ? `<div class="gsub">בתוקף עד: ${fmtD(r.validUntil)}</div>` : ''}
       </div>
     </div>
 
     <div class="sec-title"><span class="t">פירוט הצעת המחיר</span><span class="l"></span></div>
     <table class="items">
       <thead><tr>
-        <th style="width:34px">מס'</th><th style="text-align:right">תיאור הפריט</th>
-        <th style="width:50px">כמות</th><th style="width:90px">מחיר ליחידה</th><th style="width:90px">סה"כ</th>
+        <th style="width:34px">מס׳</th><th style="text-align:right">תיאור הפריט</th>
+        <th style="width:50px">כמות</th><th style="width:90px">מחיר ליחידה (₪)</th><th style="width:90px">סה"כ (₪)</th>
       </tr></thead>
       <tbody>${itemRows}</tbody>
     </table>
 
-    <div style="margin-bottom:16px">
-      <div class="totals-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(r.subtotal || 0).toLocaleString('he-IL')}</span></div>
-      ${r.hasVat ? `<div class="totals-row"><span>מע"מ (18%)</span><span>₪${Number(r.vatAmount || 0).toLocaleString('he-IL', { maximumFractionDigits: 2 })}</span></div>` : ''}
-      <div class="totals-grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(r.total || 0).toLocaleString('he-IL')}</span></div>
-    </div>
+    <table class="totals">
+      <tr><td style="text-align:right">סה"כ לפני מע"מ</td><td class="tv">${money(r.subtotal)} ₪</td></tr>
+      ${r.hasVat ? `<tr><td style="text-align:right">מע"מ (18%)</td><td class="tv">${money(r.vatAmount)} ₪</td></tr>` : ''}
+      <tr class="grand"><td style="text-align:right">סה"כ כולל מע"מ</td><td class="tv">${money(r.total)} ₪</td></tr>
+    </table>
 
     <div class="inc-block"><div class="h">ההצעה כוללת</div>${includesRows}</div>
 
@@ -447,13 +446,6 @@ export function exportQuotePDF(id) {
     ${validityLine}
 
     <div class="signoff">בברכה,<div class="name">${esc(signerName)}</div></div>
-
-    <div class="sign-area">
-      <div class="sign-box"><div class="line">חתימת הלקוח (אישור הזמנה)</div></div>
-      <div class="sign-box"><div class="line">חתימת ${esc(company)}</div></div>
-    </div>
-
-    <div class="footer">הצעת מחיר זו אינה מהווה חשבונית · ${esc(company)}${cfg.phone ? ' · ' + esc(cfg.phone) : ''}${cfg.email ? ' · ' + esc(cfg.email) : ''} · ${fmtD(today())}</div>
   </div>
 </body></html>`;
 
