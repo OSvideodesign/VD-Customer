@@ -483,13 +483,8 @@ export function exportWReportPDF(id) {
   </div>
 
   <div class="footer">הופק ממערכת ${esc(company)} · ${fmtD(today())}</div>
-  <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 350); };<\/script>
 </body></html>`;
 
-  const w = window.open('', '_blank');
-  if (!w) { toast('חסום ע"י חוסם חלונות קופצים', 'err'); return; }
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
+  window.openPrintPreview(html);
 }
 window.exportWReportPDF = exportWReportPDF;
