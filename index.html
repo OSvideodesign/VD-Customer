@@ -456,6 +456,11 @@ document.head.appendChild(_link);
         <div style="margin-bottom:20px"><label class="flbl">לינק תשלום (אשראי, אופציונלי)</label><input class="finp" id="s-pay-link" placeholder="https://..."></div>
 
         <div class="stit" style="margin-top:6px">📄 תבנית הצעת מחיר</div>
+        <div style="margin-bottom:12px">
+          <label class="flbl">לוגו ייעודי להצעות מחיר (אופציונלי — אם לא מועלה, ישמש הלוגו הראשי)</label>
+          <input type="file" class="finp" accept="image/*" onchange="window.uploadLogo(this, 'quote')" style="padding:4px; font-size:11px;">
+          <div id="s-quote-logo-preview" style="margin-top:8px"></div>
+        </div>
         <div style="margin-bottom:12px"><label class="flbl">תגית מתחת לשם החברה</label><input class="finp" id="s-tagline" placeholder="תכנון וביצוע בתים חכמים"></div>
         <div style="margin-bottom:12px"><label class="flbl">שם החותם ("בברכה, ...")</label><input class="finp" id="s-signer" placeholder="אופיר שטרית"></div>
         <div style="margin-bottom:20px"><label class="flbl">"ההצעה כוללת" — ברירת מחדל (שורה לכל סעיף)</label><textarea class="finp" id="s-includes" rows="4" placeholder="אספקה והתקנה של כל הציוד המפורט"></textarea></div>
