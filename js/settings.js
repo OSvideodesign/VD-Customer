@@ -125,6 +125,7 @@ export function loadSettings() {
   if (document.getElementById('s-email'))   document.getElementById('s-email').value   = window.cfg.email   || '';
   if (document.getElementById('s-pay-bank')) document.getElementById('s-pay-bank').value = window.cfg.payBank || '';
   if (document.getElementById('s-pay-link')) document.getElementById('s-pay-link').value = window.cfg.payLink || '';
+  if (document.getElementById('s-public-url')) document.getElementById('s-public-url').value = window.cfg.publicUrl || '';
   if (document.getElementById('s-tagline'))  document.getElementById('s-tagline').value  = window.cfg.tagline  || 'תכנון וביצוע בתים חכמים';
   if (document.getElementById('s-signer'))   document.getElementById('s-signer').value   = window.cfg.signerName || '';
   if (document.getElementById('s-includes')) document.getElementById('s-includes').value = window.cfg.quoteIncludes || 'אספקה והתקנה של כל הציוד המפורט\nהגדרה ובדיקת תקינות מלאה בשטח\nהדרכת שימוש למשתמש הקצה';
@@ -175,6 +176,7 @@ export function saveSettings() {
   if (document.getElementById('s-email'))   window.cfg.email   = document.getElementById('s-email').value.trim();
   if (document.getElementById('s-pay-bank')) window.cfg.payBank = document.getElementById('s-pay-bank').value.trim();
   if (document.getElementById('s-pay-link')) window.cfg.payLink = document.getElementById('s-pay-link').value.trim();
+  if (document.getElementById('s-public-url')) window.cfg.publicUrl = document.getElementById('s-public-url').value.trim().replace(/\/$/, '');
   if (document.getElementById('s-tagline'))  window.cfg.tagline      = document.getElementById('s-tagline').value.trim();
   if (document.getElementById('s-signer'))   window.cfg.signerName   = document.getElementById('s-signer').value.trim();
   if (document.getElementById('s-includes')) window.cfg.quoteIncludes = document.getElementById('s-includes').value.trim();
