@@ -709,6 +709,19 @@ document.head.appendChild(_link);
   </div>
 </div>
 
+<div class="modal" id="M-print">
+  <div class="mbox" style="max-width:900px;width:95vw;max-height:92vh">
+    <div class="mhd"><h2>תצוגה מקדימה להדפסה</h2><button class="btn bs btn-sm" onclick="window.closePrintPreview()">✕</button></div>
+    <div class="mbody" style="padding:0;background:#fff">
+      <iframe id="print-frame" style="width:100%;height:65vh;border:0;display:block;background:#fff"></iframe>
+    </div>
+    <div class="mft">
+      <button class="btn bs" onclick="window.closePrintPreview()">סגור</button>
+      <button class="btn bp" onclick="window.printPreviewFrame()">🖨️ הדפס / שמור כ-PDF</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="M-wreport">
   <div class="mbox">
     <div class="mhd"><h2 id="M-wreport-title">דוח עבודה חדש</h2><button class="btn bs btn-sm" onclick="closeM('M-wreport')">✕</button></div>
