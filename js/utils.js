@@ -105,6 +105,30 @@ export function sendPaymentDetails(phone, name, amount) {
 }
 window.sendPaymentDetails = sendPaymentDetails;
 
+// שליחת טקסט חופשי בוואטסאפ ללקוח (קישורי חתימה וכו')
+export function sendWhatsAppText(phone, text) {
+  if (!phone) { toast('אין מספר טלפון ללקוח', 'err'); return; }
+  const clean = phone.replace(/[\s\-\(\)]/g, '').replace(/^\+/, '').replace(/^0/, '972');
+  const link = document.createElement('a');
+  link.href = 'https://wa.me/' + clean + '?text=' + encodeURIComponent(text);
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => link.remove(), 300);
+}
+window.sendWhatsAppText = sendWhatsAppText;
+
+// טוקן אקראי (להצפנת קישורי חתימה ציבוריים) — מבוסס crypto כשזמין, אחרת נופל חזרה ל-uid()
+export function genToken() {
+  if (window.crypto && window.crypto.getRandomValues) {
+    const arr = new Uint8Array(16);
+    window.crypto.getRandomValues(arr);
+    return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
+  }
+  return uid() + uid();
+}
+
 // יתרת חוב של משימה: סכום מלא פחות מה ששולם בפועל (0 אם סומן כשולם)
 export function faultBalance(f) {
   const amt = parseFloat(f.amount) || 0;
