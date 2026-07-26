@@ -455,6 +455,9 @@ document.head.appendChild(_link);
         <div style="margin-bottom:12px"><label class="flbl">פרטי חשבון בנק</label><textarea class="finp" id="s-pay-bank" rows="4" placeholder="א.ש וידאו דיזיין בע&quot;מ | בנק פועלים (12) | סניף 791 | חשבון 139387"></textarea></div>
         <div style="margin-bottom:20px"><label class="flbl">לינק תשלום (אשראי, אופציונלי)</label><input class="finp" id="s-pay-link" placeholder="https://..."></div>
 
+        <div class="stit" style="margin-top:6px">🔗 קישורים ציבוריים</div>
+        <div style="margin-bottom:20px"><label class="flbl">כתובת האתר הציבורית (לשליחת קישורי חתימה ללקוחות)</label><input class="finp" id="s-public-url" placeholder="https://vd-clientpro.web.app"></div>
+
         <div class="stit" style="margin-top:6px">📄 תבנית הצעת מחיר</div>
         <div style="margin-bottom:12px">
           <label class="flbl">לוגו ייעודי להצעות מחיר (אופציונלי — אם לא מועלה, ישמש הלוגו הראשי)</label>
@@ -787,6 +790,7 @@ document.head.appendChild(_link);
           <input class="finp" id="wr-signer" placeholder="שם החותם" style="flex:1">
           <button type="button" class="btn bs btn-sm" onclick="window.clearSig()" style="flex-shrink:0">🗑️ נקה חתימה</button>
         </div>
+        <button type="button" class="btn bs btn-sm" id="wr-send-sign" style="display:none;width:100%;margin-top:8px" onclick="window.sendWReportSignLink()">📤 שלח ללקוח לחתימה מרחוק (וואטסאפ)</button>
       </div>
     </div></div>
     <div class="mft">
