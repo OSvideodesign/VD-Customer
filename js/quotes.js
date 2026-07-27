@@ -371,7 +371,7 @@ export function exportQuotePDF(id) {
   * { box-sizing:border-box; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact; }
   body { font-family:Arial,'Heebo',sans-serif; color:#262626; font-size:14px; line-height:1.5; }
   .topbar { background:#16233F; padding:16px 32px; }
-  .topbar .co { color:#FFFFFF; font-size:15pt; font-weight:700; }
+  .topbar .co { color:#FFFFFF; font-size:20pt; font-weight:700; }
   .topbar .tag { color:#E8DFC8; font-size:9pt; margin-top:2px; }
   .topbar img { max-height:81px; max-width:323px; }
   .wrap { padding:24px 32px; }
@@ -428,7 +428,7 @@ export function exportQuotePDF(id) {
     <table class="items">
       <thead><tr>
         <th style="width:34px">מס׳</th><th style="text-align:right">תיאור הפריט</th>
-        <th style="width:50px">כמות</th><th style="width:90px">מחיר ליחידה (₪)</th><th style="width:90px">סה"כ (₪)</th>
+        <th style="width:50px">כמות</th><th style="width:130px">מחיר ליחידה (₪)</th><th style="width:90px">סה"כ (₪)</th>
       </tr></thead>
       <tbody>${itemRows}</tbody>
     </table>
