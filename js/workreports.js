@@ -430,7 +430,7 @@ export function exportWReportPDF(id) {
 <title>דוח עבודה — ${esc(custName)} — ${fmtD(r.date)}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap');
-  * { box-sizing:border-box; margin:0; padding:0; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact; }
   body { font-family:'Heebo',Arial,sans-serif; color:#1e293b; padding:28px 32px; font-size:14px; line-height:1.5; }
   .head { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #3b82f6; padding-bottom:14px; margin-bottom:8px; }
   .head img { max-height:70px; max-width:220px; }
