@@ -373,7 +373,7 @@ export function exportQuotePDF(id) {
   .topbar { background:#16233F; padding:16px 32px; }
   .topbar .co { color:#FFFFFF; font-size:15pt; font-weight:700; }
   .topbar .tag { color:#E8DFC8; font-size:9pt; margin-top:2px; }
-  .topbar img { max-height:92px; max-width:340px; }
+  .topbar img { max-height:110px; max-width:400px; }
   .wrap { padding:24px 32px; }
   .doc-title { text-align:center; font-size:22pt; font-weight:700; color:#262626; }
   .doc-sub { text-align:center; font-size:12pt; color:#6B6B6B; margin-top:4px; margin-bottom:16px; }
