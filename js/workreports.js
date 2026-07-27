@@ -408,7 +408,7 @@ export function exportWReportPDF(id) {
   const custPhone = c ? (c.phone || '') : (r.guestPhone || '');
   const custAddr  = c ? [c.address, c.city].filter(Boolean).join(', ') : '';
   const logo = (cfg.logos && (cfg.logos.header || cfg.logos.login)) || '';
-  const company = cfg.company || 'וידאו דיזיין';
+  const company = cfg.company || 'א.ש וידאו דיזיין בע"מ';
 
   const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
 
