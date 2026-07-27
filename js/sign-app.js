@@ -34,7 +34,7 @@ function showMsg(icon, title, sub) {
 }
 
 function topbarHtml(cfg) {
-  const company = (cfg && cfg.company) || 'וידאו דיזיין';
+  const company = (cfg && cfg.company) || 'א.ש וידאו דיזיין בע"מ';
   const tagline = (cfg && cfg.tagline) || 'תכנון וביצוע בתים חכמים';
   const logo = cfg && cfg.logos && (cfg.logos.header || cfg.logos.main || cfg.logos.quote);
   return `<div class="topbar" style="display:flex;justify-content:space-between;align-items:center">
