@@ -368,7 +368,7 @@ export function exportQuotePDF(id) {
   const html = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <title>הצעת מחיר ${esc(r.number || '')} — ${esc(custName)}</title>
 <style>
-  * { box-sizing:border-box; margin:0; padding:0; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact; }
   body { font-family:Arial,'Heebo',sans-serif; color:#262626; font-size:14px; line-height:1.5; }
   .topbar { background:#16233F; padding:16px 32px; }
   .topbar .co { color:#FFFFFF; font-size:15pt; font-weight:700; }
