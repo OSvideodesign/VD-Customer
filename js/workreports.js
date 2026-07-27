@@ -433,7 +433,7 @@ export function exportWReportPDF(id) {
   * { box-sizing:border-box; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact; }
   body { font-family:'Heebo',Arial,sans-serif; color:#1e293b; padding:28px 32px; font-size:14px; line-height:1.5; }
   .head { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #3b82f6; padding-bottom:14px; margin-bottom:8px; }
-  .head img { max-height:95px; max-width:380px; }
+  .head img { max-height:81px; max-width:323px; }
   .head .co { text-align:left; }
   .head .co h1 { font-size:22px; color:#3b82f6; font-weight:800; }
   .head .co div { font-size:12px; color:#64748b; }
